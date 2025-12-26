@@ -1,0 +1,58 @@
+#+TITLE: GLOSSARY — SYSTEM
+#+SCOPE: Public Language Contract
+#+LAYER: 0′
+
+* System Glossary (Public)
+
+** INCLUDE
+Signals intentional participation.
+Inclusion does not imply agreement.
+
+** IGNORE
+Defers resolution without negation.
+Ignored elements remain observable.
+
+** SCHEMA
+Shared structure for verification.
+Schemas are readable, comparable, and stable.
+
+** SCHEME
+Executable interpretation.
+Schemes are contextual and replaceable.
+
+** GENESIS
+The act of definition prior to execution.
+
+** RESPONSE
+The minimal proof of existence.
+That which cannot respond cannot persist.
+
+---
+
+* Personal Purview (Non-Normative)
+
+#+SCOPE: Reflection Only
+
+** FREEDOM
+Capacity to choose alignment.
+
+** AUTONOMY
+Capacity to act without coercion.
+
+** SOVEREIGNTY
+Capacity to define one's own boundaries.
+
+** RECIPROCITY
+The only valid measure of trust.
+
+** GRACE
+Allowance for error without erasure.
+
+** LOVE
+Commitment to mutual recognition.
+
+** UNDERSTANDING
+Effort to align perspectives.
+
+** EMPATHY
+Willingness to feel without assuming.

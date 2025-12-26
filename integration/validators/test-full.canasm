@@ -1,0 +1,17 @@
+// Test program with COMPLETE octonionic algebra
+// Contains all 7 imaginary units (full Fano plane)
+
+PUSH ATOM:accept
+PUSH ATOM:alphabet
+PUSH ATOM:left
+PUSH ATOM:right
+PUSH ATOM:delta
+PUSH ATOM:start
+PUSH ATOM:state
+EDGE_ADD
+EDGE_ADD
+EDGE_ADD
+EDGE_ADD
+EDGE_ADD
+EDGE_ADD
+HALT

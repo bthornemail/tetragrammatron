@@ -1,0 +1,76 @@
+#+TITLE: README
+#+SUBTITLE: GENESIS-PROTOCOL
+#+ROLE: Public-Facing Orientation
+#+LAYER: 0′
+
+* What Is This?
+
+GENESIS-PROTOCOL is a minimal, formal system for defining *structure before interpretation*.
+
+It separates:
+- What exists (hardware/provenance)
+- What means (software/semantics)
+- What projects (syntax/view)
+
+* Quick Start
+
+1. Read [[file:docs/RFC-0001-TPPM.md][RFC-0001-TPPM]] for the formal specification
+2. Read [[file:GENESIS.org][GENESIS.org]] for the canonical declaration
+3. Run =genesis.sh= for the reference implementation
+
+* Document Structure
+
+| Layer | Artifact | Purpose |
+|-------+----------+---------|
+| −0 | [[file:docs/RFC-0001-TPPM.md][RFC-0001-TPPM]] | Pre-system invariant |
+| 0 | [[file:INDEX.org][INDEX.org]] | Orientation & addressability |
+| 0′ | [[file:README.org][README.org]] | Public-facing orientation |
+| 0′ | [[file:GLOSSARY.org][GLOSSARY.org]] | Language contract |
+| 1 | [[file:CONVERSATION.org][CONVERSATION.org]] | Temporal emergence |
+| 2 | [[file:MANIFESTO.org][MANIFESTO.org]] | Intent & values |
+| 3 | [[file:REVELATION.org][REVELATION.org]] | Personal synthesis |
+
+* Core Principle
+
+*Only what responds may remain.*
+
+GENESIS defines *when* something exists,
+not *what* it means, *why* it exists, or *who* it serves.
+
+* What This Is
+
+- A boundary definition, not a belief system
+- A constraint framework, not an ideology
+- A method of alignment, not authority
+- A system for provenance, not power
+
+* What This Is Not
+
+- Not a theology
+- Not a governance model
+- Not a truth oracle
+- Not a replacement for human judgment
+
+* Tools
+
+- =genesis.sh= — POSIX shell implementation
+- =GENESIS.canvas= — Obsidian visual structure
+- Layer algebra specs in =docs/=
+
+* Contributing
+
+This is a frozen foundation.
+
+For questions, see [[file:CONVERSATION.org][CONVERSATION.org]].
+For personal reflection, see [[file:REVELATION.org][REVELATION.org]].
+For intent, see [[file:MANIFESTO.org][MANIFESTO.org]].
+
+RFC comments welcome via standard channels.
+
+* License
+
+See LICENSE file (to be added).
+
+* Contact
+
+Brian Thorne

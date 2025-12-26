@@ -1,0 +1,35 @@
+; CANASM₁ — single-pass, no jumps
+; This file is intentionally tiny: it proves the seed toolchain end-to-end.
+; Assemble:
+;   ./canasm0 src/canasm/seed/canasm1.canasm -o out.canb
+; Run in wasm demo or native VM later.
+;
+; Atoms used here are your normalized 8-tuple keywords.
+
+@atoms
+  accept
+  alphabet
+  left
+  right
+  delta
+  start
+  state
+  reject
+@end
+
+@code
+  ; Build a minimal “repo kernel” relation slice:
+  ; start → state → accept
+  ATOM start
+  ATOM state
+  EDGE
+
+  ATOM state
+  ATOM accept
+  EDGE
+
+  ; Visual boundary
+  PROJ_FANO
+
+  HALT
+@end

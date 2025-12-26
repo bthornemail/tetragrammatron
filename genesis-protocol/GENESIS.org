@@ -1,0 +1,140 @@
+#+TITLE: GENESIS
+#+SUBTITLE: Combinatorial Origin of Structure
+#+AUTHOR: Brian Thorne
+#+OPTIONS: toc:nil num:nil
+#+STARTUP: overview
+
+* GENESIS
+The act of definition prior to execution.
+
+GENESIS does not describe meaning.
+GENESIS does not describe belief.
+GENESIS does not describe syntax.
+
+GENESIS describes *structure before interpretation*.
+
+---
+
+* Layer Model (Invariant)
+
+| Layer | Role         | Description                          |
+|-------+--------------+--------------------------------------|
+|    -0 | Constraint   | Hardware / physical / byte invariants |
+|     0 | Index        | Positional identity                  |
+|     1 | Conversation | Process / interaction                |
+|     2 | Manifesto    | Intent                               |
+|     3 | Revelation   | Personal synthesis                   |
+
+This document exists at *Layer 0*.
+
+---
+
+* Primitive Combinatorial Model
+
+GENESIS reduces all text to two primitives:
+
+- *P0* — semantic mass
+  = contiguous alphanumeric runs
+  = =[[:alnum:]]+​=
+
+- *P1* — structural projection
+  = contiguous non-alphanumeric runs
+  = =[^[:alnum:]]+​=
+
+No other primitives exist.
+
+Meaning emerges *after* projection.
+
+---
+
+* Fundamental Projection Rules
+
+1. Collapse text into P0 / P1
+2. Preserve order
+3. Measure run length
+4. Compare shapes, not symbols
+
+Two expressions are equivalent *iff*:
+- Their P0/P1 sequences match
+- Their run-length polynomials match
+
+---
+
+* GENESIS as Program (Reference)
+
+This block is a *reference*, not a dependency.
+
+#+NAME: genesis
+#+BEGIN_SRC sh
+cat | genesis.sh translate
+#+END_SRC
+
+Any implementation that preserves the combinatorial invariants
+is a valid GENESIS.
+
+---
+
+* Software Constraint (Form Projection)
+
+Alphanumeric characters preserve semantic mass.
+Structure is everything else.
+
+#+BEGIN_SRC sh
+sed 's/[A-Za-z0-9.]/A/g'
+#+END_SRC
+
+---
+
+* Hardware Constraint (Provenance Fingerprint)
+
+A fixed-width byte projection.
+
+#+BEGIN_SRC sh
+awk '{ printf "%02X:00:00:00:00:00:00:00\n", length($0) }'
+#+END_SRC
+
+---
+
+* Meta-Tags (Emergent, Not Defined)
+
+A meta-tag is any structure of the form:
+
+P1 → P0 → P1
+
+Examples (all equivalent):
+
+- =[[term]]=
+- =💻term💻=
+- =<term>=
+- =::term::=
+
+Symbols do not matter.
+Only shape matters.
+
+---
+
+* Non-Authority Clause
+
+Org Mode is a *view*.
+Markdown is a *view*.
+Emoji are a *view*.
+
+GENESIS remains valid if this file is deleted.
+
+Only what responds can remain.
+
+---
+
+* Index Linkage
+
+This document defines the origin of:
+
+- INDEX.org
+- CONVERSATION.org
+- MANIFESTO.org
+- REVELATION.org
+
+Those documents project meaning.
+GENESIS only defines constraint.
+
+This file is now portable, timeless, and frozen.

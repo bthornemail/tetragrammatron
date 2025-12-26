@@ -1,0 +1,9 @@
+// Test program that SATISFIES Fano closure
+// Contains complete line 0: accept + alphabet + left
+
+PUSH ATOM:accept
+PUSH ATOM:alphabet
+EDGE_ADD
+PUSH ATOM:left
+EDGE_ADD
+HALT

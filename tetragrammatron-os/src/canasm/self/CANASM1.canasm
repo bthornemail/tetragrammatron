@@ -1,0 +1,14 @@
+# CANASM1.canasm (bootstrap skeleton)
+# Single-pass, no jumps. Tokenized input. Comments start with '#'.
+#
+# Goal: This file will evolve into a self-hosting assembler written *in CANASM*.
+# For now, it's a minimal "alive" artifact that exercises atoms + edge ops.
+
+PUSH ATOM:CANASM1
+PUSH ATOM:BOOTSTRAP
+EDGE_ADD
+
+# Fano projection hook (optional; VM may treat as no-op initially)
+PROJ_FANO
+
+HALT

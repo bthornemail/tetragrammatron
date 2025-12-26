@@ -1,0 +1,23 @@
+#+TITLE: CONVERSATION
+#+ROLE: Process
+#+LAYER: 1
+
+This document captures emergence through dialogue.
+
+It records:
+- questions asked
+- assumptions challenged
+- constraints discovered
+- boundaries negotiated
+
+*CONVERSATION is temporal.*
+It may contradict itself.
+It must not be judged.
+
+Meaning emerges here,
+but is never finalized here.
+
+* Notes
+
+This is an append-only record.
+History of thought, not authority.

@@ -1,0 +1,57 @@
+#+TITLE: MANIFESTO
+#+SUBTITLE: GENESIS-PROTOCOL
+#+AUTHOR: Brian Thorne
+#+STATUS: Frozen
+
+* Purpose
+
+This manifesto asserts a single principle:
+
+*Only what responds may remain.*
+
+GENESIS-PROTOCOL exists to define *when* something may be said to exist,
+not *what* it means, *why* it exists, or *who* it serves.
+
+* What This Is
+
+- A boundary definition, not a belief system
+- A constraint framework, not an ideology
+- A method of alignment, not authority
+- A system for provenance, not power
+
+* What This Is Not
+
+- Not a theology
+- Not a governance model
+- Not a truth oracle
+- Not a replacement for human judgment
+
+* Core Commitments
+
+- Freedom without coercion
+- Autonomy without isolation
+- Sovereignty without domination
+- Reciprocity as the only metric of trust
+
+* The Fourfold Discipline
+
+We separate systems by intention:
+
+- *INCLUDE* — what is allowed to speak
+- *IGNORE* — what is left unresolved
+- *SCHEMA* — what is shared and verifiable
+- *SCHEME* — what is executable and contextual
+
+No system may collapse these without loss.
+
+* Final Statement
+
+This manifesto does not claim correctness.
+It claims responsibility.
+
+Anything that cannot be justified,
+must be excluded.
+Anything that cannot respond,
+must dissolve.
+
+*Only what responds may remain.*

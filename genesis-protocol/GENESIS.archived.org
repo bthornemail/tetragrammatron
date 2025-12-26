@@ -1,0 +1,81 @@
+#+BEGIN_GENESIS
+:PROPERTIES:
+:GENESIS_ID: GENESISORG
+:GENESIS_PATH: GENESIS.org
+:GENESIS_TIME: 2025-12-25T01:54:00Z
+:GENESIS_HW: A2:34:F4:4B:4B:B2:DA:94
+:GENESIS_V8: 172 198 199 14 10 140 22 63
+:END:
+
+#+BEGIN_PAYLOAD
+#+TITLE: GENESIS.org — Combinatorics Core (Authoritative)
+#+AUTHOR: Brian James Thorne
+#+OPTIONS: toc:2
+
+* GENESIS (authority)
+GENESIS is definition *prior* to execution.
+
+- Stat is Layer 0 (existence + provenance).
+- Syntax is a *projection* (views).
+- Semantics is alnum-bearing content (signals that can speak).
+
+Your shared form is:
+
+- HARDWARE_PROBE: stat → 8 bytes (r0..r7)
+- SOFTWARE_PROBE: topology → 8 ints (r0..r7)
+- SYNTAX_VIEW: non-alnum grouping/ordering (polynomial operators)
+- SEMANTIC_STREAM: alnum tokens (payload)
+
+* Constraints
+** Hardware constraint (probe address)
+A colon-separated hex byte string:
+
+: ^([0-9A-Fa-f]{2}:)*[0-9A-Fa-f]{2}$
+
+** Software constraint (semantic stream)
+Alnum is semantic. Non-alnum is syntax.
+
+- semantic = /[[:alnum:]]+/
+- syntax   = /[^[:alnum:][:space:]]+/
+- whitespace is neutral carrier.
+
+* Octonion closure (8 roles)
+0 Identity
+1 Include (transition count)
+2 Ignore (stable non-alnum runs)
+3 Schema (opens: ( [ { )
+4 Scheme (closes: ) ] } )
+5 Context (quotes)
+6 Boundary (separators)
+7 Collapse (newlines / commits)
+
+These are not meanings; they are *connection channels*.
+
+* Canonical wrapper (view)
+#+BEGIN_GENESIS
+:PROPERTIES:
+:GENESIS_ID: <ALNUM-COLLAPSE>
+:GENESIS_HW: <8-byte>
+:GENESIS_V8: <8-int>
+:END:
+
+#+BEGIN_PAYLOAD
+<bytes>
+#+END_PAYLOAD
+
+#+BEGIN_FINGERPRINT
+HW <8-byte>
+V8 <8-int>
+#+END_FINGERPRINT
+#+END_GENESIS
+
+* Implementation shadow
+The portable implementation is in =genesis.sh=.
+
+#+END_PAYLOAD
+
+#+BEGIN_FINGERPRINT
+HW A2:34:F4:4B:4B:B2:DA:94
+V8 172 198 199 14 10 140 22 63
+#+END_FINGERPRINT
+#+END_GENESIS

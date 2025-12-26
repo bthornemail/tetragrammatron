@@ -1,0 +1,24 @@
+# Genesis ignore patterns (UNKNOWN-UNKNOWN / dark matter)
+# These files are excluded from Genesis processing
+
+# Build artifacts
+bin/
+*.o
+*.a
+*.so
+*.wasm
+
+# Editor and IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+*.bak

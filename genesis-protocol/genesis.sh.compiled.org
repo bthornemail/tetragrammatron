@@ -1,0 +1,221 @@
+#+BEGIN_GENESIS
+:PROPERTIES:
+:GENESIS_ID: GENESISSH
+:GENESIS_PATH: genesis.sh
+:GENESIS_TIME: 2025-12-25T02:21:45Z
+:GENESIS_HW: E2:34:F4:4B:4B:0C:C3:C3
+:GENESIS_V8: 8 111 112 14 32 222 30 203
+:END:
+
+#+BEGIN_PAYLOAD
+#!/usr/bin/env sh
+# genesis.sh — GENESIS combinatorics (POSIX sh)
+set -eu
+
+HARDWARE_RE='^([0-9A-Fa-f]{2}:)*[0-9A-Fa-f]{2}$'
+
+die(){ printf "genesis: %s\n" "$*" >&2; exit 1; }
+have(){ command -v "$1" >/dev/null 2>&1; }
+
+now_iso(){
+  if have date; then date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date; else echo "unknown-time"; fi
+}
+
+stat_fields(){
+  f="$1"
+  if stat --version >/dev/null 2>&1; then
+    stat -c "%d %i %f %u %g %s %X %Y %Z" "$f"
+    return
+  fi
+  if stat -f "%d %i %p %u %g %z %a %m %c" "$f" >/dev/null 2>&1; then
+    stat -f "%d %i %p %u %g %z %a %m %c" "$f"
+    return
+  fi
+  sz="$(wc -c <"$f" 2>/dev/null || echo 0)"
+  printf "0 0 0 0 0 %s 0 0 0\n" "$sz"
+}
+
+atom_id_from_string(){
+  printf "%s" "$1" | tr -cd '[:alnum:]' | tr '[:lower:]' '[:upper:]'
+}
+
+hex2(){ awk -v n="$1" 'BEGIN{printf "%02X",(n%256+256)%256}'; }
+
+hardware_probe(){
+  f="$1"
+  set -- $(stat_fields "$f")
+  dev="$1"; ino="$2"; mode="$3"; uid="$4"; gid="$5"; size="$6"; mt="$8"; ct="$9"
+  b0="$(hex2 "$ino")"; b1="$(hex2 "$dev")"; b2="$(hex2 "$mode")"; b3="$(hex2 "$uid")"
+  b4="$(hex2 "$gid")"; b5="$(hex2 "$size")"; b6="$(hex2 "$mt")"; b7="$(hex2 "$ct")"
+  printf "%s:%s:%s:%s:%s:%s:%s:%s" "$b0" "$b1" "$b2" "$b3" "$b4" "$b5" "$b6" "$b7"
+}
+
+software_probe8(){
+  f="$1"
+  awk '
+    BEGIN{total=0; aruns=0; nruns=0; maxa=0; maxn=0; trans=0; newlines=0; ina=0; len=0; first_set=0; first_non=0}
+    {
+      line=$0 "\n";
+      for(i=1;i<=length(line);i++){
+        c=substr(line,i,1);
+        if(first_set==0){ first_set=1; if(c !~ /[[:alnum:]]/) first_non=1; }
+        total++;
+        if(c=="\n"){ newlines++; }
+        isalnum=(c ~ /[[:alnum:]]/);
+        if(isalnum){
+          if(ina==0){ aruns++; if(total>1) trans++; ina=1; len=1; } else { len++; }
+          if(len>maxa) maxa=len;
+        } else {
+          if(ina==1){ nruns++; trans++; ina=0; len=1; } else { len++; }
+          if(len>maxn) maxn=len;
+          if(c !~ /[[:space:]]/){ sep[c]=1; }
+        }
+      }
+    }
+    END{
+      s=0; for(k in sep) s++;
+      if(first_set==1 && first_non==1){ nruns=(nruns+1); }
+      printf "%d %d %d %d %d %d %d %d\n",
+        (total%256),(aruns%256),(nruns%256),(maxa%256),(maxn%256),(trans%256),(s%256),(newlines%256);
+    }
+  ' "$f"
+}
+
+emit_atom_jsonl(){
+  f="$1"; root="${2:-.}"
+  rel="${f#"$root"/}"
+  set -- $(stat_fields "$f" 2>/dev/null || echo "0 0 0 0 0 0 0 0 0")
+  dev="$1"; ino="$2"; mode="$3"; uid="$4"; gid="$5"; size="$6"; at="$7"; mt="$8"; ct="$9"
+  hw="$(hardware_probe "$f")"
+  set -- $(software_probe8 "$f"); v0="$1"; v1="$2"; v2="$3"; v3="$4"; v4="$5"; v5="$6"; v6="$7"; v7="$8"
+  id="$(atom_id_from_string "$rel")"
+  ts="$(now_iso)"
+  esc_rel=$(printf "%s" "$rel" | sed 's/\\/\\\\/g; s/"/\\"/g')
+  printf '{"t":"%s","path":"%s","id":"%s","stat":{"dev":%s,"ino":%s,"mode":%s,"uid":%s,"gid":%s,"size":%s,"at":%s,"mt":%s,"ct":%s},"hw":"%s","v":[%s,%s,%s,%s,%s,%s,%s,%s]}\n'     "$ts" "$esc_rel" "$id" "$dev" "$ino" "$mode" "$uid" "$gid" "$size" "$at" "$mt" "$ct" "$hw"     "$v0" "$v1" "$v2" "$v3" "$v4" "$v5" "$v6" "$v7"
+}
+
+cmd_probe(){
+  root="${1:-.}"; out="${2:-atoms.jsonl}"
+  [ -d "$root" ] || die "not a directory: $root"
+  : >"$out"
+  find "$root" -type f 2>/dev/null | while IFS= read -r f; do
+    dir=$(dirname "$f"); base=$(basename "$f")
+    inc="$dir/.genesisinclude"; ign="$dir/.genesisignore"
+    allow=true
+    if [ -f "$ign" ]; then
+      while IFS= read -r pat; do
+        case "$pat" in ""|\#*) continue;; esac
+        case "$base" in $pat) allow=false; break;; esac
+      done <"$ign"
+    fi
+    if [ "$allow" = true ] && [ -f "$inc" ]; then
+      allow=false
+      while IFS= read -r pat; do
+        case "$pat" in ""|\#*) continue;; esac
+        case "$base" in $pat) allow=true; break;; esac
+      done <"$inc"
+    fi
+    if [ "$allow" = true ]; then emit_atom_jsonl "$f" "$root" >>"$out"; fi
+  done
+  printf "wrote %s\n" "$out"
+}
+
+cmd_compile(){
+  in="$1"; out="${2:-$in.org}"
+  [ -f "$in" ] || die "not a file: $in"
+  hw="$(hardware_probe "$in")"
+  v="$(software_probe8 "$in")"
+  id="$(atom_id_from_string "$in")"
+  ts="$(now_iso)"
+  {
+    printf "#+BEGIN_GENESIS\n"
+    printf ":PROPERTIES:\n:GENESIS_ID: %s\n:GENESIS_PATH: %s\n:GENESIS_TIME: %s\n:GENESIS_HW: %s\n:GENESIS_V8: %s\n:END:\n\n" "$id" "$in" "$ts" "$hw" "$v"
+    printf "#+BEGIN_PAYLOAD\n"
+    cat "$in"
+    printf "\n#+END_PAYLOAD\n\n"
+    printf "#+BEGIN_FINGERPRINT\nHW %s\nV8 %s\n#+END_FINGERPRINT\n" "$hw" "$v"
+    printf "#+END_GENESIS\n"
+  } >"$out"
+  printf "compiled %s -> %s\n" "$in" "$out"
+}
+
+cmd_decompile(){
+  in="$1"; out="${2:-restored.bin}"
+  [ -f "$in" ] || die "not a file: $in"
+  awk 'BEGIN{b=0} /^\#\+BEGIN_PAYLOAD/{b=1;next} /^\#\+END_PAYLOAD/{b=0;exit} {if(b==1)print}' "$in" >"$out"
+  printf "decompiled %s -> %s\n" "$in" "$out"
+}
+
+cmd_translate(){
+  f="$1"; [ -f "$f" ] || die "not a file: $f"
+  hw="$(hardware_probe "$f")"
+  v="$(software_probe8 "$f")"
+  form="$(awk '{line=$0"\n"; for(i=1;i<=length(line);i++){c=substr(line,i,1); if(c ~ /[[:alnum:]]/)printf"A"; else if(c ~ /[[:space:]]/)printf"_"; else printf"S";}}' "$f" | awk '{print substr($0,1,512)}')"
+  printf "HW=%s V8=%s FORM=%s\n" "$hw" "$v" "$form"
+}
+
+cmd_mux8(){
+  f="$1"; [ -f "$f" ] || die "not a file: $f"
+  awk '
+    BEGIN{id=0;inc=0;ign=0;sch=0;scm=0;ctx=0;bnd=0;col=0;prev="";depth=0}
+    {
+      line=$0 "\n";
+      for(i=1;i<=length(line);i++){
+        c=substr(line,i,1);
+        t="S";
+        if(c ~ /[[:alnum:]]/) t="A";
+        else if(c ~ /[[:space:]]/) t="_";
+        id++;
+        if(prev!="" && prev!=t) inc++;
+        else if(prev==t && t!="A") ign++;
+        if(c=="("||c=="["||c=="{") {sch++; depth++;}
+        if(c==")"||c=="]"||c=="}") {scm++; if(depth>0) depth--;}
+        if(c=="\"" || c=="\047") ctx++;
+        if(t=="S") bnd++;
+        if(c=="\n") col++;
+        prev=t;
+      }
+    }
+    END{printf "%d %d %d %d %d %d %d %d\n", (id%256),(inc%256),(ign%256),(sch%256),(scm%256),(ctx%256),(bnd%256),(col%256);}
+  ' "$f"
+}
+
+usage(){
+  cat <<'EOF'
+genesis.sh — GENESIS combinatorics
+
+USAGE
+  genesis.sh probe      [ROOT] [OUT.jsonl]
+  genesis.sh compile    INFILE [OUT.org]
+  genesis.sh decompile  IN.org [OUTFILE]
+  genesis.sh translate  FILE
+  genesis.sh mux8       FILE
+
+IDEA
+  Reduce many languages to one shared FORM:
+    - HW = 8-byte stat probe
+    - V8 = 8-int topology probe
+    - FORM = A/_/S skeleton (alnum / space / separator)
+  Separators and casing are VIEWS. Identity is alnum-only collapse.
+EOF
+}
+
+cmd="${1:-}"
+[ $# -gt 0 ] && shift
+case "$cmd" in
+  probe) cmd_probe "${1:-.}" "${2:-atoms.jsonl}";;
+  compile) [ $# -ge 1 ] || die "compile needs INFILE"; cmd_compile "$1" "${2:-$1.org}";;
+  decompile) [ $# -ge 1 ] || die "decompile needs IN.org"; cmd_decompile "$1" "${2:-restored.bin}";;
+  translate) [ $# -ge 1 ] || die "translate needs FILE"; cmd_translate "$1";;
+  mux8) [ $# -ge 1 ] || die "mux8 needs FILE"; cmd_mux8 "$1";;
+  ""|-h|--help|help) usage;;
+  *) die "unknown command: $cmd";;
+esac
+
+#+END_PAYLOAD
+
+#+BEGIN_FINGERPRINT
+HW E2:34:F4:4B:4B:0C:C3:C3
+V8 8 111 112 14 32 222 30 203
+#+END_FINGERPRINT
+#+END_GENESIS

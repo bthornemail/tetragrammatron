@@ -1,0 +1,11 @@
+# Genesis functor table
+# Maps (ignore-class, include-class) -> processing rules
+
+# UU = Unknown-Unknown (dark matter) - no processing
+UU,*,none
+
+# KU = Known-Unknown (deferred) - defer processing
+KU,*,defer
+
+# KK = Known-Known (light matter) - full processing with default rules
+KK,*,default-rules

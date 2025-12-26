@@ -1,0 +1,27 @@
+# Genesis include patterns (KNOWN-KNOWN / light matter)
+# These files are included for Genesis processing
+
+# CANB/CANASM source
+*.canasm
+*.canb
+
+# C source and headers
+*.c
+*.h
+
+# JavaScript for web demos
+*.js
+*.html
+
+# Documentation
+*.md
+*.org
+
+# Specs and design
+src/canb/spec/*.md
+
+# Web demo assets
+web/demo/*.canasm
+web/demo/*.canb
+web/demo/*.js
+web/demo/*.html

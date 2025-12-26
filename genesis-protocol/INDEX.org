@@ -1,0 +1,22 @@
+#+TITLE: INDEX
+#+ROLE: Orientation
+#+LAYER: 0
+
+This document defines how to read this system.
+
+- RFC defines invariants
+- INDEX defines position
+- CONVERSATION defines process
+- MANIFESTO defines intent
+- REVELATION defines personal synthesis
+
+INDEX is not authoritative.
+It is navigational.
+
+* See
+
+- [[file:MANIFESTO.org][MANIFESTO.org]]
+- [[file:REVELATION.org][REVELATION.org]]
+- [[file:CONVERSATION.org][CONVERSATION.org]]
+- [[file:docs/RFC-0001-TPPM.md][RFC-0001-TPPM]]
+- [[file:GENESIS.org][GENESIS.org]]

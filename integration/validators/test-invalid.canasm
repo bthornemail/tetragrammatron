@@ -1,0 +1,7 @@
+// Test program that VIOLATES Fano closure
+// Contains accept + alphabet (2 points from line 0, missing left)
+
+PUSH ATOM:accept
+PUSH ATOM:alphabet
+EDGE_ADD
+HALT
