@@ -1,0 +1,7 @@
+{
+  "name": "Alice",
+  "pubkey": "0xalice1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab",
+  "created": "2025-12-25T20:00:00Z",
+  "jurisdiction": "USA",
+  "type": "individual"
+}

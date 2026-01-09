@@ -1,0 +1,251 @@
+#+TITLE: AGENTS — Tetragrammatron-OS
+#+AUTHOR: Universal Life Protocol
+#+DATE: 2025-01-21
+#+PROPERTY: SYSTEM Tetragrammatron-OS
+#+PROPERTY: CONTRACT authoritative
+#+PROPERTY: SCOPE repo-wide
+
+* Purpose
+
+This document defines **where things go and why**.
+
+Every file in the repository MUST:
+- belong to exactly one Genesis layer
+- live in exactly one mapped directory
+- obey the constraints of that layer
+
+No file may silently cross layers.
+
+---
+
+* Layer Overview (Binding)
+
+| Layer Range | Name              | Mandatory | Creates Files | Reads Bytes | Executes |
+|------------+-------------------+-----------+---------------+-------------+----------|
+| 0–3        | GENESIS CORE      | YES       | YES           | NO          | NO       |
+| 4–7        | SEMANTIC CORE     | YES       | YES           | LIMITED     | NO       |
+| 8–11       | LOGOS LAYER       | OPTIONAL  | YES           | YES         | NO       |
+| 12–15      | CREATION LAYER    | OPTIONAL  | YES           | YES         | YES      |
+| 16–23      | REVELATION LAYER  | OPTIONAL  | YES           | YES         | NO       |
+
+---
+
+* Repository Root (Layer 0 Anchor)
+
+These files define **existence and selection only**.
+
+#+BEGIN_SRC text
+/
+├── .genesisignore        # L1: dark selection
+├── .genesisinclude       # L1: light permission
+├── .genesisschema        # L6 / L8: schema data
+├── .genesis              # L9–10: functor / rule table
+├── AGENTS.org            # this file (meta-contract)
+└── README.org            # human orientation only
+#+END_SRC
+
+Rules:
+- These files may NOT depend on any code
+- They may NOT execute
+- They may NOT import libraries
+
+---
+
+* GENESIS CORE (Layers 0–3)
+
+**Purpose:** freeze existence, selection, identity, provenance.
+
+#+BEGIN_SRC text
+genesis/
+├── layer.0/
+│   ├── genesis.layer.0.scm     # POSIX stat, enumerate
+│   └── genesis.layer.0.c       # optional C impl
+│
+├── layer.1/
+│   └── genesis.layer.1.scm     # ignore/include classification
+│
+├── layer.2/
+│   └── genesis.layer.2.scm     # address + fingerprint policy
+│
+├── layer.3/
+│   └── genesis.layer.3.scm     # org provenance emitter
+#+END_SRC
+
+Constraints:
+- No file content reading in L0–L1
+- No parsing in L0–L2
+- `.org/` mirror is append-only
+
+Generated Output:
+#+BEGIN_SRC text
+.org/
+└── <repo-mirror>/**/*.org
+#+END_SRC
+
+---
+
+* SEMANTIC CORE (Layers 4–7)
+
+**Purpose:** representation → structure → validation → projection.
+
+#+BEGIN_SRC text
+genesis/
+├── layer.4/
+│   └── genesis.layer.4.scm     # bytes → org/src blocks
+│
+├── layer.5/
+│   └── genesis.layer.5.scm     # parse (org/json/sexp)
+│
+├── layer.6/
+│   └── genesis.layer.6.scm     # schema gate / signatures
+│
+├── layer.7/
+│   └── genesis.layer.7.scm     # sphere–ball projection
+#+END_SRC
+
+Outputs:
+#+BEGIN_SRC text
+state/
+├── vm_state.jsonl              # canonical VM-visible states
+└── vm_state.bin                # optional compact form
+#+END_SRC
+
+Rules:
+- Layer 7 is the **last required layer**
+- ESP32 / minimal nodes stop here
+
+---
+
+* LOGOS LAYER (Layers 8–11) — Optional
+
+**Purpose:** articulate and normalize rules.
+
+#+BEGIN_SRC text
+logos/
+├── layer.8/
+│   └── logos.layer.8.scm       # rule encoding (R5RS/AAL)
+│
+├── layer.9/
+│   └── logos.layer.9.scm       # rule selection (realm/context)
+│
+├── layer.10/
+│   └── logos.layer.10.scm      # rule composition (functors)
+│
+├── layer.11/
+│   └── logos.layer.11.scm      # normalization / idempotence
+#+END_SRC
+
+Notes:
+- `.genesisschema` feeds L8
+- `.genesis` feeds L9–L10
+- No execution permitted here
+
+---
+
+* CREATION LAYER (Layers 12–15) — Optional
+
+**Purpose:** generate artifacts deterministically.
+
+#+BEGIN_SRC text
+creation/
+├── layer.12/
+│   └── creation.layer.12.scm   # artifact generation
+│
+├── layer.13/
+│   └── creation.layer.13.scm   # address allocation
+│
+├── layer.14/
+│   └── creation.layer.14.scm   # cross-projection (SVG/GLB)
+│
+├── layer.15/
+│   └── creation.layer.15.scm   # materialization (files)
+#+END_SRC
+
+Outputs may include:
+#+BEGIN_SRC text
+public/
+├── schemas/
+├── assets/
+├── canvases/
+├── glb/
+└── svg/
+#+END_SRC
+
+All outputs MUST reference back to Layer 3 provenance.
+
+---
+
+* REVELATION LAYER (Layers 16–23) — Optional
+
+**Purpose:** observe, compare, aggregate — never decide.
+
+#+BEGIN_SRC text
+revelation/
+├── layer.16/   # observation (collect states)
+├── layer.17/   # comparison (diff / divergence)
+├── layer.18/   # aggregation (lattices)
+├── layer.19/   # trajectory estimation
+├── layer.20/   # boundary detection
+├── layer.21/   # external constraint interface
+├── layer.22/   # audit / witness artifacts
+└── layer.23/   # closure / epoch marker
+#+END_SRC
+
+Rules:
+- No mutation of lower layers
+- Append-only outputs
+- Human-readable summaries allowed
+
+---
+
+* Tools and Adapters (Cross-Layer, Non-Authoritative)
+
+#+BEGIN_SRC text
+tools/
+├── genesis-run.scm        # orchestrates layers 0–7
+├── org-tangle.scm
+├── canvas-export.mjs
+├── schema-compile.py
+└── address-schema.yaml
+#+END_SRC
+
+These are **replaceable**.
+They do not define truth — only convenience.
+
+---
+
+* Enforcement Rules (Non-Negotiable)
+
+1. A file belongs to **exactly one layer**
+2. Higher layers may read lower layers, never the reverse
+3. `.org/` mirror is append-only
+4. Deleting generated files is always safe
+5. Layer 7 output is the **only VM-visible truth**
+
+---
+
+* Agent Guidance
+
+Any human or machine agent must:
+- declare which layer it operates in
+- refuse inputs from higher layers
+- emit outputs only in its layer’s directory
+
+Violation = invalid agent.
+
+---
+
+* End State
+
+If all generated artifacts are deleted,
+and only:
+
+- `.genesis*`
+- `genesis/`
+- `.org/`
+
+remain…
+
+**The entire system can be reconstructed.**
+
+That is the contract.

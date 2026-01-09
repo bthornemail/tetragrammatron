@@ -1,0 +1,24 @@
+{
+	"nodes":[
+		{"id":"57128a95993842be","type":"file","file":"Genesis.canvas","x":-180,"y":-240,"width":400,"height":400},
+		{"id":"bb1dda8a66358203","type":"file","file":"INCLUDE.md","x":-250,"y":240,"width":220,"height":120},
+		{"id":"7c0dfcfc8c7234f1","type":"file","file":"IGNORE.md","x":80,"y":240,"width":240,"height":80},
+		{"id":"3a30be9987bb815e","type":"file","file":"SCHEME.md","x":80,"y":380,"width":220,"height":120},
+		{"id":"b9d510bdab7c3128","type":"file","file":"GLOSSARY.md","x":280,"y":-200,"width":220,"height":80},
+		{"id":"e195f7a2a6abe6f3","type":"file","file":"CONVERSATION.md","x":580,"y":-30,"width":280,"height":80},
+		{"id":"7b8b8b2b74f48fbc","type":"file","file":"REVELATION.md","x":580,"y":-210,"width":220,"height":90},
+		{"id":"b277ec1f9882062e","type":"file","file":"MANIFESTO.md","x":280,"y":-30,"width":220,"height":80},
+		{"id":"0b678b759e0fdc9b","type":"file","file":"README.md","x":-65,"y":-500,"width":170,"height":100},
+		{"id":"6e8d8c9d4c2da76c","type":"file","file":"RFC.md","x":-660,"y":-130,"width":200,"height":100},
+		{"id":"cf6657f6fbcffdf7","type":"file","file":"Hardware Constraint  - Layer - 0.md","x":-840,"y":215,"width":400,"height":130},
+		{"id":"3cfbdf24a8f8785c","type":"file","file":"INDEX.md","x":-385,"y":-120,"width":170,"height":80},
+		{"id":"14ce4959ecbca486","type":"file","file":"PROTOCOL.md","x":-80,"y":-360,"width":200,"height":90},
+		{"id":"b6fafaa9760fd3bd","type":"text","text":"- **String-native** (not line-based)\n- **Meta-tag–driven topology**\n- **Hardware constraint = byte encoding**\n- **Software constraint = alphanumeric semantic space**\n- **Syntax/view = non-alphanumeric enclosure**\n- **No hardcoded pinch points**\n- **POSIX-only** (`sh`, `sed`, `awk`, `grep`, `stat`, `cat`, `printf`)\n- **Deterministic, reversible, append-only**\n- **Implementation ≠ authority**","x":220,"y":-700,"width":470,"height":340},
+		{"id":"86babffbd46eede9","type":"file","file":"Meta-Projection.md","x":-1140,"y":-470,"width":400,"height":400},
+		{"id":"3285f958d0fbaee5","type":"file","file":"GENESIS.org.md","x":-660,"y":-800,"width":360,"height":440},
+		{"id":"719e1ace271ac70f","type":"file","file":"Software Form - Layer  - 1.md","x":-660,"y":10,"width":400,"height":160},
+		{"id":"25460d43e4579cab","type":"text","text":"HARDWARE_REGEX='^([0-9A-Fa-f]{2}:)+[0-9A-Fa-f]{2}$'\nSOFTWARE_SED='s/[^A-Za-z0-9.]/ /g'\nSYNTAX_SPACE = [^A-Za-z0-9.]+ \nSOFTWARE_SED='s/[^A-Za-z0-9.]/ /g'\n\n\n\n* Layers −0..3 (inheriting the shell foundation)\n** Layer −0 / 0: Hardware constraint (byte bitmap)\nHardware is *byte-addressable provenance* derived from POSIX stat fields (inode/size/mtime at minimum).\nIt is not “meaning”. It is identity/provenance.\n\n#+NAME: genesis.layer-0.hardware-constraint\n#+BEGIN_SRC text\nHARDWARE_REGEX = ^([0-9A-Fa-f]{2}:)+[0-9A-Fa-f]{2}$\nHARDWARE_BITMAP = probe_stat(path) -> byte groups (IP6-like)\n#+END_SRC\n\n** Layer 1: Software semantic space (alphanumeric meaning)\nSoftware is *alphanumeric semantics* (names, symbols, identifiers). It is preserved.\n\n#+NAME: genesis.layer-1.software-space\n#+BEGIN_SRC text\nSOFTWARE_SPACE = [A-Za-z0-9.]+    ; semantic tokens\nPATH (virtual template) vs path (existing path) are views of the same atom.\n#+END_SRC\n\n** Layer 2: Syntax / View enclosure (non-alphanumeric meta-tags)\nSyntax is the *projection region*: an enclosure marker that is non-alphanumeric.\nThis defines where interpretation may occur, without defining what it means.\n\n#+NAME: genesis.layer-2.syntax-space\n#+BEGIN_SRC text\nSYNTAX_SPACE = [^A-Za-z0-9.]+  ; enclosure markers\nMETA-TAG = any non-alphanumeric enclosure operator\nPolynomial degree = length / repetition of the marker (e.g., emoji count), NOT dimension.\n#+END_SRC\n\n** Layer 3: Emission / Translation\nEmission creates projections (org → md, org → code, org → canvas).\nThis is *optional* and MUST NOT change hardware provenance.\n\n#+NAME: genesis.layer-3.emission\n#+BEGIN_SRC text\nEMIT(file, target) preserves HARDWARE_BITMAP; changes only VIEW.\nExamples: tangle to .sh/.scm/.c/.js, export to .md, emit canvas JSON.\n#+END_SRC\n\n* The GENESIS CLI (reference implementation)\nThis is the operational mirror. The canonical implementation lives in genesis.sh.\n\n#+NAME: genesis.cli.shell\n#+BEGIN_SRC sh :tangle genesis.sh\n#!/bin/sh\nset -eu\n\nHARDWARE_REGEX='^([0-9A-Fa-f]{2}:)+[0-9A-Fa-f]{2}$'\nSOFTWARE_SED='s/[^A-Za-z0-9.]/ /g'\n","x":-754,"y":-202,"width":250,"height":60},
+		{"id":"e5db51cae236a34f","type":"file","file":"SCHEMA.md","x":-250,"y":440,"width":220,"height":120}
+	],
+	"edges":[]
+}

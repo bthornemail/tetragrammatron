@@ -1,0 +1,85 @@
+; ========================================
+; ATOM Economic Transaction Example
+; Transfer $100 USD from Alice to Bob
+; ========================================
+; Generated using genesis-protocol signatures
+; Alice V8: 191,14,15,67,6,28,6,7
+; Bob V8: 187,14,15,66,6,28,6,7
+; Asset V8+HW: 169,20,21,12,6,40,7,8 + F0:34:F4:4B:4B:A9:A5:A5
+; ========================================
+
+@atoms
+  ; Canonical 8-tuple (Fano/Octonion basis)
+  accept
+  alphabet
+  left
+  right
+  delta
+  start
+  state
+  reject
+
+  ; Economic relation atoms
+  OWNS
+
+  ; Identity atoms (genesis V8 signatures)
+  identity:alice:5cb8287d3349ba2a
+  identity:bob:2a3ba70a969a22af
+
+  ; Asset atom (genesis V8+HW signature)
+  asset:usd:64baaa2e4025ffb7
+@end
+
+@code
+  ; ========================================
+  ; TRANSACTION: Alice → Bob ($100 USD)
+  ; ========================================
+
+  ; STEP 1: Verify Alice currently owns the asset
+  ; (This prevents double-spending)
+  ATOM identity:alice:5cb8287d3349ba2a
+  ATOM OWNS
+  ATOM asset:usd:64baaa2e4025ffb7
+  ; EDGE_FIND_FWD would verify edge exists
+  ; Stack: [edge_reference] or FAIL
+
+  ; STEP 2: Remove Alice's ownership edge
+  ; EDGE_REMOVE
+  ; Graph mutation: alice -/→ OWNS -/→ asset
+
+  ; STEP 3: Create Bob's ownership edge
+  ATOM identity:bob:2a3ba70a969a22af
+  ATOM OWNS
+  ATOM asset:usd:64baaa2e4025ffb7
+  ; EDGE_ADD
+  ; Graph mutation: bob → OWNS → asset
+
+  ; STEP 4: Geometric validation barrier
+  PROJ_FANO
+  ; Triggers Fano-7 validator consensus
+  ; Transaction hash → select Fano line
+  ; Await 3-of-3 signatures from validators on that line
+
+  HALT
+@end
+
+; ========================================
+; VERIFICATION
+; ========================================
+; Pre-state:
+;   (identity:alice:5cb8287d3349ba2a) → OWNS → (asset:usd:64baaa2e4025ffb7)
+;
+; Post-state:
+;   (identity:bob:2a3ba70a969a22af) → OWNS → (asset:usd:64baaa2e4025ffb7)
+;
+; Balance queries (derived, not stored):
+;   Alice balance before: COUNT(alice OWNS *) = N
+;   Alice balance after:  COUNT(alice OWNS *) = N-1
+;   Bob balance before:   COUNT(bob OWNS *) = M
+;   Bob balance after:    COUNT(bob OWNS *) = M+1
+;
+; Critical property: Asset atom is UNIQUE
+; - Cannot be duplicated (atom table enforces uniqueness)
+; - Cannot be double-spent (EDGE_FIND_FWD fails if already spent)
+; - Globally identifiable by V8+HW signature
+; ========================================

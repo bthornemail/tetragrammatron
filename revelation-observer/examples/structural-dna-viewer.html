@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structural DNA Viewer - Revelation Observer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+        }
+
+        header {
+            background: rgba(0,0,0,0.3);
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #0f3460;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: #00d9ff;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 0.25rem;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+        .panel {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .drop-zone {
+            border: 2px dashed rgba(0, 217, 255, 0.5);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(0, 217, 255, 0.05);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .drop-zone:hover {
+            border-color: #00d9ff;
+            background: rgba(0, 217, 255, 0.1);
+        }
+
+        .drop-zone.active {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .drop-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #eee;
+            padding: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        .result {
+            background: rgba(0,0,0,0.3);
+            padding: 1rem;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .result-label {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+
+        .hash {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            word-break: break-all;
+            color: #00d9ff;
+            text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
+        }
+
+        .passes {
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 0.5rem;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .pass-item {
+            margin: 0.25rem 0;
+            padding: 0.25rem;
+            background: rgba(255,255,255,0.03);
+            border-left: 2px solid rgba(0, 217, 255, 0.3);
+            padding-left: 0.5rem;
+        }
+
+        #canvas-container {
+            grid-column: 1 / -1;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            position: relative;
+            min-height: 400px;
+        }
+
+        #three-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        footer {
+            background: rgba(0,0,0,0.3);
+            padding: 1rem 2rem;
+            border-top: 2px solid #0f3460;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status {
+            font-size: 0.9rem;
+        }
+
+        .status.match {
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .status.different {
+            color: #ff6b6b;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+
+        button {
+            background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #333;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .filename {
+            font-size: 0.8rem;
+            color: #00d9ff;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔬 Structural DNA Viewer</h1>
+            <div class="tagline">Revelation Observer - See code structure without semantics</div>
+        </header>
+
+        <main>
+            <div class="panel">
+                <h3>File A</h3>
+                <div class="drop-zone" id="dropA">
+                    <div class="drop-icon">📄</div>
+                    <div>Drop file here or click to select</div>
+                    <input type="file" id="fileA" style="display: none;" accept=".c,.js,.py,.java,.cpp,.h,.md,.txt">
+                    <div class="filename" id="filenameA"></div>
+                </div>
+                <div class="result" id="resultA" style="display: none;">
+                    <div class="result-label">Structural Basis (SHA256)</div>
+                    <div class="hash" id="hashA"></div>
+                    <div class="passes" id="passesA"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>File B</h3>
+                <div class="drop-zone" id="dropB">
+                    <div class="drop-icon">📄</div>
+                    <div>Drop file here or click to select</div>
+                    <input type="file" id="fileB" style="display: none;" accept=".c,.js,.py,.java,.cpp,.h,.md,.txt">
+                    <div class="filename" id="filenameB"></div>
+                </div>
+                <div class="result" id="resultB" style="display: none;">
+                    <div class="result-label">Structural Basis (SHA256)</div>
+                    <div class="hash" id="hashB"></div>
+                    <div class="passes" id="passesB"></div>
+                </div>
+            </div>
+
+            <div id="canvas-container">
+                <canvas id="three-canvas"></canvas>
+            </div>
+        </main>
+
+        <footer>
+            <div class="status" id="status">Drop two files to compare their structural DNA</div>
+            <button id="clearBtn" disabled>Clear All</button>
+        </footer>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // =====================================================
+        // REVELATION OBSERVER - 8-PASS DIFFUSION (JavaScript)
+        // =====================================================
+
+        async function sha256(text) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function diffuse(content) {
+            const passes = [];
+
+            // Pass 0: Identity (anchor)
+            let pass0 = content;
+            passes.push({ pass: 0, name: 'Identity (anchor)', length: pass0.length });
+
+            // Pass 1: Alphanumeric collapse (software projection)
+            let pass1 = pass0.replace(/[^a-zA-Z0-9]/g, ' ');
+            passes.push({ pass: 1, name: 'Alphanumeric collapse', length: pass1.length, sample: pass1.slice(0, 50) });
+
+            // Pass 2: Non-alphanumeric isolation (syntax projection)
+            let pass2 = pass0.replace(/[a-zA-Z0-9]/g, ' ');
+            passes.push({ pass: 2, name: 'Non-alphanumeric isolation', length: pass2.length, sample: pass2.slice(0, 50) });
+
+            // Pass 3: Boundary normalization
+            let pass3 = pass2.replace(/\s+/g, ' ');
+            passes.push({ pass: 3, name: 'Boundary normalization', length: pass3.length });
+
+            // Pass 4: Repetition compression
+            let pass4 = pass3.replace(/(.)\1+/g, '$1');
+            passes.push({ pass: 4, name: 'Repetition compression', length: pass4.length });
+
+            // Pass 5: Symmetry check (sort + uniq)
+            let lines = pass4.split('\n').filter(l => l.trim());
+            let pass5 = [...new Set(lines)].sort().join('\n');
+            passes.push({ pass: 5, name: 'Symmetry check (sort + uniq)', lines: [...new Set(lines)].length });
+
+            // Pass 6: Context adjacency (sliding window)
+            let pass6 = pass5.split('').join('|');
+            passes.push({ pass: 6, name: 'Context adjacency', length: pass6.length });
+
+            // Pass 7: Closure (SHA256 hash)
+            let basis = await sha256(pass6);
+            passes.push({ pass: 7, name: 'Closure (SHA256)', hash: basis });
+
+            return { basis, passes };
+        }
+
+        // =====================================================
+        // THREE.JS VISUALIZATION
+        // =====================================================
+
+        let scene, camera, renderer, controls;
+        let shapeA, shapeB;
+        let targetPositionA = new THREE.Vector3(-3, 0, 0);
+        let targetPositionB = new THREE.Vector3(3, 0, 0);
+
+        function initThree() {
+            const canvas = document.getElementById('three-canvas');
+            const container = document.getElementById('canvas-container');
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a1a);
+
+            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 10;
+
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+
+            const pointLight1 = new THREE.PointLight(0x00d9ff, 1);
+            pointLight1.position.set(5, 5, 5);
+            scene.add(pointLight1);
+
+            const pointLight2 = new THREE.PointLight(0xff6b6b, 1);
+            pointLight2.position.set(-5, -5, 5);
+            scene.add(pointLight2);
+
+            window.addEventListener('resize', onWindowResize);
+            animate();
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function createShapeFromHash(hash, color) {
+            // Use hash to generate pseudo-random geometry
+            const seed = parseInt(hash.slice(0, 8), 16);
+            const detail = (seed % 3) + 1;
+            const scale = ((seed % 100) / 100) * 0.5 + 1;
+
+            let geometry;
+            const type = seed % 4;
+
+            switch(type) {
+                case 0:
+                    geometry = new THREE.IcosahedronGeometry(scale, detail);
+                    break;
+                case 1:
+                    geometry = new THREE.OctahedronGeometry(scale, detail);
+                    break;
+                case 2:
+                    geometry = new THREE.TetrahedronGeometry(scale, detail);
+                    break;
+                case 3:
+                    geometry = new THREE.DodecahedronGeometry(scale, detail);
+                    break;
+            }
+
+            const material = new THREE.MeshPhongMaterial({
+                color: color,
+                shininess: 100,
+                wireframe: false,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+
+            // Add wireframe overlay
+            const wireframe = new THREE.WireframeGeometry(geometry);
+            const line = new THREE.LineSegments(wireframe);
+            line.material.color = new THREE.Color(color);
+            line.material.opacity = 0.5;
+            line.material.transparent = true;
+            mesh.add(line);
+
+            return mesh;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotate shapes
+            if (shapeA) {
+                shapeA.rotation.x += 0.005;
+                shapeA.rotation.y += 0.005;
+            }
+            if (shapeB) {
+                shapeB.rotation.x += 0.005;
+                shapeB.rotation.y += 0.005;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        function updateVisualization(hashA, hashB, isMatch) {
+            // Remove old shapes
+            if (shapeA) scene.remove(shapeA);
+            if (shapeB) scene.remove(shapeB);
+
+            if (hashA) {
+                shapeA = createShapeFromHash(hashA, 0x00d9ff);
+                shapeA.position.copy(targetPositionA);
+                scene.add(shapeA);
+            }
+
+            if (hashB) {
+                shapeB = createShapeFromHash(hashB, 0xff6b6b);
+                shapeB.position.copy(targetPositionB);
+                scene.add(shapeB);
+            }
+
+            // If match, bring shapes together
+            if (isMatch && shapeA && shapeB) {
+                targetPositionA.set(-1.5, 0, 0);
+                targetPositionB.set(1.5, 0, 0);
+
+                // Animate convergence
+                gsap.to(shapeA.position, {
+                    x: targetPositionA.x,
+                    duration: 1,
+                    ease: "power2.inOut"
+                });
+                gsap.to(shapeB.position, {
+                    x: targetPositionB.x,
+                    duration: 1,
+                    ease: "power2.inOut"
+                });
+            } else {
+                targetPositionA.set(-3, 0, 0);
+                targetPositionB.set(3, 0, 0);
+            }
+        }
+
+        // =====================================================
+        // FILE HANDLING
+        // =====================================================
+
+        let fileDataA = null;
+        let fileDataB = null;
+
+        function setupDropZone(dropId, fileInputId, filenameId, resultId, hashId, passesId, isA) {
+            const dropZone = document.getElementById(dropId);
+            const fileInput = document.getElementById(fileInputId);
+            const filenameDiv = document.getElementById(filenameId);
+            const resultDiv = document.getElementById(resultId);
+            const hashDiv = document.getElementById(hashId);
+            const passesDiv = document.getElementById(passesId);
+
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('active');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('active');
+            });
+
+            dropZone.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('active');
+                const file = e.dataTransfer.files[0];
+                if (file) await processFile(file, isA);
+            });
+
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) await processFile(file, isA);
+            });
+
+            async function processFile(file, isA) {
+                const content = await file.text();
+                const result = await diffuse(content);
+
+                if (isA) {
+                    fileDataA = result;
+                } else {
+                    fileDataB = result;
+                }
+
+                filenameDiv.textContent = file.name;
+                hashDiv.textContent = result.basis;
+
+                passesDiv.innerHTML = result.passes.map(p =>
+                    `<div class="pass-item">Pass ${p.pass}: ${p.name} ${p.length ? `(${p.length} bytes)` : ''} ${p.lines ? `(${p.lines} lines)` : ''}</div>`
+                ).join('');
+
+                resultDiv.style.display = 'block';
+
+                checkComparison();
+            }
+        }
+
+        function checkComparison() {
+            const statusDiv = document.getElementById('status');
+            const clearBtn = document.getElementById('clearBtn');
+
+            if (fileDataA && fileDataB) {
+                const isMatch = fileDataA.basis === fileDataB.basis;
+
+                if (isMatch) {
+                    statusDiv.textContent = '✅ STRUCTURAL MATCH - Same structure, different content';
+                    statusDiv.className = 'status match';
+                } else {
+                    statusDiv.textContent = '❌ STRUCTURAL DIFFERENCE - Different structures detected';
+                    statusDiv.className = 'status different';
+                }
+
+                updateVisualization(fileDataA.basis, fileDataB.basis, isMatch);
+                clearBtn.disabled = false;
+            } else if (fileDataA || fileDataB) {
+                statusDiv.textContent = 'Drop another file to compare...';
+                statusDiv.className = 'status';
+                updateVisualization(fileDataA?.basis, fileDataB?.basis, false);
+                clearBtn.disabled = false;
+            }
+        }
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            fileDataA = null;
+            fileDataB = null;
+
+            document.getElementById('filenameA').textContent = '';
+            document.getElementById('filenameB').textContent = '';
+            document.getElementById('resultA').style.display = 'none';
+            document.getElementById('resultB').style.display = 'none';
+            document.getElementById('status').textContent = 'Drop two files to compare their structural DNA';
+            document.getElementById('status').className = 'status';
+            document.getElementById('clearBtn').disabled = true;
+
+            if (shapeA) scene.remove(shapeA);
+            if (shapeB) scene.remove(shapeB);
+            shapeA = null;
+            shapeB = null;
+
+            document.getElementById('fileA').value = '';
+            document.getElementById('fileB').value = '';
+        });
+
+        // Initialize
+        initThree();
+        setupDropZone('dropA', 'fileA', 'filenameA', 'resultA', 'hashA', 'passesA', true);
+        setupDropZone('dropB', 'fileB', 'filenameB', 'resultB', 'hashB', 'passesB', false);
+    </script>
+
+    <!-- GSAP for smooth animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</body>
+</html>

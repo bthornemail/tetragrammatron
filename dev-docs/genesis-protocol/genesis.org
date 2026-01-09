@@ -1,0 +1,440 @@
+#+TITLE: genesis.org — Tetragrammatron-OS Bootstrap
+#+AUTHOR: ULP / Tetragrammatron-OS
+#+DATE: 2025-01-21
+#+PROPERTY: header-args :mkdirp yes
+#+PROPERTY: header-args:scheme :results silent :exports code
+#+PROPERTY: header-args:sh :results silent :exports code
+
+* 0. Contract
+
+This file is the *single bootstrapping source* for:
+- GENESIS core layers 0–7 (required)
+- stubs for LOGOS/CREATION/REVELATION (optional)
+
+Rule: layers only depend on lower layers.
+
+* 1. Default root control files (.genesis*)
+
+**.genesisignore** (L1)
+#+BEGIN_SRC text :tangle .genesisignore
+# Anything here is UNKNOWN-UNKNOWN (dark)
+.git/
+.org/
+node_modules/
+dist/
+build/
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.bin
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.mp4
+*.zip
+#+END_SRC
+
+**.genesisinclude** (L1)
+#+BEGIN_SRC text :tangle .genesisinclude
+# Anything here is KNOWN-KNOWN (light)
+genesis/
+logos/
+creation/
+revelation/
+tools/
+*.org
+*.scm
+*.c
+*.h
+*.lean
+*.md
+*.json
+*.jsonl
+*.yaml
+*.yml
+#+END_SRC
+
+**.genesisschema** (L6/L8 placeholder)
+#+BEGIN_SRC text :tangle .genesisschema
+# Schema DB placeholder.
+# Later: compiled schema.bin is authoritative for protected/public.
+schema.version=0
+realm.default=private
+signature.required.protected=true
+signature.required.public=true
+#+END_SRC
+
+**.genesis** (L9–L10 placeholder functor table)
+#+BEGIN_SRC text :tangle .genesis
+# Functor table placeholder:
+# row = ignore-class, col = include-class, cell = scheme/rule-set
+UU,*,none
+KU,*,defer
+KK,*,default-rules
+#+END_SRC
+
+* 2. GENESIS Layer 0 — existence (POSIX facts only)
+
+#+BEGIN_SRC scheme :tangle genesis/layer.0/genesis.layer.0.scm
+;; genesis.layer.0.scm
+;; Layer 0: existence only (POSIX stat + enumeration)
+;; No content reads. No hashing. No parsing.
+
+(define (L0.enumerate root)
+  ;; Placeholder: implement with your Scheme runtime / OS bindings.
+  ;; Returns list of relative paths under root.
+  '())
+
+(define (L0.stat root relpath)
+  ;; Placeholder: implement with stat().
+  ;; MUST NOT read file bytes.
+  ;; Return immutable fact record.
+  `((path . ,relpath)
+    (kind . file)     ; file|dir|symlink
+    (size . 0)
+    (mtime . "UNKNOWN")
+    (mode . "UNKNOWN")
+    (uid . 0)
+    (gid . 0)))
+#+END_SRC
+
+#+BEGIN_SRC c :tangle genesis/layer.0/genesis.layer.0.c
+/* genesis.layer.0.c
+ * Optional C implementation helpers for Layer 0.
+ * Not wired by default (keep tooling replaceable).
+ */
+#include <stdio.h>
+#include <sys/stat.h>
+
+int main(int argc, char** argv) {
+  (void)argc; (void)argv;
+  return 0;
+}
+#+END_SRC
+
+* 3. GENESIS Layer 1 — selection (ignore/include → UU/KU/KK)
+
+#+BEGIN_SRC scheme :tangle genesis/layer.1/genesis.layer.1.scm
+;; genesis.layer.1.scm
+;; Layer 1: selection only (light/dark classification)
+
+(define (string-prefix? s prefix)
+  (let ((ls (string-length s))
+        (lp (string-length prefix)))
+    (and (>= ls lp) (string=? (substring s 0 lp) prefix))))
+
+(define (string-suffix? s suffix)
+  (let ((ls (string-length s))
+        (lf (string-length suffix)))
+    (and (>= ls lf) (string=? (substring s (- ls lf) ls) suffix))))
+
+(define (matches-any? path patterns)
+  ;; Minimal matcher:
+  ;; - treats pattern ending with "/" as prefix match
+  ;; - treats "*.ext" as suffix match
+  ;; - otherwise prefix match
+  (let loop ((ps patterns))
+    (if (null? ps) #f
+        (let ((p (car ps)))
+          (cond
+            ((string=? p "") (loop (cdr ps)))
+            ((string-suffix? p "/")
+             (if (string-prefix? path p) #t (loop (cdr ps))))
+            ((and (>= (string-length p) 2) (string-prefix? p "*."))
+             (let ((ext (substring p 1 (string-length p))))
+               (if (string-suffix? path ext) #t (loop (cdr ps)))))
+            (else
+             (if (string-prefix? path p) #t (loop (cdr ps)))))))))
+
+(define (L1.classify l0-record ignore-patterns include-patterns)
+  (let ((path (cdr (assoc 'path l0-record))))
+    (cond
+      ((matches-any? path ignore-patterns) 'unknown-unknown)
+      ((matches-any? path include-patterns) 'known-known)
+      (else 'known-unknown))))
+#+END_SRC
+
+* 4. GENESIS Layer 2 — identity (address + fingerprint policy)
+
+#+BEGIN_SRC scheme :tangle genesis/layer.2/genesis.layer.2.scm
+;; genesis.layer.2.scm
+;; Layer 2: identity envelope (address + fingerprint policy)
+;; No parsing, no execution.
+
+(define (L2.address-of-path path)
+  ;; Placeholder deterministic address.
+  ;; Replace with your IPv6-like 8-byte (or 8x5-line) scheme later.
+  (string-append "ip6::" path))
+
+(define (L2.assign l0-record l1-class)
+  (let ((path (cdr (assoc 'path l0-record))))
+    (cond
+      ((eq? l1-class 'unknown-unknown)
+       '((visibility . dark)))
+      ((eq? l1-class 'known-unknown)
+       `((visibility . shadow)
+         (address . ,(L2.address-of-path path))))
+      ((eq? l1-class 'known-known)
+       `((visibility . light)
+         (address . ,(L2.address-of-path path))
+         (fingerprint-policy . "content-hash-later")))
+      (else
+       '((visibility . dark))))))
+#+END_SRC
+
+* 5. GENESIS Layer 3 — provenance (.org append-only trace)
+
+#+BEGIN_SRC scheme :tangle genesis/layer.3/genesis.layer.3.scm
+;; genesis.layer.3.scm
+;; Layer 3: provenance emitter (append-only .org nodes)
+
+(define (alist-ref k a)
+  (let ((p (assoc k a))) (if p (cdr p) #f)))
+
+(define (L3.emit-org l0 l1 l2)
+  (let ((path (alist-ref 'path l0))
+        (kind (alist-ref 'kind l0))
+        (size (alist-ref 'size l0))
+        (mtime (alist-ref 'mtime l0))
+        (addr (alist-ref 'address l2)))
+    (string-append
+     "* GENESIS
+"
+     ":PROPERTIES:
+"
+     ":GENESIS_LAYER: 3
+"
+     ":PATH: " (if path path "") "
+"
+     ":KIND: " (if kind (symbol->string kind) "") "
+"
+     ":SIZE: " (if size (number->string size) "0") "
+"
+     ":MTIME: " (if mtime mtime "") "
+"
+     ":CLASS: " (symbol->string l1) "
+"
+     (if addr (string-append ":ADDRESS: " addr "
+") "")
+     ":END:
+
+")))
+
+#+END_SRC
+
+* 6. GENESIS Layer 4 — representation (bytes → blocks)
+
+#+BEGIN_SRC scheme :tangle genesis/layer.4/genesis.layer.4.scm
+;; genesis.layer.4.scm
+;; Layer 4: representation wrapper (bytes -> org/src blocks), no meaning.
+
+(define (L4.ext->lang path)
+  (cond
+    ((string-suffix? path ".scm") "scheme")
+    ((string-suffix? path ".c") "c")
+    ((string-suffix? path ".h") "c")
+    ((string-suffix? path ".json") "json")
+    ((string-suffix? path ".jsonl") "json")
+    ((string-suffix? path ".yaml") "yaml")
+    ((string-suffix? path ".yml") "yaml")
+    ((string-suffix? path ".org") "org")
+    ((string-suffix? path ".md") "markdown")
+    ((string-suffix? path ".lean") "lean")
+    (else "text")))
+
+(define (L4.represent l0 l1 l2 read-bytes-fn)
+  (let* ((path (cdr (assoc 'path l0)))
+         (lang (L4.ext->lang path))
+         (size (cdr (assoc 'size l0))))
+    (cond
+      ((eq? l1 'unknown-unknown)
+       '((rep.kind . none)))
+
+      ((eq? l1 'known-unknown)
+       `((rep.kind . org-src)
+         (rep.lang . ,lang)
+         (rep.tangle . ,path)
+         (rep.body . "<<CONTENT-DEFERRED>>")
+         (rep.size . ,size)
+         (rep.encoding . "unknown")))
+
+      ((eq? l1 'known-known)
+       (let ((bytes (read-bytes-fn path)))
+         `((rep.kind . org-src)
+           (rep.lang . ,lang)
+           (rep.tangle . ,path)
+           (rep.body . ,bytes)
+           (rep.size . ,size)
+           (rep.encoding . "utf-8|binary"))))
+
+      (else '((rep.kind . none))))))
+#+END_SRC
+
+* 7. GENESIS Layer 5 — structure (parse, AST-ish)
+
+#+BEGIN_SRC scheme :tangle genesis/layer.5/genesis.layer.5.scm
+;; genesis.layer.5.scm
+;; Layer 5: structure parse (deterministic), no execution.
+
+(define (L5.structure l4-rep)
+  (let ((lang (cdr (assoc 'rep.lang l4-rep))))
+    (cond
+      ((or (string=? lang "org") (string=? lang "markdown"))
+       `((struct.kind . org)
+         (struct.props . ())
+         (struct.ast . ,(cdr (assoc 'rep.body l4-rep)))
+         (struct.errors . ())))
+      ((string=? lang "json")
+       `((struct.kind . json)
+         (struct.props . ())
+         (struct.ast . "<<JSON-AST-PENDING>>")
+         (struct.errors . ())))
+      ((string=? lang "scheme")
+       `((struct.kind . sexp)
+         (struct.props . ())
+         (struct.ast . "<<SEXP-AST-PENDING>>")
+         (struct.errors . ())))
+      (else
+       `((struct.kind . bytes)
+         (struct.props . ())
+         (struct.ast . "<<BYTES>>")
+         (struct.errors . ()))))))
+#+END_SRC
+
+* 8. GENESIS Layer 6 — schema gate
+
+#+BEGIN_SRC scheme :tangle genesis/layer.6/genesis.layer.6.scm
+;; genesis.layer.6.scm
+;; Layer 6: schema gate (valid/invalid/unknown-schema)
+
+(define (L6.require-signature? realm)
+  (or (string=? realm "protected")
+      (string=? realm "public")))
+
+(define (L6.validate l2 l5 schema-db)
+  ;; placeholder: schema-db will come from .genesisschema or schema.bin later
+  (let* ((realm "private")
+         (req? (L6.require-signature? realm)))
+    `((gate.result . unknown-schema)
+      (gate.realm . ,realm)
+      (gate.require-signature? . ,req?)
+      (gate.violations . ()))))
+#+END_SRC
+
+* 9. GENESIS Layer 7 — projection (Sphere–Ball quotient → VM state)
+
+#+BEGIN_SRC scheme :tangle genesis/layer.7/genesis.layer.7.scm
+;; genesis.layer.7.scm
+;; Layer 7: projection / canonicalization (VM-visible state)
+
+(define (L7.parity n) (if (= (modulo n 2) 0) 'even 'odd))
+
+(define (L7.is-prime n)
+  (cond
+    ((< n 2) #f)
+    ((= n 2) #t)
+    ((= (modulo n 2) 0) #f)
+    (else
+     (let loop ((d 3))
+       (cond
+         ((> (* d d) n) #t)
+         ((= (modulo n d) 0) #f)
+         (else (loop (+ d 2))))))))
+
+(define (L7.residue-from-address address)
+  ;; Deterministic placeholder: replace with your ip6 8-byte fold.
+  (modulo (string-length address) 8))
+
+(define (L7.admissible-7point? r)
+  ;; 8 -> 7 compression: reject residue 6
+  (not (= r 6)))
+
+(define (L7.project l2 l6)
+  (let* ((addrp (assoc 'address l2))
+         (address (if addrp (cdr addrp) "::"))
+         (r (L7.residue-from-address address))
+         (ad? (L7.admissible-7point? r))
+         (facets (list (L7.parity r)
+                       (if (L7.is-prime r) 'prime 'not-prime)))
+         (gate (cdr (assoc 'gate.result l6))))
+    `((vm.pointer . ,r)
+      (vm.admissible? . ,ad?)
+      (vm.facets . ,facets)
+      (vm.gate . ,gate))))
+#+END_SRC
+
+* 10. Orchestrator (layers 0–7) — tools/genesis-run.scm
+
+#+BEGIN_SRC scheme :tangle tools/genesis-run.scm
+;; tools/genesis-run.scm
+;; Orchestrates layers 0–7.
+;; This file is non-authoritative convenience tooling.
+
+(load "genesis/layer.0/genesis.layer.0.scm")
+(load "genesis/layer.1/genesis.layer.1.scm")
+(load "genesis/layer.2/genesis.layer.2.scm")
+(load "genesis/layer.3/genesis.layer.3.scm")
+(load "genesis/layer.4/genesis.layer.4.scm")
+(load "genesis/layer.5/genesis.layer.5.scm")
+(load "genesis/layer.6/genesis.layer.6.scm")
+(load "genesis/layer.7/genesis.layer.7.scm")
+
+(define (read-bytes-stub path)
+  ;; Replace with real file IO.
+  "<<BYTES>>")
+
+(define (genesis-run root)
+  ;; Placeholder pipeline demo: no real enumeration yet.
+  (let* ((l0 (L0.stat root "README.org"))
+         (ignore '(".git/" ".org/"))
+         (include '("*.org" "*.scm" "genesis/"))
+         (l1 (L1.classify l0 ignore include))
+         (l2 (L2.assign l0 l1))
+         (l3 (L3.emit-org l0 l1 l2))
+         (l4 (L4.represent l0 l1 l2 read-bytes-stub))
+         (l5 (L5.structure l4))
+         (l6 (L6.validate l2 l5 '()))
+         (l7 (L7.project l2 l6)))
+    (display l3) (newline)
+    (display l7) (newline)))
+
+;; (genesis-run ".")
+#+END_SRC
+
+* 11. Bootstrap CLI — Emacs batch tangling (single command)
+
+This is the one-liner you wanted.
+
+#+BEGIN_SRC sh :tangle tools/genesis-tangle.sh
+#!/usr/bin/env sh
+set -eu
+
+ORG="${1:-genesis.org}"
+
+emacs --batch \
+  --eval "(require 'org)" \
+  --eval "(require 'ob-tangle)" \
+  --eval "(setq org-confirm-babel-evaluate nil)" \
+  --eval "(org-babel-tangle-file "${ORG}")"
+
+echo "Tangled from ${ORG}"
+#+END_SRC
+
+* 12. Optional: Stubs for higher layers (8–23)
+
+These are intentionally empty scaffolds so the directory map is stable.
+
+#+BEGIN_SRC text :tangle logos/.keep
+LOGOS stubs live in logos/layer.N/
+#+END_SRC
+
+#+BEGIN_SRC text :tangle creation/.keep
+CREATION stubs live in creation/layer.N/
+#+END_SRC
+
+#+BEGIN_SRC text :tangle revelation/.keep
+REVELATION stubs live in revelation/layer.N/
+#+END_SRC

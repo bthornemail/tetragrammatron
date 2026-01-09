@@ -1,0 +1,14 @@
+#+TITLE: GENESIS Bootstrap
+
+* Install
+Copy genesis.sh into any directory and run:
+
+#+BEGIN_SRC sh
+chmod +x genesis.sh
+./genesis.sh init .
+./genesis.sh scan . > genesis.jsonl
+#+END_SRC
+
+* Notes
+- Layer 0 is content-blind (stat/path).
+- Layer 2/3 are views (Org blocks, emojis, emitters).

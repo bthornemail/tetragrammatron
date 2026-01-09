@@ -1,0 +1,8 @@
+{
+  "type": "USD",
+  "denomination": "100",
+  "serial": "B12345678C",
+  "issued_by": "federal_reserve:usa",
+  "issued_at": "2024-03-15T10:30:00Z",
+  "series": "2017A"
+}
