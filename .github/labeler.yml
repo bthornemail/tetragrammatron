@@ -1,0 +1,37 @@
+track:a-capability:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/tracks/track-a-capability.md'
+          - 'src/core/**'
+
+track:b-evr:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/tracks/track-b-evr.md'
+          - 'src/hub/**'
+
+track:c-federation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/tracks/track-c-federation.md'
+          - 'src/network/**'
+
+track:d-productization:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/tracks/track-d-productization.md'
+          - 'README.md'
+          - 'docs/**'
+
+contract-impact:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/core/**'
+          - 'src/network/**'
+          - 'src/protocol/**'
+
+snapshot-update:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'fixtures/demos/**'
+          - 'tests/conformance/**'

@@ -1,0 +1,20 @@
+name: release-gate
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  module-release-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - run: test -f docs/release-policy.md
+      - run: test -f docs/modules/module-release-checklist.md
+      - run: npm test
+      - run: npm run conformance
+      - run: npm run demo:all

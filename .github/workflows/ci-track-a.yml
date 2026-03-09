@@ -1,0 +1,25 @@
+name: ci-track-a
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/**'
+      - 'src/protocol/**'
+      - 'docs/tracks/track-a-capability.md'
+      - 'tests/**'
+  push:
+    paths:
+      - 'src/core/**'
+      - 'src/protocol/**'
+      - 'docs/tracks/track-a-capability.md'
+      - 'tests/**'
+
+jobs:
+  track-a:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - run: npm test

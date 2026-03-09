@@ -1,0 +1,29 @@
+name: ci-track-d
+
+on:
+  pull_request:
+    paths:
+      - 'src/hub/**'
+      - 'docs/**'
+      - 'README.md'
+      - 'scripts/**'
+      - 'docs/tracks/track-d-productization.md'
+      - 'tests/**'
+  push:
+    paths:
+      - 'src/hub/**'
+      - 'docs/**'
+      - 'README.md'
+      - 'scripts/**'
+      - 'docs/tracks/track-d-productization.md'
+      - 'tests/**'
+
+jobs:
+  track-d:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - run: npm test

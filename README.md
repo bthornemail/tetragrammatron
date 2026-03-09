@@ -59,3 +59,24 @@ Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 ## Conformance checklist
 
 See `docs/reference-conformance-checklist.md`.
+
+## Release policy
+
+Post-baseline releases are module-gated (not feature-incremental):
+
+- `docs/release-policy.md`
+- `docs/modules/module-release-checklist.md`
+
+## Independent tracks
+
+Post-v0 work is intentionally split into independent tracks:
+
+- Track A: capability / authority model (`docs/tracks/track-a-capability.md`)
+- Track B: EVR doctrine (`docs/tracks/track-b-evr.md`)
+- Track C: federation breadth (`docs/tracks/track-c-federation.md`)
+- Track D: productization (`docs/tracks/track-d-productization.md`)
+
+Cross-track dependency and contract rules:
+
+- `docs/tracks/contract-map.md`
+- `docs/tracks/workflow-rules.md`
