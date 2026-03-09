@@ -44,6 +44,14 @@ A module release requires all of the following:
 4. Demo proof (when applicable)
 - Module-level runnable demo proving the key claim.
 
+5. Module manifest
+- `module-manifest.json` present at repo root.
+- Manifest JSON is valid and release-scoped fields are complete.
+
+6. Patch-release spec stability
+- Patch tags matching `vMAJOR.MINOR.PATCH` must not modify `specs/**`.
+- Spec changes are allowed only on module releases with explicit scope/version intent.
+
 ## Track independence vs release discipline
 
 Tracks may proceed independently:

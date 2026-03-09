@@ -80,3 +80,8 @@ Cross-track dependency and contract rules:
 
 - `docs/tracks/contract-map.md`
 - `docs/tracks/workflow-rules.md`
+
+## Roadmap diagram
+
+- JSON Canvas: `docs/diagrams/protocol-roadmap.canvas`
+- Static fallback: `docs/diagrams/protocol-roadmap.svg`

@@ -6,6 +6,7 @@ Use this checklist before cutting any post-baseline module release.
 
 - [ ] Module name and scope are explicit.
 - [ ] Module boundaries do not overlap unresolved semantics from other tracks.
+- [ ] `module-manifest.json` is present and valid JSON.
 
 ## Law completeness
 
@@ -34,3 +35,7 @@ Use this checklist before cutting any post-baseline module release.
 - [ ] CHANGELOG section for module release prepared.
 - [ ] Release conformance statement updated for module scope.
 - [ ] Deferred items are explicitly listed.
+
+## Patch-release guard
+
+- [ ] If release tag matches `vMAJOR.MINOR.PATCH`, no `specs/**` files changed.

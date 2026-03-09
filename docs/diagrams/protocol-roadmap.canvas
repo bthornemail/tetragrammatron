@@ -1,0 +1,15 @@
+{
+  "nodes": [
+    {"id":"n1","type":"text","x":80,"y":120,"width":300,"height":120,"text":"Reference Stack v0\nTag: v0.1.0-reference\nFrozen baseline"},
+    {"id":"n2","type":"text","x":460,"y":120,"width":300,"height":140,"text":"Capability Model (Track A)\nCapabilityGrant\nDelegation chains\nVerification semantics"},
+    {"id":"n3","type":"text","x":840,"y":120,"width":300,"height":140,"text":"EVR Doctrine (Track B)\nEvent families\nEvidence shapes\nObservability contracts"},
+    {"id":"n4","type":"text","x":1220,"y":120,"width":320,"height":140,"text":"Federation Discovery (Track C)\nPeer discovery\nRoute arbitration\nConvergence proofs"},
+    {"id":"n5","type":"text","x":1620,"y":120,"width":300,"height":140,"text":"Role-based Hub (Track D)\nBrowser shell\nRole segmentation\nProduct ergonomics"}
+  ],
+  "edges": [
+    {"id":"e1","fromNode":"n1","toNode":"n2","label":"next module"},
+    {"id":"e2","fromNode":"n2","toNode":"n3","label":"depends on A"},
+    {"id":"e3","fromNode":"n3","toNode":"n4","label":"depends on B"},
+    {"id":"e4","fromNode":"n4","toNode":"n5","label":"depends on C"}
+  ]
+}

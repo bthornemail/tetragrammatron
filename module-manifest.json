@@ -1,0 +1,20 @@
+{
+  "module": "reference-stack",
+  "module_version": "0.1.0-reference",
+  "release_type": "reference-baseline",
+  "laws": [
+    "NRR-Laws",
+    "DBC-Stage-Resolution",
+    "IDL-SID-Derivation",
+    "Core-Faithful-Execution",
+    "HDRPC-Semantic-Routing",
+    "Hub-Projection-Only"
+  ],
+  "fixtures": [
+    "hello.snapshot",
+    "pipeline.snapshot",
+    "federation.snapshot"
+  ],
+  "cross_layer_tests": true,
+  "conformance_verified": true
+}

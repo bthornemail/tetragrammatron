@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="340" viewBox="0 0 1800 340">
+  <style>
+    .box { fill:#f6f8fa; stroke:#24292f; stroke-width:2; rx:10; ry:10; }
+    .title { font: 700 18px sans-serif; fill:#111827; }
+    .text { font: 14px sans-serif; fill:#1f2937; }
+    .arrow { stroke:#374151; stroke-width:2; marker-end:url(#arrow); }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#374151" />
+    </marker>
+  </defs>
+  <rect class="box" x="30" y="60" width="300" height="130"/>
+  <text class="title" x="50" y="92">Reference Stack v0</text>
+  <text class="text" x="50" y="118">Tag: v0.1.0-reference</text>
+  <text class="text" x="50" y="142">Frozen baseline</text>
+  <rect class="box" x="380" y="50" width="320" height="150"/>
+  <text class="title" x="400" y="82">Capability Model (Track A)</text>
+  <text class="text" x="400" y="108">CapabilityGrant</text>
+  <text class="text" x="400" y="132">Delegation chains</text>
+  <text class="text" x="400" y="156">Verification semantics</text>
+  <rect class="box" x="760" y="50" width="320" height="150"/>
+  <text class="title" x="780" y="82">EVR Doctrine (Track B)</text>
+  <text class="text" x="780" y="108">Event families</text>
+  <text class="text" x="780" y="132">Evidence shapes</text>
+  <text class="text" x="780" y="156">Observability contracts</text>
+  <rect class="box" x="1140" y="50" width="330" height="150"/>
+  <text class="title" x="1160" y="82">Federation Discovery (Track C)</text>
+  <text class="text" x="1160" y="108">Peer discovery</text>
+  <text class="text" x="1160" y="132">Route arbitration</text>
+  <text class="text" x="1160" y="156">Convergence proofs</text>
+  <rect class="box" x="1530" y="50" width="250" height="150"/>
+  <text class="title" x="1550" y="82">Role-based Hub</text>
+  <text class="text" x="1550" y="108">Track D</text>
+  <text class="text" x="1550" y="132">Browser shell</text>
+  <text class="text" x="1550" y="156">Role segmentation</text>
+  <line class="arrow" x1="330" y1="120" x2="380" y2="120"/>
+  <line class="arrow" x1="700" y1="120" x2="760" y2="120"/>
+  <line class="arrow" x1="1080" y1="120" x2="1140" y2="120"/>
+  <line class="arrow" x1="1470" y1="120" x2="1530" y2="120"/>
+</svg>

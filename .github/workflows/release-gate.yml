@@ -10,11 +10,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
       - run: test -f docs/release-policy.md
       - run: test -f docs/modules/module-release-checklist.md
+      - run: test -f module-manifest.json
+      - run: node -e "JSON.parse(require('fs').readFileSync('module-manifest.json','utf8')); console.log('module-manifest.json valid')"
+      - name: Block spec changes on patch releases
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            PREV_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | grep -v "^${TAG}$" | head -n1 || true)
+            if [[ -n "$PREV_TAG" ]]; then
+              if git diff --name-only "$PREV_TAG" "$TAG" | grep -q '^specs/'; then
+                echo "Patch releases may not modify protocol specs (specs/**)."
+                exit 1
+              fi
+            fi
+          fi
       - run: npm test
       - run: npm run conformance
       - run: npm run demo:all
