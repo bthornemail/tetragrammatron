@@ -85,3 +85,10 @@ Cross-track dependency and contract rules:
 
 - JSON Canvas: `docs/diagrams/protocol-roadmap.canvas`
 - Static fallback: `docs/diagrams/protocol-roadmap.svg`
+
+## Diagram profile
+
+Tetragrammatron diagrams may use JSON Canvas as an optional visualization profile. Diagrams are projection-only and non-authoritative.
+
+- `docs/diagrams/canvas-visualization-profile.md`
+- `docs/diagrams/canvas-style-guide.md`
