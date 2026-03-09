@@ -9,6 +9,7 @@ ABI defines the canonical semantic structures. EABI defines how those structures
 ## What it includes
 
 - Machine-readable manifest: `conformance-kit.json`
+- Machine-readable profile targets: `conformance-kit/targets.json`
 - ABI fixtures: `fixtures/abi/{golden,negative,determinism}`
 - EABI fixtures: `fixtures/eabi/{golden,negative,determinism}`
 - Public transcripts: `fixtures/eabi/snapshots/*`
@@ -22,6 +23,8 @@ ABI defines the canonical semantic structures. EABI defines how those structures
 - EABI: `v1.2.0-eabi`
 
 ## Minimum viable implementation levels
+
+Choose a conformance profile first, then implement exactly the `must_pass` surface for that profile.
 
 | Level | Must pass |
 |---|---|

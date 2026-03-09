@@ -1,0 +1,42 @@
+{
+  "version": "v1.2.0",
+  "abi_version": "v1.1.0-abi",
+  "eabi_version": "v1.2.0-eabi",
+  "profiles": {
+    "semantic-reader": {
+      "must_pass": [
+        "abi/schema",
+        "abi/golden"
+      ]
+    },
+    "semantic-verifier": {
+      "must_pass": [
+        "abi/schema",
+        "abi/golden",
+        "abi/negative",
+        "abi/determinism"
+      ]
+    },
+    "runtime-host": {
+      "must_pass": [
+        "abi/schema",
+        "abi/golden",
+        "abi/negative",
+        "abi/determinism",
+        "eabi/core"
+      ]
+    },
+    "full-node": {
+      "must_pass": [
+        "abi/schema",
+        "abi/golden",
+        "abi/negative",
+        "abi/determinism",
+        "eabi/core",
+        "eabi/network",
+        "eabi/bundle",
+        "eabi/evr"
+      ]
+    }
+  }
+}

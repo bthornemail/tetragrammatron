@@ -10,6 +10,7 @@
     "RELEASE_CONFORMANCE.md",
     "module-manifest.json",
     "conformance-kit.json",
+    "conformance-kit-targets.json",
     "docs/**",
     "examples/**",
     "replay-packs/**",

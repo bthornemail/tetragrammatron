@@ -35,6 +35,35 @@ const requiredOperations = [
 
 const optionalOperations = ['event-stream-item'];
 
+const targets = {
+  version: 'v1.2.0',
+  abi_version: 'v1.1.0-abi',
+  eabi_version: 'v1.2.0-eabi',
+  profiles: {
+    'semantic-reader': {
+      must_pass: ['abi/schema', 'abi/golden']
+    },
+    'semantic-verifier': {
+      must_pass: ['abi/schema', 'abi/golden', 'abi/negative', 'abi/determinism']
+    },
+    'runtime-host': {
+      must_pass: ['abi/schema', 'abi/golden', 'abi/negative', 'abi/determinism', 'eabi/core']
+    },
+    'full-node': {
+      must_pass: [
+        'abi/schema',
+        'abi/golden',
+        'abi/negative',
+        'abi/determinism',
+        'eabi/core',
+        'eabi/network',
+        'eabi/bundle',
+        'eabi/evr'
+      ]
+    }
+  }
+};
+
 function sha256Bytes(bytes) {
   return `sha256:${crypto.createHash('sha256').update(bytes).digest('hex')}`;
 }
@@ -109,6 +138,7 @@ const manifest = {
 };
 
 fs.writeFileSync(path.join(root, 'conformance-kit.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+fs.writeFileSync(path.join(root, 'conformance-kit-targets.json'), `${JSON.stringify(targets, null, 2)}\n`);
 
 const outDir = path.join(root, 'conformance-kit');
 fs.rmSync(outDir, { recursive: true, force: true });
@@ -128,6 +158,7 @@ for (const t of transcriptEntries) {
 }
 
 fs.writeFileSync(path.join(outDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+fs.writeFileSync(path.join(outDir, 'targets.json'), `${JSON.stringify(targets, null, 2)}\n`);
 fs.writeFileSync(
   path.join(outDir, 'README.md'),
   '# Conformance Kit\n\nUse `manifest.json` plus fixture groups and snapshots to validate ABI/EABI compatibility.\n'

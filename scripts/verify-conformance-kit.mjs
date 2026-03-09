@@ -9,9 +9,16 @@ if (!fs.existsSync(manifestPath)) {
   console.error('missing conformance-kit.json');
   process.exit(2);
 }
+const targetsPath = path.join(root, 'conformance-kit-targets.json');
+if (!fs.existsSync(targetsPath)) {
+  console.error('missing conformance-kit-targets.json');
+  process.exit(2);
+}
 
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+const targets = JSON.parse(fs.readFileSync(targetsPath, 'utf8'));
 const allowed = new Set(['success', 'semantic_failure', 'execution_failure']);
+const requiredProfiles = ['semantic-reader', 'semantic-verifier', 'runtime-host', 'full-node'];
 
 function sha256Bytes(bytes) {
   return `sha256:${crypto.createHash('sha256').update(bytes).digest('hex')}`;
@@ -68,13 +75,22 @@ for (const t of manifest.transcripts ?? []) {
   }
 }
 
+for (const profile of requiredProfiles) {
+  const entry = targets?.profiles?.[profile];
+  if (!entry || !Array.isArray(entry.must_pass) || entry.must_pass.length === 0) {
+    console.error(`invalid conformance target profile: ${profile}`);
+    process.exit(1);
+  }
+}
+
 console.log(
   JSON.stringify(
     {
       ok: true,
       checked_groups: checkedGroups,
       checked_fixtures: (manifest.fixture_expectations ?? []).length,
-      checked_transcripts: (manifest.transcripts ?? []).length
+      checked_transcripts: (manifest.transcripts ?? []).length,
+      checked_profiles: requiredProfiles.length
     },
     null,
     2
