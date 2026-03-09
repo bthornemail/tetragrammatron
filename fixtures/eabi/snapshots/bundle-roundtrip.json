@@ -1,0 +1,59 @@
+{
+  "acceptance": "eabi bundle framing preserves replayable logical bundle contents",
+  "exported": {
+    "eabi_version": "1.0",
+    "ok": true,
+    "operation": "bundle-export",
+    "result": {
+      "blob_count": 5,
+      "bundle": {
+        "blobs": {
+          "sha256:2a00c61d1b5ff84218b66f6424f316f64239463b5dc0f8d950afc1411fd8f3e4": "eyJraW5kIjoiY29yZS5ub3JtYWxfZm9ybS52MSIsIm5vcm1hbF9mb3JtIjp7ImNvbnN0cmFpbnRzIjpbXSwiZWRnZXMiOltbImhhc1R5cGUiLCJBbGljZSIsIlBlcnNvbiJdLFsicGFyZW50IiwiQSIsIkIiXSxbInBhcmVudCIsIkEiLCJDIl0sWyJwYXJlbnQiLCJCIiwiQyJdXSwibm9kZXMiOlsiQSIsIkFsaWNlIiwiQiIsIkMiLCJQZXJzb24iXSwid2l0bmVzc2VzIjpbXX0sInNjaGVtYV9kaWdlc3QiOiJzaGEyNTY6OTJkYzFjY2FkMDk2YjAyMTY4ZDdiYTk2YTJjZTcyYmMwNDQ0ZmI4NzYwZDZlNTQ4NWRhYjc1ZDc4Y2MzYTRiOCIsInNpZCI6InNpZDpkYmM6YTJjYjc0ZTQ2NThkNTJkNGQ5OTRhYTc3YTE4MTRkZDUwYTRjN2YxMThlYzFhODhmM2MxNTI1YjcwYjQ4Mzc0NSJ9",
+          "sha256:2c9919e691ea2a7e65c443818699c1e296ddb4f42577d094bea38eecb43a6118": "eyJjYWxsIjp7ImNhbm9uaWNhbF9pbnB1dCI6eyJkb2N1bWVudCI6W3siUmVsIjpbImhhc1R5cGUiLCJBbGljZSIsIlBlcnNvbiJdfSx7IlJlbCI6WyJwYXJlbnQiLCJBIiwiQiJdfSx7IlJlbCI6WyJwYXJlbnQiLCJCIiwiQyJdfV0sInNjaGVtYSI6eyJjbG9zdXJlIjp7InRyYW5zaXRpdmVfcmVsYXRpb25zIjpbInBhcmVudCJdfSwiaWQiOiJkYmMtbWluaW1hbC12MSIsInJlbGF0aW9ucyI6eyJoYXNUeXBlIjoyLCJwYXJlbnQiOjJ9LCJzeW1ib2xzIjpbIkFsaWNlIiwiQm9iIiwiUGVyc29uIiwiQSIsIkIiLCJDIl19LCJ2aWV3Ijp7InRhcmdldCI6InByb2plY3Rpb24vanNvbi12MSJ9fSwidGFyZ2V0X3N0YWdlIjoiTm9ybWFsaXplZCJ9LCJraW5kIjoiY29yZS5yZXNvbHZlLmNhbGwudjEiLCJzY2hlbWFfZGlnZXN0Ijoic2hhMjU2OjkyZGMxY2NhZDA5NmIwMjE2OGQ3YmE5NmEyY2U3MmJjMDQ0NGZiODc2MGQ2ZTU0ODVkYWI3NWQ3OGNjM2E0YjgifQ==",
+          "sha256:933cfdafb263dca8301e72305548f71a3e31e4df934bd39f90b4bb347b38d3c4": "eyJkZXNjcmlwdG9yX3JlZiI6InNoYTI1NjphZTM2NzRjOTMzYWZiM2NjN2M5ZDdhMjE3NzRmZTdhOWEwZDU5NTU3OTliODg2OTcyMmM4NTFiOGRkMWFkNTRhIiwia2luZCI6ImNvcmUuZGVzY3JpcHRvcl9pbmRleC52MSIsIm5vcm1hbF9mb3JtX3JlZiI6InNoYTI1NjoyYTAwYzYxZDFiNWZmODQyMThiNjZmNjQyNGYzMTZmNjQyMzk0NjNiNWRjMGY4ZDk1MGFmYzE0MTFmZDhmM2U0Iiwic2NoZW1hX2RpZ2VzdCI6InNoYTI1Njo5MmRjMWNjYWQwOTZiMDIxNjhkN2JhOTZhMmNlNzJiYzA0NDRmYjg3NjBkNmU1NDg1ZGFiNzVkNzhjYzNhNGI4Iiwic2lkIjoic2lkOmRiYzphMmNiNzRlNDY1OGQ1MmQ0ZDk5NGFhNzdhMTgxNGRkNTBhNGM3ZjExOGVjMWE4OGYzYzE1MjViNzBiNDgzNzQ1In0=",
+          "sha256:985474759c55643ed1ff818fb063447323652b0c5f83c0927c794269099ddc65": "eyJraW5kIjoiY29yZS5yZXNvbHZlLnJlc3VsdC52MSIsInJlc29sdmVkIjp7ImVudmVsb3BlIjp7Im9rIjp0cnVlLCJzdGFnZSI6Ik5vcm1hbGl6ZWQiLCJ2YWx1ZV9raW5kIjoiTm9ybWFsRm9ybSJ9LCJvayI6dHJ1ZSwic3RhZ2UiOiJOb3JtYWxpemVkIiwidmFsdWUiOnsiY29uc3RyYWludHMiOltdLCJlZGdlcyI6W1siaGFzVHlwZSIsIkFsaWNlIiwiUGVyc29uIl0sWyJwYXJlbnQiLCJBIiwiQiJdLFsicGFyZW50IiwiQSIsIkMiXSxbInBhcmVudCIsIkIiLCJDIl1dLCJub2RlcyI6WyJBIiwiQWxpY2UiLCJCIiwiQyIsIlBlcnNvbiJdLCJ3aXRuZXNzZXMiOltdfSwidmFsdWVfa2luZCI6Ik5vcm1hbEZvcm0ifSwic2NoZW1hX2RpZ2VzdCI6InNoYTI1Njo5MmRjMWNjYWQwOTZiMDIxNjhkN2JhOTZhMmNlNzJiYzA0NDRmYjg3NjBkNmU1NDg1ZGFiNzVkNzhjYzNhNGI4In0=",
+          "sha256:ae3674c933afb3cc7c9d7a21774fe7a9a0d5955799b8869722c851b8dd1ad54a": "eyJkZXNjcmlwdG9yIjp7ImRlc2NyaXB0b3JfZGlnZXN0Ijoic2hhMjU2OmU2ZDQxZDQxNzY5NWFmNjE2MDgxMDJmMjRjOWZlMDBjY2ZlYjBmZTJjMzBiM2I3YmE4Y2E3YzMxMDljYmVjNDUiLCJub3JtYWxfZm9ybV9kaWdlc3QiOiJzaGEyNTY6NDBmZDZiNjhlYmZmOWE2ZGNlOWI4NmU0MTgzZjY2NGEyN2QzMzI4YTRmMDY1MTk2MmQxOTE2YzlhNTFlNTAyNCIsInNjaGVtYV9kaWdlc3QiOiJzaGEyNTY6OTJkYzFjY2FkMDk2YjAyMTY4ZDdiYTk2YTJjZTcyYmMwNDQ0ZmI4NzYwZDZlNTQ4NWRhYjc1ZDc4Y2MzYTRiOCIsInNpZCI6InNpZDpkYmM6YTJjYjc0ZTQ2NThkNTJkNGQ5OTRhYTc3YTE4MTRkZDUwYTRjN2YxMThlYzFhODhmM2MxNTI1YjcwYjQ4Mzc0NSIsInNwZWMiOiJEQkMtSURMLTEuMiJ9LCJraW5kIjoiY29yZS5pZGVudGl0eV9kZXNjcmlwdG9yLnYxIiwic2lkIjoic2lkOmRiYzphMmNiNzRlNDY1OGQ1MmQ0ZDk5NGFhNzdhMTgxNGRkNTBhNGM3ZjExOGVjMWE4OGYzYzE1MjViNzBiNDgzNzQ1In0="
+        },
+        "log": "AAAAAQIsmRnmkeoqfmXEQ4GGmcHilt209CV30JS+o47stDphGAAAAAECmFR0dZxVZD7R/4GPsGNEcyNlKwxfg8CSfHlCaQmd3GUAAAABAioAxh0bX/hCGLZvZCTzFvZCOUY7XcD42VCvwUEf2PPkAAAAAQKuNnTJM6+zzHydeiF3T+epoNWVV5m4hpciyFG43RrVSgAAAAECkzz9r7Jj3KgwHnIwVUj3Gj4x5N+TS9OfkLS7NHs408Q=",
+        "manifest": {
+          "blob_count": 5,
+          "entry_count": 5,
+          "hash_algorithm": "sha256",
+          "log_format": "nrr-log-bin-v1",
+          "manifest_hash": "sha256:25f19dedde734bbf9db4db5f5968391d928c56b068122312385f1050c5ad4f5b",
+          "nrr_version": "1.0",
+          "segment_end": 4,
+          "segment_start": 0
+        }
+      },
+      "entry_count": 5
+    }
+  },
+  "imported": {
+    "eabi_version": "1.0",
+    "ok": true,
+    "operation": "bundle-import",
+    "result": {
+      "blob_count": 5,
+      "entry_count": 5,
+      "imported_refs": [
+        "sha256:2a00c61d1b5ff84218b66f6424f316f64239463b5dc0f8d950afc1411fd8f3e4",
+        "sha256:2c9919e691ea2a7e65c443818699c1e296ddb4f42577d094bea38eecb43a6118",
+        "sha256:933cfdafb263dca8301e72305548f71a3e31e4df934bd39f90b4bb347b38d3c4",
+        "sha256:985474759c55643ed1ff818fb063447323652b0c5f83c0927c794269099ddc65",
+        "sha256:ae3674c933afb3cc7c9d7a21774fe7a9a0d5955799b8869722c851b8dd1ad54a"
+      ],
+      "status": "complete"
+    }
+  },
+  "verified": {
+    "eabi_version": "1.0",
+    "ok": true,
+    "operation": "verify-store",
+    "result": {
+      "blob_count_checked": 5,
+      "status": "valid",
+      "violations": []
+    }
+  }
+}

@@ -1,28 +1,29 @@
 {
-  "module": "abi",
-  "module_version": "1.1.0-abi",
+  "module": "eabi",
+  "module_version": "1.2.0-eabi",
   "release_type": "module",
   "status": "complete",
   "laws": [
-    "SemanticNeutralityLaw",
-    "CanonicalDeterminismLaw",
-    "StructureEncodingSeparationLaw",
-    "CanonicalOrderingLaw",
-    "TypedResultPreservationLaw",
-    "EvidenceCompletenessLaw",
-    "EVREvidenceLegalityLaw",
-    "ClosedStatusTaxonomyLaw",
-    "ExecutionExclusionLaw",
+    "ExecutionBoundaryLaw",
+    "ABITransparencyLaw",
     "ExplicitVersioningLaw",
-    "BaselineNonMutationLaw"
+    "CanonicalEnvelopeOrderingLaw",
+    "SemanticExecutionFailureSeparationLaw",
+    "ContextNormalizationLaw",
+    "OperationVersionStabilityLaw",
+    "TransportNeutralityLaw",
+    "DeterministicFramingLaw",
+    "ImportExportReplayabilityLaw",
+    "EventFramingNeutralityLaw"
   ],
   "fixtures": [
-    "abi/golden",
-    "abi/negative",
-    "abi/determinism",
-    "abi/snapshots/resolve-envelope.json",
-    "abi/snapshots/capability-envelope.json",
-    "abi/snapshots/federation-envelope.json"
+    "eabi/golden",
+    "eabi/negative",
+    "eabi/determinism",
+    "eabi/snapshots/resolve.json",
+    "eabi/snapshots/capability-verify.json",
+    "eabi/snapshots/routed-call.json",
+    "eabi/snapshots/bundle-roundtrip.json"
   ],
   "cross_layer_tests": true,
   "conformance_verified": true

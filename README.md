@@ -16,6 +16,7 @@ Deterministic law-first reference implementation of the Tetragrammatron semantic
 - `src/protocol` — DBC + DBC-IDL + capability verification
 - `src/revocation` — canonical revocation records and deterministic authority-withdrawal verification
 - `src/abi` — canonical semantic ABI (structure + encoding conformance layer)
+- `src/eabi` — canonical execution/environment ABI (operation framing + host mapping)
 - `src/core` — host + node transport mapping (faithful execution, canonical persistence)
 - `src/network` — HD-RPC routing + federation bridge
 - `src/federation` — pure federation rules (descriptors, announcements, route sets, arbitration, convergence)
@@ -50,6 +51,10 @@ Deterministic law-first reference implementation of the Tetragrammatron semantic
 - `npm run demo:abi:resolve`
 - `npm run demo:abi:capability`
 - `npm run demo:abi:federation`
+- `npm run demo:eabi:resolve`
+- `npm run demo:eabi:capability`
+- `npm run demo:eabi:routed`
+- `npm run demo:eabi:bundle`
 
 ## Frozen demo snapshots
 
@@ -75,6 +80,10 @@ Frozen snapshot fixtures live in `fixtures/demos/`:
 - `abi/snapshots/resolve-envelope.json`
 - `abi/snapshots/capability-envelope.json`
 - `abi/snapshots/federation-envelope.json`
+- `eabi/snapshots/resolve.json`
+- `eabi/snapshots/capability-verify.json`
+- `eabi/snapshots/routed-call.json`
+- `eabi/snapshots/bundle-roundtrip.json`
 
 Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 
@@ -82,6 +91,7 @@ Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 
 - Baseline tag target: `v1.0.0-semantic-baseline`
 - ABI module target: `v1.1.0-abi`
+- EABI module target: `v1.2.0-eabi`
 - Previous reference tag: `v0.1.0-reference`
 - Changelog: `CHANGELOG.md`
 - Conformance statements: `RELEASE_CONFORMANCE.md`
@@ -101,7 +111,6 @@ Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 - Production PKI / hardware-backed cryptographic infrastructure
 - Revocation distribution policies beyond deterministic record evaluation
 - EVR `device.*` family completion
-- Role-segmented hub
 - Wide-area federation mesh optimization
 - Embedded profile optimization work
 
@@ -127,6 +136,7 @@ Post-baseline work is intentionally split into independent tracks:
 - Track E: revocation (`docs/tracks/track-e-revocation.md`)
 - Track H: role-based hub completion (`docs/tracks/track-h-hub-roles.md`)
 - Track F: canonical semantic ABI (`docs/tracks/track-f-abi.md`)
+- Track G: canonical execution/environment ABI (`docs/tracks/track-g-eabi.md`)
 
 Cross-track dependency and contract rules:
 

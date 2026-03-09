@@ -41,6 +41,30 @@ This release is a **semantic baseline freeze**: foundationally stable semantics 
 
 ---
 
+# EABI Module Conformance Statement
+
+Module version: `1.2.0-eabi`
+
+This module cut completes Track G canonical execution/environment ABI over the frozen semantic baseline and ABI module.
+
+## Proven in this module
+
+- EABI invocation/success/error envelopes are canonical and deterministic.
+- EABI keeps semantic failures inside successful invocation envelopes and execution failures in typed EABI error envelopes.
+- EABI host mapping preserves direct host/network semantic outcomes without reinterpretation.
+- EABI bundle export/import framing preserves NRR replayable logical contents and atomic import behavior.
+- EABI event batch and stream framing carry EVR events verbatim without evidence mutation.
+- EABI fixtures are frozen for golden/negative/determinism coverage.
+- EABI demo snapshots are frozen and conformance-checked.
+
+## Intentionally deferred after Track G
+
+- Transport-specific socket/wire protocol contracts.
+- Process supervision and runtime lifecycle management.
+- Auth/session/user account management in product surfaces.
+
+---
+
 # ABI Module Conformance Statement
 
 Module version: `1.1.0-abi`

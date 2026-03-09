@@ -1,5 +1,30 @@
 # Changelog
 
+## v1.2.0-eabi
+
+### Track G (Canonical Execution/Environment ABI)
+- Added EABI module docs and release artifacts under `docs/modules/eabi` and `docs/tracks/track-g-eabi.md`.
+- Added pure EABI layer (`src/eabi`) with operation registry, envelope schemas, validators, canonical encoders/decoders, typed execution error envelopes, host mapping, EVR stream/batch framing, and bundle handoff framing.
+- Added EABI operation inventory covering core/network/store/EVR operation surfaces.
+- Added EABI fixture matrices and canonical fixture sets:
+  - `fixtures/eabi/golden` (13)
+  - `fixtures/eabi/negative` (7)
+  - `fixtures/eabi/determinism` (3)
+- Added EABI mapping/conformance tests:
+  - `tests/eabi/schema.test.mjs`
+  - `tests/eabi/fixtures.test.mjs`
+  - `tests/eabi/host.test.mjs`
+  - `tests/eabi/network.test.mjs`
+  - `tests/eabi/bundle.test.mjs`
+  - `tests/eabi/events.test.mjs`
+  - `tests/conformance/eabi-snapshots.test.mjs`
+- Added EABI demos and frozen snapshots:
+  - `eabi-resolve`
+  - `eabi-capability-verify`
+  - `eabi-routed-call`
+  - `eabi-bundle-roundtrip`
+- Maintained semantic baseline invariants: EABI is execution-boundary framing only and does not redefine ABI semantics.
+
 ## v1.1.0-abi
 
 ### Track F (Canonical Semantic ABI)

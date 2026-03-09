@@ -38,6 +38,11 @@ Use this checklist to validate an independent implementation against this refere
 - [ ] Federation convergence/divergence witness structures are explicit and deterministic.
 - [ ] ABI structures are defined and validated for protocol/identity/capability/revocation/evr/federation surfaces.
 - [ ] Structure conformance and encoding conformance are proven independently.
+- [ ] EABI invocation/result/error framing is canonical and deterministic.
+- [ ] EABI preserves semantic/execution failure separation for all implemented operations.
+- [ ] EABI host mapping preserves semantic equivalence with direct host/network invocation.
+- [ ] EABI event framing carries EVR events verbatim without evidence mutation.
+- [ ] EABI bundle import/export framing preserves replayable logical contents and atomic import behavior.
 
 ## Required demos
 
@@ -69,6 +74,11 @@ Use this checklist to validate an independent implementation against this refere
   - resolve envelope
   - capability envelope
   - federation envelope
+- [ ] EABI demos:
+  - resolve framing
+  - capability verify framing
+  - routed-call framing
+  - bundle round-trip framing
 
 ## Required negative proofs
 
@@ -89,6 +99,7 @@ Use this checklist to validate an independent implementation against this refere
 - [ ] Event timeline projection ordering is stable for equivalent operation traces.
 - [ ] Federation route-set/arbitration/convergence outputs are reproducible for equivalent inputs.
 - [ ] ABI snapshot outputs are reproducible for equivalent semantic inputs.
+- [ ] EABI snapshot outputs are reproducible for equivalent invocation/context inputs.
 
 ## Deferred (intentional)
 
