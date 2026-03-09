@@ -10,6 +10,8 @@ Define the canonical authority-delegation model and verification semantics for c
 - No UI policy behavior.
 - No federation/discovery policy behavior.
 - No device bootstrap workflow behavior.
+- No capability revocation model in this module cut.
+- No production PKI / hardware-backed key infrastructure in this module cut.
 
 ## Boundary doctrine
 

@@ -49,6 +49,8 @@ This module cut completes Track A capability semantics over the existing referen
 
 ## Intentionally deferred after Track A
 
+- Capability revocation semantics.
+- Production PKI / hardware-backed cryptographic infrastructure.
 - EVR doctrine completion.
 - Federation discovery/arbitration breadth.
 - Role-segmented hub workflows.

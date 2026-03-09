@@ -58,6 +58,8 @@ Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 
 ## Deferred (intentional)
 
+- Capability revocation semantics
+- Production PKI / hardware-backed cryptographic infrastructure
 - EVR doctrine expansion
 - Role-segmented hub
 - Federation/discovery mesh breadth
