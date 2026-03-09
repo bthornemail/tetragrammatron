@@ -1,0 +1,10 @@
+{
+  "cases": [
+    {"id":"G01_valid_single_grant","type":"valid_single"},
+    {"id":"G02_valid_delegated_chain","type":"valid_delegated"},
+    {"id":"G03_valid_bounded_scope","type":"valid_bounded_scope"},
+    {"id":"G04_valid_epoch_bound","type":"valid_epoch_bound"},
+    {"id":"G05_valid_adapter_guard","type":"valid_adapter_guard"},
+    {"id":"G06_valid_multi_intermediate_governors","type":"valid_multi_intermediate"}
+  ]
+}

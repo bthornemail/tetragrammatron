@@ -21,12 +21,19 @@ Use this checklist to validate an independent implementation against this refere
 - [ ] HD-RPC `call(SID, stage)` forwards to Core semantics without reinterpretation.
 - [ ] `adapter:ipv6` canonical, `adapter:ipv4` compatibility-only.
 - [ ] Hub read panes are mutation-free; only resolve mutates canonical state.
+- [ ] Capability verification outcomes are deterministic, typed, and evidence-carrying.
+- [ ] Capability verification does not alter SID, descriptor identity, or NormalForm semantics.
+- [ ] Capability-gated resolve and guarded adapter paths are deterministic across Core/Network/Hub.
 
 ## Required demos
 
 - [ ] Hello Tetragrammatron: same meaning -> same NormalForm -> same SID -> same IPv6.
 - [ ] Node pipeline: resolve -> persist -> descriptor -> adapter -> store/replay inspection.
 - [ ] Minimal federation proof: routed call equals direct core call; unknown route typed failure.
+- [ ] Capability demos:
+  - valid delegation allows guarded action
+  - expired chain denies guarded action
+  - scope escalation denies guarded action
 
 ## Required negative proofs
 
@@ -34,7 +41,8 @@ Use this checklist to validate an independent implementation against this refere
 - [ ] Invalid SID returns deterministic `invalid_sid`.
 - [ ] Unknown SID route returns deterministic `route_not_found` or equivalent typed failure.
 - [ ] Unsupported adapter returns deterministic `unsupported_adapter`.
-- [ ] Capability verification unsupported path is explicit non-success (`not_implemented`).
+- [ ] Capability malformed request returns deterministic `invalid_request` / `malformed_capability`.
+- [ ] Invalid chain states return deterministic typed rejects (`broken_chain`, `invalid_signature`, `scope_escalation`, `epoch_expired`, etc.).
 
 ## Reproducibility
 
@@ -45,7 +53,6 @@ Use this checklist to validate an independent implementation against this refere
 
 ## Deferred (intentional)
 
-- [ ] Capability grant model completion.
 - [ ] EVR doctrine expansion.
 - [ ] Role-segmented hub.
 - [ ] Peer discovery mesh / federation breadth.

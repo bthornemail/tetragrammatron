@@ -1,0 +1,7 @@
+{
+  "acceptance": "scope escalation in delegated chain is rejected deterministically",
+  "resolve_code": "capability_denied",
+  "resolve_ok": false,
+  "verification_ok": false,
+  "verification_status": "scope_escalation"
+}

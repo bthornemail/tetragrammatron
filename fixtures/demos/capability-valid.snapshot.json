@@ -1,0 +1,7 @@
+{
+  "acceptance": "provider -> actor delegation verifies and guarded action is allowed",
+  "guarded_adapter_ok": true,
+  "resolve_ok": true,
+  "sid": "sid:dbc:a2cb74e4658d52d4d994aa77a1814dd50a4c7f118ec1a88f3c1525b70b483745",
+  "verification_status": "verified"
+}

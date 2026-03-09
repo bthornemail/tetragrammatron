@@ -1,0 +1,7 @@
+{
+  "acceptance": "expired authority chain is rejected and guarded resolve is denied",
+  "resolve_code": "capability_denied",
+  "resolve_ok": false,
+  "verification_ok": false,
+  "verification_status": "epoch_expired"
+}

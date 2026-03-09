@@ -6,6 +6,7 @@ import path from 'node:path';
 
 import { CoreHost } from '../../src/core/host.mjs';
 import { loadProtocolFixture } from '../protocol/fixture.mjs';
+import { SIDS, buildValidSingle } from '../capability/fixture.mjs';
 
 function normalizedCall(fixture) {
   return {
@@ -74,14 +75,69 @@ test('descriptor lookup by SID returns exact descriptor', async () => {
   assert.deepEqual(lookup.descriptor, result.identity.descriptor);
 });
 
-test('unsupported capability verification returns explicit typed non-success', async () => {
+test('capability verification returns deterministic typed result', async () => {
   const repoPath = await mkdtemp(path.join(os.tmpdir(), 'core-host-'));
   const host = await CoreHost.create({ repoDir: repoPath });
 
-  const result = await host.verifyCapability({ actor: 'sid:dbc:abc' });
+  const result = await host.verifyCapability({});
   assert.equal(result.ok, false);
-  assert.equal(result.code, 'not_implemented');
-  assert.equal(result.kind, 'UnsupportedCapabilityVerification');
+  assert.equal(result.status, 'invalid_request');
+  assert.equal(result.kind, 'CapabilityRejected');
+  assert.equal(typeof result.meta.evidence_ref, 'string');
+});
+
+test('resolve capability gating and guarded adapter behavior are deterministic', async () => {
+  const fixture = await loadProtocolFixture();
+  const repoPath = await mkdtemp(path.join(os.tmpdir(), 'core-host-'));
+  const host = await CoreHost.create({ repoDir: repoPath });
+
+  const denied = await host.resolve({
+    ...normalizedCall(fixture),
+    required_capability: true,
+    capability_context: {},
+  });
+  assert.equal(denied.ok, false);
+  assert.equal(denied.code, 'capability_denied');
+  assert.equal(denied.meta.category, 'host_validation_failure');
+
+  const validCapability = {
+    capability_chain: buildValidSingle(),
+    max_delegation_depth: 8,
+    now_epoch: 20,
+    request: {
+      action: 'resolve',
+      actor_sid: SIDS.actorA,
+      resource: 'resource:alpha',
+      subject_sid: SIDS.subject,
+    },
+    trust_anchors: [SIDS.govRoot],
+  };
+
+  const allowed = await host.resolve({
+    ...normalizedCall(fixture),
+    required_capability: true,
+    capability_context: validCapability,
+  });
+  assert.equal(allowed.ok, true);
+
+  const guardedDenied = await host.deriveAdapter('adapter:guarded-demo', SIDS.subject, { capability_context: {} });
+  assert.equal(guardedDenied.ok, false);
+  assert.equal(guardedDenied.code, 'adapter_not_authorized');
+
+  const guardedAllowed = await host.deriveAdapter('adapter:guarded-demo', SIDS.subject, {
+    capability_context: {
+      ...validCapability,
+      request: {
+        action: 'derive_adapter',
+        actor_sid: SIDS.actorA,
+        adapter_label: 'adapter:guarded-demo',
+        resource: 'resource:alpha',
+        subject_sid: SIDS.subject,
+      },
+    },
+  });
+  assert.equal(guardedAllowed.ok, true);
+  assert.equal(guardedAllowed.value.adapter_label, 'adapter:guarded-demo');
 });
 
 test('missing SID lookup and unsupported adapter are deterministic non-success', async () => {

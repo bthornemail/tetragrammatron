@@ -61,10 +61,18 @@ export class HDRPC {
       return { code: 'route_target_not_registered', kind: 'RouteResolutionFailure', ok: false, sid };
     }
 
-    const response = await target.resolve({
+    const call = {
       canonical_input: request.canonical_input,
       target_stage: stage,
-    });
+    };
+    if (Object.prototype.hasOwnProperty.call(request, 'capability_context')) {
+      call.capability_context = request.capability_context;
+    }
+    if (request.required_capability === true) {
+      call.required_capability = true;
+    }
+
+    const response = await target.resolve(call);
 
     return {
       network: {

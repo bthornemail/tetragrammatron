@@ -9,6 +9,7 @@ import { canonicalJson } from '../../src/protocol/dbc.mjs';
 import { HubShell } from '../../src/hub/shell.mjs';
 import { HDRPC } from '../../src/network/hd-rpc.mjs';
 import { loadHubFixture } from './fixture.mjs';
+import { SIDS, buildValidSingle } from '../capability/fixture.mjs';
 
 async function setup() {
   const fixture = await loadHubFixture();
@@ -108,4 +109,30 @@ test('only resolve mutates canonical state; read panes are mutation-free', async
 
   const afterResolve = (await coreHost.nrr.log()).length;
   assert.equal(afterResolve > baseline, true);
+});
+
+test('capability pane is projection-only and matches core verification', async () => {
+  const { coreHost, shell } = await setup();
+
+  const capabilityInput = {
+    capability_chain: buildValidSingle(),
+    now_epoch: 20,
+    trust_anchors: [SIDS.govRoot],
+    request: {
+      action: 'resolve',
+      actor_sid: SIDS.actorA,
+      resource: 'resource:alpha',
+      subject_sid: SIDS.subject,
+    },
+  };
+
+  const baseline = (await coreHost.nrr.log()).length;
+  const pane = await shell.run('capability.verify', { input: capabilityInput });
+  const direct = await coreHost.verifyCapability(capabilityInput);
+
+  assert.equal(pane.pane, 'capability');
+  assert.equal(canonicalJson(pane.value), canonicalJson(direct));
+
+  const afterCapability = (await coreHost.nrr.log()).length;
+  assert.equal(afterCapability > baseline, true);
 });

@@ -87,6 +87,15 @@ export class HubViewModel {
     };
   }
 
+  async verifyCapability(input) {
+    const result = await this.coreHost.verifyCapability(input);
+    this._record('hub.capability.verify', { ok: result.ok, status: result.status ?? null });
+    return {
+      pane: 'capability',
+      value: result,
+    };
+  }
+
   async storeReplaySummary() {
     const logEntries = await this.coreHost.nrr.log();
     const verify = await this.coreHost.nrr.verify();

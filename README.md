@@ -25,6 +25,9 @@ Minimal law-first reference implementation of the five-layer Tetragrammatron sta
 - Hello demo: `npm run demo:hello`
 - Node pipeline demo: `npm run demo:pipeline`
 - Minimal federation proof: `npm run demo:federation`
+- Capability valid chain demo: `npm run demo:capability:valid`
+- Capability expired chain demo: `npm run demo:capability:expired`
+- Capability scope-failure demo: `npm run demo:capability:scope`
 
 ## Frozen demo snapshots
 
@@ -33,6 +36,9 @@ Frozen snapshot fixtures live in `fixtures/demos/`:
 - `hello.snapshot.json`
 - `pipeline.snapshot.json`
 - `federation.snapshot.json`
+- `capability-valid.snapshot.json`
+- `capability-expired.snapshot.json`
+- `capability-scope.snapshot.json`
 
 Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 
@@ -46,11 +52,12 @@ Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 
 - Deterministic canonical stack from substrate through hub
 - Typed deterministic failure surfaces across protocol/core/network
+- Capability delegation verification with typed deterministic rejection taxonomy
+- Capability-gated resolve and guarded adapter derivation in Core
 - End-to-end runnable demos and reproducibility checks
 
 ## Deferred (intentional)
 
-- Capability grant model completion
 - EVR doctrine expansion
 - Role-segmented hub
 - Federation/discovery mesh breadth

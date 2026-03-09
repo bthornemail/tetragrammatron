@@ -1,19 +1,25 @@
 {
-  "module": "reference-stack",
-  "module_version": "0.1.0-reference",
-  "release_type": "reference-baseline",
+  "module": "capability-model",
+  "module_version": "0.2.0-capability",
+  "release_type": "module",
+  "status": "complete",
   "laws": [
-    "NRR-Laws",
-    "DBC-Stage-Resolution",
-    "IDL-SID-Derivation",
-    "Core-Faithful-Execution",
-    "HDRPC-Semantic-Routing",
-    "Hub-Projection-Only"
+    "AuthorityIsDelegated",
+    "CapabilityIsNotIdentity",
+    "CapabilityDoesNotAlterSID",
+    "GrantChainValidity",
+    "EpochAndScopeBounds",
+    "DeterministicVerification",
+    "TypedRejection"
   ],
   "fixtures": [
-    "hello.snapshot",
-    "pipeline.snapshot",
-    "federation.snapshot"
+    "capability/golden/cases.json",
+    "capability/negative/cases.json",
+    "capability/determinism/cases.json",
+    "capability/integration/cases.json",
+    "demos/capability-valid.snapshot.json",
+    "demos/capability-expired.snapshot.json",
+    "demos/capability-scope.snapshot.json"
   ],
   "cross_layer_tests": true,
   "conformance_verified": true

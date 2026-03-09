@@ -37,6 +37,9 @@ export class HubShell {
         value: this.viewModel.listEvents(payload.limit ?? 100),
       };
     }
+    if (command === 'capability.verify') {
+      return this.viewModel.verifyCapability(payload.input ?? {});
+    }
 
     return {
       pane: 'error',

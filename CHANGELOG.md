@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.2.0-capability
+
+### Track A (Capability Model)
+- Finalized capability law taxonomy and fixture matrix for golden/negative/determinism/integration classes.
+- Implemented pure protocol capability verifier (`src/protocol/capability.mjs`) with deterministic typed outcomes and evidence.
+- Integrated real capability verification in Core (`POST /verify-capability`) and removed placeholder non-semantic path.
+- Added capability gating for `resolve` (`required_capability`) and a guarded adapter witness (`adapter:guarded-demo`).
+- Hardened HD-RPC forwarding to carry capability context without semantic reinterpretation.
+- Added Hub capability verification inspection pane (`capability.verify`) as projection-only output.
+- Added full Track A test coverage across protocol/core/network/hub/integration/e2e.
+- Added frozen capability demo snapshots:
+  - valid delegation chain
+  - expired chain denial
+  - scope escalation denial
+
 ## v0.1.0-reference
 
 ### Substrate (NRR)

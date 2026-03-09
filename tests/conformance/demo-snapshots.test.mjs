@@ -4,6 +4,9 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import { canonicalJson } from '../../src/protocol/dbc.mjs';
+import { runCapabilityExpiredChainDemo } from '../../scripts/capability-expired-chain.mjs';
+import { runCapabilityScopeFailureDemo } from '../../scripts/capability-scope-failure.mjs';
+import { runCapabilityValidChainDemo } from '../../scripts/capability-valid-chain.mjs';
 import { runMinimalFederationProof } from '../../scripts/minimal-federation-proof.mjs';
 import { runHelloTetragrammatron } from '../../scripts/hello-tetragrammatron.mjs';
 import { runNodePipelineDemo } from '../../scripts/node-pipeline-demo.mjs';
@@ -71,4 +74,24 @@ test('federation demo snapshot is frozen and reproducible', async () => {
 
   assert.equal(canonicalJson(actualA), canonicalJson(expected));
   assert.equal(canonicalJson(actualB), canonicalJson(expected));
+});
+
+test('capability demos snapshots are frozen and reproducible', async () => {
+  const expectedValid = await loadSnapshot('capability-valid');
+  const expectedExpired = await loadSnapshot('capability-expired');
+  const expectedScope = await loadSnapshot('capability-scope');
+
+  const validA = await runCapabilityValidChainDemo();
+  const validB = await runCapabilityValidChainDemo();
+  const expiredA = await runCapabilityExpiredChainDemo();
+  const expiredB = await runCapabilityExpiredChainDemo();
+  const scopeA = await runCapabilityScopeFailureDemo();
+  const scopeB = await runCapabilityScopeFailureDemo();
+
+  assert.equal(canonicalJson(validA), canonicalJson(expectedValid));
+  assert.equal(canonicalJson(validB), canonicalJson(expectedValid));
+  assert.equal(canonicalJson(expiredA), canonicalJson(expectedExpired));
+  assert.equal(canonicalJson(expiredB), canonicalJson(expectedExpired));
+  assert.equal(canonicalJson(scopeA), canonicalJson(expectedScope));
+  assert.equal(canonicalJson(scopeB), canonicalJson(expectedScope));
 });

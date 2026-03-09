@@ -9,6 +9,7 @@ import { canonicalJson } from '../../src/protocol/dbc.mjs';
 import { HDRPC } from '../../src/network/hd-rpc.mjs';
 import { loadNetworkFixture } from './fixture.mjs';
 import { loadProtocolFixture } from '../protocol/fixture.mjs';
+import { SIDS, buildValidSingle } from '../capability/fixture.mjs';
 
 function normalizedCall(protocolFixture) {
   return {
@@ -126,4 +127,43 @@ test('IPv4 compatibility projection is deterministic and non-authoritative', asy
   assert.equal(b.ok, true);
   assert.equal(a.value.credential, b.value.credential);
   assert.equal(a.value.authoritative, false);
+});
+
+test('capability-bearing HD-RPC calls are forwarded without semantic reinterpretation', async () => {
+  const protocolFixture = await loadProtocolFixture();
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'network-cap-'));
+  const host = await CoreHost.create({ repoDir: repo });
+  const initial = await host.resolve(normalizedCall(protocolFixture));
+
+  const network = new HDRPC();
+  assert.equal(network.registerTarget('node-a', host).ok, true);
+  assert.equal(network.registerRoute(initial.identity.sid, 'node-a').ok, true);
+
+  const capabilityContext = {
+    capability_chain: buildValidSingle(),
+    now_epoch: 20,
+    trust_anchors: [SIDS.govRoot],
+    request: {
+      action: 'resolve',
+      actor_sid: SIDS.actorA,
+      resource: 'resource:alpha',
+      subject_sid: SIDS.subject,
+    },
+  };
+
+  const direct = await host.resolve({
+    ...normalizedCall(protocolFixture),
+    required_capability: true,
+    capability_context: capabilityContext,
+  });
+
+  const routed = await network.call(initial.identity.sid, 'Normalized', {
+    canonical_input: normalizedCall(protocolFixture).canonical_input,
+    required_capability: true,
+    capability_context: capabilityContext,
+  });
+
+  const { network: routeMeta, ...routedCoreShape } = routed;
+  assert.equal(typeof routeMeta.route_target, 'string');
+  assert.equal(canonicalJson(routedCoreShape), canonicalJson(direct));
 });

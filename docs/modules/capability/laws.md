@@ -49,16 +49,23 @@ For identical chain input, anchors, epoch context, and scope context, verificati
 
 Verification failure is typed, deterministic, and evidence-carrying; no generic or ambiguous failure surface.
 
-## Verification result taxonomy (initial)
+## Verification result taxonomy (runtime-complete)
 
-- `valid`
-- `expired`
-- `scope_mismatch`
-- `broken_chain`
-- `wrong_governor`
-- `invalid_signature`
+- `verified`
 - `invalid_request`
-- `not_implemented` (allowed only before runtime verifier is delivered)
+- `malformed_capability`
+- `unsupported_capability_version`
+- `broken_chain`
+- `invalid_signature`
+- `invalid_governor`
+- `wrong_governor`
+- `scope_escalation`
+- `scope_mismatch`
+- `adapter_not_authorized`
+- `epoch_not_yet_valid`
+- `epoch_expired`
+- `identity_mismatch`
+- `unauthorized_delegation_depth`
 
 ## Evidence requirements (shape-level)
 

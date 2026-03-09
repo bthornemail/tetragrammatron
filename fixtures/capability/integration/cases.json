@@ -1,0 +1,9 @@
+{
+  "cases": [
+    {"id":"I01_resolve_with_valid_capability","type":"resolve_allowed"},
+    {"id":"I02_resolve_with_invalid_capability","type":"resolve_denied"},
+    {"id":"I03_guarded_adapter_with_valid_capability","type":"adapter_allowed"},
+    {"id":"I04_guarded_adapter_with_invalid_capability","type":"adapter_denied"},
+    {"id":"I05_hub_capability_view_matches_core","type":"hub_projection_equivalence"}
+  ]
+}

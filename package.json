@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "conformance": "node --test tests/conformance/*.test.mjs",
-    "demo:all": "npm run demo:hello && npm run demo:pipeline && npm run demo:federation",
+    "demo:all": "npm run demo:hello && npm run demo:pipeline && npm run demo:federation && npm run demo:capability:valid && npm run demo:capability:expired && npm run demo:capability:scope",
+    "demo:capability:expired": "node scripts/capability-expired-chain.mjs",
+    "demo:capability:scope": "node scripts/capability-scope-failure.mjs",
+    "demo:capability:valid": "node scripts/capability-valid-chain.mjs",
     "demo:federation": "node scripts/minimal-federation-proof.mjs",
     "demo:hello": "node scripts/hello-tetragrammatron.mjs",
     "demo:pipeline": "node scripts/node-pipeline-demo.mjs",

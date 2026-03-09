@@ -21,7 +21,6 @@ This release is the foundational reference baseline for the minimal five-layer T
 
 ## Intentionally deferred
 
-- Capability model completion.
 - EVR doctrine completion.
 - Broader federation/discovery mesh.
 - Role-based hub segmentation.
@@ -30,3 +29,27 @@ This release is the foundational reference baseline for the minimal five-layer T
 ## Release classification
 
 This is a **reference-conformant baseline** (foundational completeness), not ecosystem-complete feature coverage.
+
+---
+
+# Capability Module Conformance Statement
+
+Module version: `0.2.0-capability`
+
+This module cut completes Track A capability semantics over the existing reference baseline.
+
+## Proven in this module
+
+- Delegated authority chains verify deterministically with typed outcomes and evidence.
+- Capability verification does not alter SID, descriptor identity, or canonical protocol meaning.
+- `POST /verify-capability` is runtime-complete (no placeholder `not_implemented` path).
+- Capability-gated `resolve` and guarded adapter derivation fail/allow deterministically.
+- HD-RPC forwards capability context as transport data; Network does not reinterpret capability semantics.
+- Hub capability pane is projection-only and matches Core verifier output.
+
+## Intentionally deferred after Track A
+
+- EVR doctrine completion.
+- Federation discovery/arbitration breadth.
+- Role-segmented hub workflows.
+- Embedded/runtime profile specialization.

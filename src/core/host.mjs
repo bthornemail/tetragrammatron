@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 
 import { NRR } from '../substrate/nrr.mjs';
 import { STAGES, canonicalJson, resolveTo } from '../protocol/dbc.mjs';
+import { verifyCapabilityChain } from '../protocol/capability.mjs';
 import {
   deriveSchemaDigest,
   deriveSID,
@@ -129,6 +130,15 @@ export class CoreHost {
     }
 
     const schemaDigest = deriveSchemaDigest(schema);
+
+    if (call.required_capability === true) {
+      const capabilityResult = await this.verifyCapability(call.capability_context);
+      if (!capabilityResult.ok) {
+        return hostValidationFailure('capability_denied', targetStage, {
+          capability_result: capabilityResult,
+        });
+      }
+    }
 
     const resolved = resolveTo(targetStage, {
       document: input.document,
@@ -297,12 +307,19 @@ export class CoreHost {
   }
 
   async verifyCapability(input) {
+    const result = verifyCapabilityChain(input ?? {});
+    const record = {
+      input_digest: `sha256:${digestHex(stableString(input ?? {}))}`,
+      kind: 'core.verify_capability.v1',
+      result,
+    };
+    const ref = await this.persistRecord(record);
+
     return {
-      code: 'not_implemented',
-      kind: 'UnsupportedCapabilityVerification',
-      ok: false,
-      received: {
-        input_digest: `sha256:${digestHex(stableString(input ?? {}))}`,
+      ...result,
+      kind: result.ok ? 'CapabilityVerified' : 'CapabilityRejected',
+      meta: {
+        evidence_ref: ref,
       },
     };
   }
@@ -329,6 +346,28 @@ export class CoreHost {
       return {
         ok: true,
         value: adapterIPv4Compat(sid),
+      };
+    }
+
+    if (label === 'adapter:guarded-demo') {
+      const verification = await this.verifyCapability(options?.capability_context ?? {});
+      if (!verification.ok) {
+        return {
+          code: 'adapter_not_authorized',
+          evidence: verification,
+          kind: 'RejectAdapter',
+          ok: false,
+        };
+      }
+      return {
+        ok: true,
+        value: {
+          adapter_label: 'adapter:guarded-demo',
+          authoritative: false,
+          credential: `guarded:${sid.slice(-12)}`,
+          credential_kind: 'guarded_demo_projection',
+          sid,
+        },
       };
     }
 

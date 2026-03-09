@@ -8,6 +8,7 @@ import { handleCoreHttpRequest } from '../../src/core/http.mjs';
 import { CoreHost } from '../../src/core/host.mjs';
 import { canonicalJson } from '../../src/protocol/dbc.mjs';
 import { loadProtocolFixture } from '../protocol/fixture.mjs';
+import { SIDS, buildValidSingle } from '../capability/fixture.mjs';
 
 function normalizedCall(fixture) {
   return {
@@ -70,13 +71,32 @@ test('HTTP mapping for sid lookup, verify-capability, and adapter endpoints', as
   assert.equal(sidMapped.payload.descriptor.sid, resolved.identity.sid);
 
   const verifyMapped = await handleCoreHttpRequest(host, {
-    body: { actor: resolved.identity.sid },
+    body: {},
     method: 'POST',
     pathname: '/verify-capability',
   });
-  assert.equal(verifyMapped.status, 501);
+  assert.equal(verifyMapped.status, 400);
   assert.equal(verifyMapped.payload.ok, false);
-  assert.equal(verifyMapped.payload.code, 'not_implemented');
+  assert.equal(verifyMapped.payload.status, 'invalid_request');
+
+  const verifySuccessMapped = await handleCoreHttpRequest(host, {
+    body: {
+      capability_chain: buildValidSingle(),
+      now_epoch: 20,
+      trust_anchors: [SIDS.govRoot],
+      request: {
+        action: 'resolve',
+        actor_sid: SIDS.actorA,
+        resource: 'resource:alpha',
+        subject_sid: SIDS.subject,
+      },
+    },
+    method: 'POST',
+    pathname: '/verify-capability',
+  });
+  assert.equal(verifySuccessMapped.status, 200);
+  assert.equal(verifySuccessMapped.payload.ok, true);
+  assert.equal(verifySuccessMapped.payload.status, 'verified');
 
   const adapterMapped = await handleCoreHttpRequest(host, {
     method: 'GET',

@@ -1,0 +1,14 @@
+{
+  "cases": [
+    {"id":"N01_broken_chain_link","type":"broken_chain"},
+    {"id":"N02_epoch_expired","type":"expired"},
+    {"id":"N03_wrong_governor_anchor","type":"wrong_governor"},
+    {"id":"N04_scope_escalation","type":"scope_escalation"},
+    {"id":"N05_epoch_not_yet_valid","type":"epoch_not_yet_valid"},
+    {"id":"N06_adapter_mismatch","type":"adapter_not_authorized"},
+    {"id":"N07_malformed_grant_structure","type":"malformed"},
+    {"id":"N08_identity_mismatch_target","type":"identity_mismatch"},
+    {"id":"N09_unauthorized_delegation_depth","type":"depth_exceeded"},
+    {"id":"N10_invalid_signature","type":"invalid_signature"}
+  ]
+}

@@ -59,7 +59,9 @@ export async function handleCoreHttpRequest(host, { method, pathname, body = {} 
 
   if (method === 'POST' && pathname === '/verify-capability') {
     const result = await host.verifyCapability(body);
-    return { payload: result, status: statusForResult(result, 501) };
+    const badInput = new Set(['invalid_request', 'malformed_capability', 'unsupported_capability_version']);
+    const status = result.ok ? 200 : (badInput.has(result.status) ? 400 : 403);
+    return { payload: result, status };
   }
 
   if (method === 'GET' && parts.length === 3 && parts[0] === 'adapter') {
