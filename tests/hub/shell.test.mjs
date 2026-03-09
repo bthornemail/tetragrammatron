@@ -6,6 +6,7 @@ import path from 'node:path';
 
 import { CoreHost } from '../../src/core/host.mjs';
 import { canonicalJson } from '../../src/protocol/dbc.mjs';
+import { signRevocationRecord } from '../../src/revocation/schema.mjs';
 import { HubShell } from '../../src/hub/shell.mjs';
 import { HDRPC } from '../../src/network/hd-rpc.mjs';
 import { loadHubFixture } from './fixture.mjs';
@@ -135,6 +136,45 @@ test('capability pane is projection-only and matches core verification', async (
 
   const afterCapability = (await coreHost.nrr.log()).length;
   assert.equal(afterCapability > baseline, true);
+});
+
+test('revocation pane is projection-only and matches core verification', async () => {
+  const { coreHost, shell } = await setup();
+  const chain = buildValidSingle();
+  const revocationInput = {
+    capability_chain: chain,
+    now_epoch: 20,
+    request: {
+      action: 'resolve',
+      actor_sid: SIDS.actorA,
+      resource: 'resource:alpha',
+      subject_sid: SIDS.subject,
+    },
+    revocation_records: [signRevocationRecord({
+      effective_epoch: 20,
+      revoker_id: SIDS.govRoot,
+      scope: {
+        actions: ['resolve'],
+        adapters: ['adapter:guarded-demo'],
+        resources: ['resource:alpha'],
+      },
+      target_kind: 'grant',
+      target_ref: chain[0].grant_id,
+      version: 'revocation/v1',
+    })],
+    trust_anchors: [SIDS.govRoot],
+  };
+
+  const baseline = (await coreHost.nrr.log()).length;
+  const pane = await shell.run('revocation.verify', { input: revocationInput });
+  const direct = await coreHost.verifyRevocation(revocationInput);
+
+  assert.equal(pane.pane, 'revocation');
+  assert.equal(canonicalJson(pane.value), canonicalJson(direct));
+  assert.equal(pane.value.status, 'revoked');
+
+  const afterRevocation = (await coreHost.nrr.log()).length;
+  assert.equal(afterRevocation > baseline, true);
 });
 
 test('EVR timeline and detail panes are projection-only and filterable', async () => {

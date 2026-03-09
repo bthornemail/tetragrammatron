@@ -1,0 +1,10 @@
+{
+  "cases": [
+    {"id":"R-N01_malformed_revocation_record","type":"malformed_revocation"},
+    {"id":"R-N02_unauthorized_revoker","type":"unauthorized_revoker"},
+    {"id":"R-N03_revocation_target_mismatch","type":"target_not_found"},
+    {"id":"R-N04_revocation_not_yet_effective","type":"revocation_out_of_scope"},
+    {"id":"R-N05_revocation_scope_mismatch","type":"revocation_out_of_scope"},
+    {"id":"R-N06_conflicting_or_duplicate_records_stable_outcome","type":"deterministic_duplicate"}
+  ]
+}

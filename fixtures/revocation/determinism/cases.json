@@ -1,0 +1,7 @@
+{
+  "cases": [
+    {"id":"R-D01_same_inputs_same_result","type":"repeat_same"},
+    {"id":"R-D02_equivalent_encoding_same_result","type":"equivalent_encoding"},
+    {"id":"R-D03_same_invalid_same_typed_reject","type":"repeat_invalid"}
+  ]
+}

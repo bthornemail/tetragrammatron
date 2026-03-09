@@ -7,6 +7,7 @@ import path from 'node:path';
 import { handleCoreHttpRequest } from '../../src/core/http.mjs';
 import { CoreHost } from '../../src/core/host.mjs';
 import { canonicalJson } from '../../src/protocol/dbc.mjs';
+import { signRevocationRecord } from '../../src/revocation/schema.mjs';
 import { loadProtocolFixture } from '../protocol/fixture.mjs';
 import { SIDS, buildValidSingle } from '../capability/fixture.mjs';
 
@@ -97,6 +98,38 @@ test('HTTP mapping for sid lookup, verify-capability, and adapter endpoints', as
   assert.equal(verifySuccessMapped.status, 200);
   assert.equal(verifySuccessMapped.payload.ok, true);
   assert.equal(verifySuccessMapped.payload.status, 'verified');
+
+  const revokedChain = buildValidSingle();
+  const verifyRevokedMapped = await handleCoreHttpRequest(host, {
+    body: {
+      capability_chain: revokedChain,
+      now_epoch: 20,
+      request: {
+        action: 'resolve',
+        actor_sid: SIDS.actorA,
+        resource: 'resource:alpha',
+        subject_sid: SIDS.subject,
+      },
+      revocation_records: [signRevocationRecord({
+        effective_epoch: 20,
+        revoker_id: SIDS.govRoot,
+        scope: {
+          actions: ['resolve'],
+          adapters: ['adapter:guarded-demo'],
+          resources: ['resource:alpha'],
+        },
+        target_kind: 'grant',
+        target_ref: revokedChain[0].grant_id,
+        version: 'revocation/v1',
+      })],
+      trust_anchors: [SIDS.govRoot],
+    },
+    method: 'POST',
+    pathname: '/verify-capability',
+  });
+  assert.equal(verifyRevokedMapped.status, 403);
+  assert.equal(verifyRevokedMapped.payload.ok, false);
+  assert.equal(verifyRevokedMapped.payload.status, 'revoked');
 
   const adapterMapped = await handleCoreHttpRequest(host, {
     method: 'GET',

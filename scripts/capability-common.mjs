@@ -1,4 +1,5 @@
 import { signGrant } from '../src/protocol/capability.mjs';
+import { signRevocationRecord } from '../src/revocation/schema.mjs';
 
 export const CAP_SIDS = {
   actorA: 'sid:dbc:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -91,5 +92,79 @@ export function buildScopeEscalationContext() {
       subject_sid: CAP_SIDS.subject,
     },
     trust_anchors: [CAP_SIDS.govRoot],
+  };
+}
+
+export function buildRevokedCapabilityContext() {
+  const base = buildValidCapabilityContext();
+  return {
+    ...base,
+    revocation_records: [signRevocationRecord({
+      effective_epoch: 20,
+      revoker_id: CAP_SIDS.govRoot,
+      scope: {
+        actions: ['resolve'],
+        adapters: ['adapter:guarded-demo'],
+        resources: ['resource:alpha'],
+      },
+      target_kind: 'grant',
+      target_ref: base.capability_chain[0].grant_id,
+      version: 'revocation/v1',
+    })],
+  };
+}
+
+export function buildDelegatedRevokedAncestorContext() {
+  const root = signGrant(makeGrant({
+    actor_sid: CAP_SIDS.govX,
+    governor_sid: CAP_SIDS.govRoot,
+  }));
+  const leaf = signGrant(makeGrant({
+    actor_sid: CAP_SIDS.actorA,
+    governor_sid: CAP_SIDS.govX,
+    parent_grant_id: root.grant_id,
+  }));
+  return {
+    capability_chain: [root, leaf],
+    max_delegation_depth: 8,
+    now_epoch: 20,
+    request: {
+      action: 'resolve',
+      actor_sid: CAP_SIDS.actorA,
+      resource: 'resource:alpha',
+      subject_sid: CAP_SIDS.subject,
+    },
+    revocation_records: [signRevocationRecord({
+      effective_epoch: 20,
+      revoker_id: CAP_SIDS.govRoot,
+      scope: {
+        actions: ['resolve'],
+        adapters: ['adapter:guarded-demo'],
+        resources: ['resource:alpha'],
+      },
+      target_kind: 'grant',
+      target_ref: root.grant_id,
+      version: 'revocation/v1',
+    })],
+    trust_anchors: [CAP_SIDS.govRoot],
+  };
+}
+
+export function buildUnauthorizedRevocationContext() {
+  const base = buildValidCapabilityContext();
+  return {
+    ...base,
+    revocation_records: [signRevocationRecord({
+      effective_epoch: 20,
+      revoker_id: CAP_SIDS.actorB,
+      scope: {
+        actions: ['resolve'],
+        adapters: ['adapter:guarded-demo'],
+        resources: ['resource:alpha'],
+      },
+      target_kind: 'grant',
+      target_ref: base.capability_chain[0].grant_id,
+      version: 'revocation/v1',
+    })],
   };
 }

@@ -1,0 +1,8 @@
+{
+  "cases": [
+    {"id":"R-G01_direct_grant_revoked_valid_authority","type":"direct_grant_revoked"},
+    {"id":"R-G02_delegated_chain_invalidated_by_revoked_ancestor","type":"ancestor_revoked"},
+    {"id":"R-G03_effective_epoch_revocation_applies","type":"effective_epoch_applies"},
+    {"id":"R-G04_non_revoked_chain_remains_valid","type":"not_revoked"}
+  ]
+}

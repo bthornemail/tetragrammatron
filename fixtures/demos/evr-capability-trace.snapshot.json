@@ -3,7 +3,7 @@
   "events": [
     {
       "evidence": {
-        "evidence_ref": "sha256:32473d8418352324f172551fa2ea9bfe9d4957306d702ac390181f1ffe0270a9",
+        "evidence_ref": "sha256:ba240e8fb00a16ba3ba4eb93f2ac290f59346d75dc76cfc97bb3c8f13fbda83a",
         "status": "verified"
       },
       "family": "capability",

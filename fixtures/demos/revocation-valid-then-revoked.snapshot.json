@@ -1,0 +1,7 @@
+{
+  "acceptance": "valid chain becomes denied after deterministic revocation",
+  "resolve_code": "capability_denied",
+  "resolve_ok": false,
+  "verification_ok": false,
+  "verification_status": "revoked"
+}

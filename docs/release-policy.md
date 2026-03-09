@@ -1,8 +1,8 @@
-# Release Policy (Post `v0.1.0-reference`)
+# Release Policy (Post `v1.0.0-semantic-baseline`)
 
 ## Baseline rule
 
-`v0.1.0-reference` is the frozen architectural baseline.
+`v1.0.0-semantic-baseline` is the frozen semantic baseline.
 
 Future releases must not ship partial protocol surfaces. Releases are allowed only for completed, coherent modules.
 
@@ -60,6 +60,7 @@ Tracks may proceed independently:
 - Track B — EVR
 - Track C — Federation
 - Track D — Productization
+- Track E — Revocation
 
 But releases happen only when one track yields a law-complete module.
 
@@ -76,8 +77,8 @@ Experimental artifacts must not redefine protocol semantics.
 
 Recommended progression after baseline:
 
-- `v0.2.0-capability`
-- `v0.3.0-evr`
-- `v0.4.0-federation`
+- `v1.1.0-abi`
+- `v1.2.0-eabi`
+- subsequent module tags by scope (`capability`, `evr`, `federation`, `revocation`, `productization`)
 
 Use module names in tag/release notes for clear scope boundaries.

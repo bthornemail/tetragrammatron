@@ -7,6 +7,7 @@ import path from 'node:path';
 import { CoreHost } from '../../src/core/host.mjs';
 import { loadProtocolFixture } from '../protocol/fixture.mjs';
 import { SIDS, buildValidSingle } from '../capability/fixture.mjs';
+import { signRevocationRecord } from '../../src/revocation/schema.mjs';
 
 function normalizedCall(fixture) {
   return {
@@ -93,6 +94,44 @@ test('capability verification returns deterministic typed result', async () => {
   assert.equal(host.listEvents().some((e) => e.kind === 'capability.verify_failed'), true);
 });
 
+test('revocation verification returns deterministic typed result', async () => {
+  const repoPath = await mkdtemp(path.join(os.tmpdir(), 'core-host-'));
+  const host = await CoreHost.create({ repoDir: repoPath });
+  const chain = buildValidSingle();
+  const record = signRevocationRecord({
+    effective_epoch: 20,
+    revoker_id: SIDS.govRoot,
+    scope: {
+      actions: ['resolve'],
+      adapters: ['adapter:guarded-demo'],
+      resources: ['resource:alpha'],
+    },
+    target_kind: 'grant',
+    target_ref: chain[0].grant_id,
+    version: 'revocation/v1',
+  });
+
+  const result = await host.verifyRevocation({
+    capability_chain: chain,
+    now_epoch: 20,
+    request: {
+      action: 'resolve',
+      actor_sid: SIDS.actorA,
+      resource: 'resource:alpha',
+      subject_sid: SIDS.subject,
+    },
+    revocation_records: [record],
+    trust_anchors: [SIDS.govRoot],
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'revoked');
+  assert.equal(result.kind, 'RevocationApplied');
+  assert.equal(typeof result.meta.evidence_ref, 'string');
+  const events = host.listEvents();
+  assert.equal(events.some((e) => e.kind === 'capability.revocation_recorded'), true);
+  assert.equal(events.some((e) => e.kind === 'capability.revocation_applied'), true);
+});
+
 test('resolve capability gating and guarded adapter behavior are deterministic', async () => {
   const fixture = await loadProtocolFixture();
   const repoPath = await mkdtemp(path.join(os.tmpdir(), 'core-host-'));
@@ -148,6 +187,29 @@ test('resolve capability gating and guarded adapter behavior are deterministic',
   const events = host.listEvents();
   assert.equal(events.some((e) => e.kind === 'adapter.derived'), true);
   assert.equal(events.some((e) => e.kind === 'adapter.derivation_failed'), true);
+
+  const revokedRecord = signRevocationRecord({
+    effective_epoch: 20,
+    revoker_id: SIDS.govRoot,
+    scope: {
+      actions: ['resolve'],
+      adapters: ['adapter:guarded-demo'],
+      resources: ['resource:alpha'],
+    },
+    target_kind: 'grant',
+    target_ref: validCapability.capability_chain[0].grant_id,
+    version: 'revocation/v1',
+  });
+  const revokedDenied = await host.resolve({
+    ...normalizedCall(fixture),
+    required_capability: true,
+    capability_context: {
+      ...validCapability,
+      revocation_records: [revokedRecord],
+    },
+  });
+  assert.equal(revokedDenied.ok, false);
+  assert.equal(revokedDenied.code, 'capability_denied');
 });
 
 test('missing SID lookup and unsupported adapter are deterministic non-success', async () => {

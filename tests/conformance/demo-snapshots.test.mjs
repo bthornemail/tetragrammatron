@@ -15,6 +15,9 @@ import { runFederationDeterministicArbitrationDemo } from '../../scripts/federat
 import { runFederationDivergenceWitnessDemo } from '../../scripts/federation-divergence-witness.mjs';
 import { runFederationMultiProviderDemo } from '../../scripts/federation-multi-provider.mjs';
 import { runMinimalFederationProof } from '../../scripts/minimal-federation-proof.mjs';
+import { runRevocationAncestorRevokedDemo } from '../../scripts/revocation-ancestor-revoked.mjs';
+import { runRevocationUnauthorizedAttemptDemo } from '../../scripts/revocation-unauthorized-attempt.mjs';
+import { runRevocationValidThenRevokedDemo } from '../../scripts/revocation-valid-then-revoked.mjs';
 import { runHelloTetragrammatron } from '../../scripts/hello-tetragrammatron.mjs';
 import { runNodePipelineDemo } from '../../scripts/node-pipeline-demo.mjs';
 
@@ -146,4 +149,24 @@ test('federation breadth demos snapshots are frozen and reproducible', async () 
   assert.equal(canonicalJson(convB), canonicalJson(expectedConv));
   assert.equal(canonicalJson(divA), canonicalJson(expectedDiv));
   assert.equal(canonicalJson(divB), canonicalJson(expectedDiv));
+});
+
+test('revocation demos snapshots are frozen and reproducible', async () => {
+  const expectedRevoked = await loadSnapshot('revocation-valid-then-revoked');
+  const expectedAncestor = await loadSnapshot('revocation-ancestor-revoked');
+  const expectedUnauthorized = await loadSnapshot('revocation-unauthorized-attempt');
+
+  const revokedA = await runRevocationValidThenRevokedDemo();
+  const revokedB = await runRevocationValidThenRevokedDemo();
+  const ancestorA = await runRevocationAncestorRevokedDemo();
+  const ancestorB = await runRevocationAncestorRevokedDemo();
+  const unauthorizedA = await runRevocationUnauthorizedAttemptDemo();
+  const unauthorizedB = await runRevocationUnauthorizedAttemptDemo();
+
+  assert.equal(canonicalJson(revokedA), canonicalJson(expectedRevoked));
+  assert.equal(canonicalJson(revokedB), canonicalJson(expectedRevoked));
+  assert.equal(canonicalJson(ancestorA), canonicalJson(expectedAncestor));
+  assert.equal(canonicalJson(ancestorB), canonicalJson(expectedAncestor));
+  assert.equal(canonicalJson(unauthorizedA), canonicalJson(expectedUnauthorized));
+  assert.equal(canonicalJson(unauthorizedB), canonicalJson(expectedUnauthorized));
 });

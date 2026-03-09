@@ -9,6 +9,8 @@
     {"id":"N07_malformed_grant_structure","type":"malformed"},
     {"id":"N08_identity_mismatch_target","type":"identity_mismatch"},
     {"id":"N09_unauthorized_delegation_depth","type":"depth_exceeded"},
-    {"id":"N10_invalid_signature","type":"invalid_signature"}
+    {"id":"N10_invalid_signature","type":"invalid_signature"},
+    {"id":"N11_revoked_grant","type":"revoked"},
+    {"id":"N12_unauthorized_revoker","type":"unauthorized_revoker"}
   ]
 }

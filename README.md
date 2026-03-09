@@ -1,6 +1,6 @@
-# Tetragrammatron Reference Stack
+# Tetragrammatron Semantic Baseline
 
-Minimal law-first reference implementation of the five-layer Tetragrammatron stack.
+Deterministic law-first reference implementation of the Tetragrammatron semantic baseline.
 
 ## Doctrine
 
@@ -10,33 +10,41 @@ Minimal law-first reference implementation of the five-layer Tetragrammatron sta
 - Descriptors are discoverable.
 - Presentation is projection.
 
-## Layers
+## Layers and modules
 
 - `src/substrate` — NRR substrate (`put/get`, append-only log, replay, verify, bundles, checkpoints)
-- `src/protocol` — DBC + DBC-IDL (stage calculus, canonical NormalForm, SID, descriptor)
+- `src/protocol` — DBC + DBC-IDL + capability verification
+- `src/revocation` — canonical revocation records and deterministic authority-withdrawal verification
 - `src/core` — host + node transport mapping (faithful execution, canonical persistence)
-- `src/network` — minimal HD-RPC (`call(SID, stage)`, route table, IPv6 canonical adapter)
-- `src/hub` — read-mostly inspection shell
-- `src/evr` — event doctrine module (kind registry, envelope validation, canonical encoding)
+- `src/network` — HD-RPC routing + federation bridge
 - `src/federation` — pure federation rules (descriptors, announcements, route sets, arbitration, convergence)
+- `src/evr` — event doctrine module (kind registry, envelope validation, canonical encoding)
+- `src/hub` — read-mostly inspection shell
 
 ## Run
 
 - Full tests: `npm test`
 - Conformance snapshots: `npm run conformance`
-- Hello demo: `npm run demo:hello`
-- Node pipeline demo: `npm run demo:pipeline`
-- Minimal federation proof: `npm run demo:federation`
-- Capability valid chain demo: `npm run demo:capability:valid`
-- Capability expired chain demo: `npm run demo:capability:expired`
-- Capability scope-failure demo: `npm run demo:capability:scope`
-- EVR resolve trace demo: `npm run demo:evr:resolve`
-- EVR capability trace demo: `npm run demo:evr:capability`
-- EVR route trace demo: `npm run demo:evr:route`
-- Federation multi-provider demo: `npm run demo:federation:multi`
-- Federation deterministic arbitration demo: `npm run demo:federation:arbitration`
-- Federation convergence witness demo: `npm run demo:federation:convergence`
-- Federation divergence witness demo: `npm run demo:federation:divergence`
+- All demos: `npm run demo:all`
+
+### Individual demos
+
+- `npm run demo:hello`
+- `npm run demo:pipeline`
+- `npm run demo:federation`
+- `npm run demo:capability:valid`
+- `npm run demo:capability:expired`
+- `npm run demo:capability:scope`
+- `npm run demo:evr:resolve`
+- `npm run demo:evr:capability`
+- `npm run demo:evr:route`
+- `npm run demo:federation:multi`
+- `npm run demo:federation:arbitration`
+- `npm run demo:federation:convergence`
+- `npm run demo:federation:divergence`
+- `npm run demo:revocation:revoked`
+- `npm run demo:revocation:ancestor`
+- `npm run demo:revocation:unauthorized`
 
 ## Frozen demo snapshots
 
@@ -55,29 +63,33 @@ Frozen snapshot fixtures live in `fixtures/demos/`:
 - `federation-deterministic-arbitration.snapshot.json`
 - `federation-convergence-witness.snapshot.json`
 - `federation-divergence-witness.snapshot.json`
+- `revocation-valid-then-revoked.snapshot.json`
+- `revocation-ancestor-revoked.snapshot.json`
+- `revocation-unauthorized-attempt.snapshot.json`
 
 Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 
-## Release v0
+## Release status
 
-- Tag: `v0.1.0-reference`
+- Baseline tag target: `v1.0.0-semantic-baseline`
+- Previous reference tag: `v0.1.0-reference`
 - Changelog: `CHANGELOG.md`
-- Conformance statement: `RELEASE_CONFORMANCE.md`
+- Conformance statements: `RELEASE_CONFORMANCE.md`
 
-## Implemented in this reference cut
+## Implemented in semantic baseline
 
 - Deterministic canonical stack from substrate through hub
 - Typed deterministic failure surfaces across protocol/core/network
-- Capability delegation verification with typed deterministic rejection taxonomy
-- Capability-gated resolve and guarded adapter derivation in Core
-- EVR event taxonomy, validation, and deterministic timeline projection over Core/Network/Hub emissions
-- Federation discovery/announcement, deterministic arbitration, and convergence/divergence witnesses
+- Capability delegation verification with deterministic reject taxonomy
+- Revocation-aware authority withdrawal with deterministic typed outcomes
+- EVR event taxonomy/validation with deterministic timeline projections
+- Federation discovery/arbitration/convergence witnesses for local deterministic profile
 - End-to-end runnable demos and reproducibility checks
 
 ## Deferred (intentional)
 
-- Capability revocation semantics
 - Production PKI / hardware-backed cryptographic infrastructure
+- Revocation distribution policies beyond deterministic record evaluation
 - EVR `device.*` family completion
 - Role-segmented hub
 - Wide-area federation mesh optimization
@@ -96,12 +108,13 @@ Post-baseline releases are module-gated (not feature-incremental):
 
 ## Independent tracks
 
-Post-v0 work is intentionally split into independent tracks:
+Post-baseline work is intentionally split into independent tracks:
 
 - Track A: capability / authority model (`docs/tracks/track-a-capability.md`)
 - Track B: EVR doctrine (`docs/tracks/track-b-evr.md`)
 - Track C: federation breadth (`docs/tracks/track-c-federation.md`)
 - Track D: productization (`docs/tracks/track-d-productization.md`)
+- Track E: revocation (`docs/tracks/track-e-revocation.md`)
 
 Cross-track dependency and contract rules:
 

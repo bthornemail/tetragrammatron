@@ -6,6 +6,7 @@
 - `track-b/<topic>` EVR and observability doctrine
 - `track-c/<topic>` federation breadth
 - `track-d/<topic>` productization
+- `track-e/<topic>` revocation
 
 ## Required labels
 
@@ -13,6 +14,7 @@
 - `track:b-evr`
 - `track:c-federation`
 - `track:d-productization`
+- `track:e-revocation`
 - Optional: `contract-impact`, `snapshot-update`
 
 ## PR discipline
@@ -30,6 +32,7 @@
 - `ci-track-b`
 - `ci-track-c`
 - `ci-track-d`
+- `ci-track-e`
 - `ci-contract-integration`
 
 A PR is merge-eligible only when its track lane and `ci-contract-integration` are green.
@@ -38,5 +41,5 @@ A PR is merge-eligible only when its track lane and `ci-contract-integration` ar
 
 - Do not cut releases for partial features.
 - Cut releases only for law-complete, fixture-complete, test-complete modules.
-- `v0.1.0-reference` remains the frozen baseline.
+- `v1.0.0-semantic-baseline` is the frozen semantic baseline.
 - Use `docs/release-policy.md` and `docs/modules/module-release-checklist.md` before tagging.

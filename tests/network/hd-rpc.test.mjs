@@ -6,6 +6,7 @@ import path from 'node:path';
 
 import { CoreHost } from '../../src/core/host.mjs';
 import { canonicalJson } from '../../src/protocol/dbc.mjs';
+import { signRevocationRecord } from '../../src/revocation/schema.mjs';
 import { HDRPC } from '../../src/network/hd-rpc.mjs';
 import { loadNetworkFixture } from './fixture.mjs';
 import { loadProtocolFixture } from '../protocol/fixture.mjs';
@@ -172,4 +173,58 @@ test('capability-bearing HD-RPC calls are forwarded without semantic reinterpret
   const { network: routeMeta, ...routedCoreShape } = routed;
   assert.equal(typeof routeMeta.route_target, 'string');
   assert.equal(canonicalJson(routedCoreShape), canonicalJson(direct));
+});
+
+test('revoked capability-bearing HD-RPC calls are denied consistently with direct core invocation', async () => {
+  const protocolFixture = await loadProtocolFixture();
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'network-cap-revoke-'));
+  const host = await CoreHost.create({ repoDir: repo });
+  const initial = await host.resolve(normalizedCall(protocolFixture));
+
+  const network = new HDRPC();
+  assert.equal(network.registerTarget('node-a', host).ok, true);
+  assert.equal(network.registerRoute(initial.identity.sid, 'node-a').ok, true);
+
+  const capabilityChain = buildValidSingle();
+  const capabilityContext = {
+    capability_chain: capabilityChain,
+    now_epoch: 20,
+    trust_anchors: [SIDS.govRoot],
+    request: {
+      action: 'resolve',
+      actor_sid: SIDS.actorA,
+      resource: 'resource:alpha',
+      subject_sid: SIDS.subject,
+    },
+    revocation_records: [signRevocationRecord({
+      effective_epoch: 20,
+      revoker_id: SIDS.govRoot,
+      scope: {
+        actions: ['resolve'],
+        adapters: ['adapter:guarded-demo'],
+        resources: ['resource:alpha'],
+      },
+      target_kind: 'grant',
+      target_ref: capabilityChain[0].grant_id,
+      version: 'revocation/v1',
+    })],
+  };
+
+  const direct = await host.resolve({
+    ...normalizedCall(protocolFixture),
+    required_capability: true,
+    capability_context: capabilityContext,
+  });
+
+  const routed = await network.call(initial.identity.sid, 'Normalized', {
+    canonical_input: normalizedCall(protocolFixture).canonical_input,
+    required_capability: true,
+    capability_context: capabilityContext,
+  });
+
+  const { network: routeMeta, ...routedCoreShape } = routed;
+  assert.equal(typeof routeMeta.route_target, 'string');
+  assert.equal(canonicalJson(routedCoreShape), canonicalJson(direct));
+  assert.equal(routed.ok, false);
+  assert.equal(routed.code, 'capability_denied');
 });

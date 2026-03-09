@@ -3,6 +3,7 @@
     {"id":"D01_same_chain_same_result","type":"repeat_valid"},
     {"id":"D02_equivalent_encoding_same_result","type":"equivalent_encoding"},
     {"id":"D03_same_invalid_same_reject","type":"repeat_invalid"},
-    {"id":"D04_verification_order_independence","type":"order_independence"}
+    {"id":"D04_verification_order_independence","type":"order_independence"},
+    {"id":"D05_same_revocation_inputs_same_result","type":"repeat_revocation"}
   ]
 }

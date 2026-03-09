@@ -9,6 +9,8 @@
     {"id":"E-G07_adapter_failure","kind":"adapter.derivation_failed"},
     {"id":"E-G08_route_success","kind":"route.lookup_succeeded"},
     {"id":"E-G09_route_failure","kind":"route.lookup_failed"},
-    {"id":"E-G10_hub_projection","kind":"hub.inspect_emitted"}
+    {"id":"E-G10_hub_projection","kind":"hub.inspect_emitted"},
+    {"id":"E-G11_revocation_checked","kind":"capability.revocation_checked"},
+    {"id":"E-G12_revocation_applied","kind":"capability.revocation_applied"}
   ]
 }

@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 
 import { canonicalJson } from './dbc.mjs';
+import { verifyRevocationSet } from '../revocation/verify.mjs';
 
 const CAPABILITY_VERSION = 'capability/v1';
 const SID_RE = /^sid:dbc:[0-9a-f]{64}$/;
@@ -131,6 +132,7 @@ function verifyGrantSignature(grant) {
 
 export function verifyCapabilityChain(input) {
   const chain = input?.capability_chain;
+  const revocationRecords = Array.isArray(input?.revocation_records) ? input.revocation_records : [];
   const trustAnchors = uniqueSorted(input?.trust_anchors);
   const nowEpoch = Number.isInteger(input?.now_epoch) ? input.now_epoch : 0;
   const request = input?.request ?? {};
@@ -241,6 +243,20 @@ export function verifyCapabilityChain(input) {
     return reject('adapter_not_authorized', { adapter_label: request.adapter_label });
   }
 
+  const revocation = verifyRevocationSet({
+    capability_chain: normalizedChain,
+    now_epoch: nowEpoch,
+    request,
+    revocation_records: revocationRecords,
+    trust_anchors: trustAnchors,
+  });
+  if (!revocation.ok) {
+    return reject(revocation.status, {
+      ...revocation.evidence,
+      revocation_status: revocation.status,
+    });
+  }
+
   return {
     ok: true,
     status: 'verified',
@@ -248,6 +264,8 @@ export function verifyCapabilityChain(input) {
       actor_sid: finalGrant.actor_sid,
       chain_digest: `ch:${sha256hex(normalizedChain.map((g) => g.grant_id).join('|'))}`,
       chain_length: normalizedChain.length,
+      revocation_checked: true,
+      revocation_set_digest: revocation.evidence.revocation_set_digest,
       root_governor_sid: root.governor_sid,
       subject_sid: finalGrant.subject_sid,
     },

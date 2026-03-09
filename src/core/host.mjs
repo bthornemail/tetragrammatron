@@ -4,6 +4,7 @@ import { NRR } from '../substrate/nrr.mjs';
 import { STAGES, canonicalJson, resolveTo } from '../protocol/dbc.mjs';
 import { verifyCapabilityChain } from '../protocol/capability.mjs';
 import { createEvent } from '../evr/schema.mjs';
+import { verifyRevocationSet } from '../revocation/verify.mjs';
 import {
   deriveSchemaDigest,
   deriveSID,
@@ -375,6 +376,16 @@ export class CoreHost {
       result,
     };
     const ref = await this.persistRecord(record);
+    const revocationRecords = Array.isArray(input?.revocation_records) ? input.revocation_records : [];
+
+    for (const revocation of revocationRecords) {
+      if (typeof revocation?.record_id === 'string' && typeof revocation?.target_ref === 'string') {
+        this.emitEvent('capability.revocation_recorded', 'ok', {
+          record_id: revocation.record_id,
+          target_ref: revocation.target_ref,
+        });
+      }
+    }
 
     const shaped = {
       ...result,
@@ -388,12 +399,74 @@ export class CoreHost {
         evidence_ref: ref,
         status: shaped.status,
       });
+      if (revocationRecords.length > 0) {
+        this.emitEvent('capability.revocation_checked', 'ok', {
+          evidence_ref: ref,
+          status: 'not_revoked',
+        });
+      }
     } else {
       this.emitEvent('capability.verify_failed', 'error', {
         evidence_ref: ref,
         status: shaped.status,
       });
+      if (revocationRecords.length > 0) {
+        const kind = shaped.status === 'revoked'
+          ? 'capability.revocation_applied'
+          : 'capability.revocation_rejected';
+        this.emitEvent(kind, 'error', {
+          evidence_ref: ref,
+          status: shaped.status,
+        });
+      }
     }
+    return shaped;
+  }
+
+  async verifyRevocation(input) {
+    const result = verifyRevocationSet(input ?? {});
+    const record = {
+      input_digest: `sha256:${digestHex(stableString(input ?? {}))}`,
+      kind: 'core.verify_revocation.v1',
+      result,
+    };
+    const ref = await this.persistRecord(record);
+    const revocationRecords = Array.isArray(input?.revocation_records) ? input.revocation_records : [];
+
+    for (const revocation of revocationRecords) {
+      if (typeof revocation?.record_id === 'string' && typeof revocation?.target_ref === 'string') {
+        this.emitEvent('capability.revocation_recorded', 'ok', {
+          record_id: revocation.record_id,
+          target_ref: revocation.target_ref,
+        });
+      }
+    }
+
+    const shaped = {
+      ...result,
+      kind: result.ok ? 'RevocationChecked' : (result.status === 'revoked' ? 'RevocationApplied' : 'RevocationRejected'),
+      meta: {
+        evidence_ref: ref,
+      },
+    };
+
+    if (result.ok) {
+      this.emitEvent('capability.revocation_checked', 'ok', {
+        evidence_ref: ref,
+        status: result.status,
+      });
+    } else if (result.status === 'revoked') {
+      this.emitEvent('capability.revocation_applied', 'error', {
+        evidence_ref: ref,
+        status: result.status,
+      });
+    } else {
+      this.emitEvent('capability.revocation_rejected', 'error', {
+        evidence_ref: ref,
+        status: result.status,
+      });
+    }
+
     return shaped;
   }
 

@@ -1,0 +1,8 @@
+{
+  "cases": [
+    {"id":"R-I01_verify_capability_reflects_revocation","type":"capability_reflects_revocation"},
+    {"id":"R-I02_guarded_resolve_denied_after_revocation","type":"resolve_denied_after_revocation"},
+    {"id":"R-I03_routed_call_respects_revoked_capability","type":"network_denied_after_revocation"},
+    {"id":"R-I04_hub_revocation_view_matches_core","type":"hub_projection_equivalence"}
+  ]
+}

@@ -143,6 +143,15 @@ export class HubViewModel {
     };
   }
 
+  async verifyRevocation(input) {
+    const result = await this.coreHost.verifyRevocation(input);
+    this._record('revocation', { ok: result.ok, status: result.status ?? null });
+    return {
+      pane: 'revocation',
+      value: result,
+    };
+  }
+
   async storeReplaySummary() {
     const logEntries = await this.coreHost.nrr.log();
     const verify = await this.coreHost.nrr.verify();

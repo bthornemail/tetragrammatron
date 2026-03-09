@@ -52,6 +52,9 @@ export class HubShell {
     if (command === 'capability.verify') {
       return this.viewModel.verifyCapability(payload.input ?? {});
     }
+    if (command === 'revocation.verify') {
+      return this.viewModel.verifyRevocation(payload.input ?? {});
+    }
     if (command === 'federation.providers') {
       return this.viewModel.federationProviders();
     }

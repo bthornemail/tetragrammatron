@@ -4,6 +4,8 @@
     {"id":"I02_resolve_with_invalid_capability","type":"resolve_denied"},
     {"id":"I03_guarded_adapter_with_valid_capability","type":"adapter_allowed"},
     {"id":"I04_guarded_adapter_with_invalid_capability","type":"adapter_denied"},
-    {"id":"I05_hub_capability_view_matches_core","type":"hub_projection_equivalence"}
+    {"id":"I05_hub_capability_view_matches_core","type":"hub_projection_equivalence"},
+    {"id":"I06_capability_verification_reflects_revocation","type":"revocation_reflected"},
+    {"id":"I07_network_call_denied_after_revocation","type":"network_revocation_denied"}
   ]
 }

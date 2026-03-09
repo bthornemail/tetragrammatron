@@ -1,6 +1,6 @@
 # Cross-Track Contract Map
 
-Baseline floor: `v0.1.0-reference`.
+Baseline floor: `v1.0.0-semantic-baseline`.
 
 ## Dependency rules
 
@@ -8,11 +8,13 @@ Baseline floor: `v0.1.0-reference`.
 - Track B (EVR) depends on Core/Network observable outputs only.
 - Track C (Federation) depends on Core/Network contracts, and may consume Track A outputs only after Track A contract freeze.
 - Track D (Productization) depends on stable APIs/contracts from A/B/C and must not define semantics.
+- Track E (Revocation) depends on Track A capability semantics and must not alter identity/protocol meaning.
 
 ## Frozen contracts
 
 - Core request/result envelopes and deterministic error taxonomy.
 - Network `call(SID, stage)` semantics and adapter non-authority rules.
+- Capability/revocation authority semantics and typed reject taxonomy.
 - Conformance snapshots and demo acceptance claims.
 
 ## Change policy

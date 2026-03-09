@@ -1,0 +1,7 @@
+{
+  "acceptance": "unauthorized revocation attempt is rejected and capability resolution is denied deterministically",
+  "resolve_code": "capability_denied",
+  "resolve_ok": false,
+  "verification_ok": false,
+  "verification_status": "unauthorized_revoker"
+}

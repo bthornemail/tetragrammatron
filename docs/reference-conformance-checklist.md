@@ -24,6 +24,8 @@ Use this checklist to validate an independent implementation against this refere
 - [ ] Capability verification outcomes are deterministic, typed, and evidence-carrying.
 - [ ] Capability verification does not alter SID, descriptor identity, or NormalForm semantics.
 - [ ] Capability-gated resolve and guarded adapter paths are deterministic across Core/Network/Hub.
+- [ ] Revocation deterministically withdraws authority without mutating SID or canonical meaning.
+- [ ] Revocation-aware capability outcomes are deterministic across Core/Network/Hub.
 - [ ] EVR event kinds are explicit and validated against evidence-shape laws.
 - [ ] Core/Network emission is observational-only and does not alter semantic outcomes.
 - [ ] Hub event timeline/detail panes are projection-only over emitted EVR events.
@@ -50,6 +52,10 @@ Use this checklist to validate an independent implementation against this refere
   - deterministic arbitration
   - convergence witness
   - divergence witness
+- [ ] Revocation demos:
+  - valid chain then revoked
+  - delegated chain invalidated by ancestor revocation
+  - unauthorized revocation attempt rejected
 
 ## Required negative proofs
 
@@ -59,6 +65,7 @@ Use this checklist to validate an independent implementation against this refere
 - [ ] Unsupported adapter returns deterministic `unsupported_adapter`.
 - [ ] Capability malformed request returns deterministic `invalid_request` / `malformed_capability`.
 - [ ] Invalid chain states return deterministic typed rejects (`broken_chain`, `invalid_signature`, `scope_escalation`, `epoch_expired`, etc.).
+- [ ] Revocation invalid states return deterministic typed rejects (`revoked`, `unauthorized_revoker`, `revocation_out_of_scope`, `malformed_revocation`, `target_not_found`).
 
 ## Reproducibility
 

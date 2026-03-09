@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.0.0-semantic-baseline
+
+### Track E (Revocation)
+- Added pure revocation module (`src/revocation`) for canonical revocation records, deterministic validation, canonical encoding, and deterministic revocation-set verification.
+- Integrated revocation semantics into capability verification so the same chain + revocation set + epoch yields the same typed outcome.
+- Added Core revocation host path (`verifyRevocation`) and revocation-aware capability gating for resolve/adapter flows.
+- Added EVR revocation event kinds:
+  - `capability.revocation_recorded`
+  - `capability.revocation_checked`
+  - `capability.revocation_applied`
+  - `capability.revocation_rejected`
+- Added Hub revocation inspection pane (`revocation.verify`) as projection-only output over Core.
+- Added revocation fixtures (golden/negative/determinism/integration), pure revocation tests, integration tests, and e2e tests.
+- Added revocation demos and frozen snapshots:
+  - valid chain then revoked
+  - ancestor revoked in delegated chain
+  - unauthorized revocation attempt rejected
+
+### Baseline freeze
+- Updated conformance snapshots, module manifest, and release conformance statement for semantic baseline freeze.
+- Declared semantic baseline complete for deterministic meaning, identity, authority withdrawal, observability, and federation routing/convergence witness model.
+
 ## v0.4.0-federation
 
 ### Track C (Federation Breadth)

@@ -59,6 +59,30 @@ export const EVENT_KIND_REGISTRY = {
     source_layers: ['core'],
     required_evidence: ['evidence_ref', 'status'],
   }),
+  'capability.revocation_recorded': def({
+    family: 'capability',
+    kind: 'capability.revocation_recorded',
+    source_layers: ['core'],
+    required_evidence: ['record_id', 'target_ref'],
+  }),
+  'capability.revocation_checked': def({
+    family: 'capability',
+    kind: 'capability.revocation_checked',
+    source_layers: ['core'],
+    required_evidence: ['evidence_ref', 'status'],
+  }),
+  'capability.revocation_applied': def({
+    family: 'capability',
+    kind: 'capability.revocation_applied',
+    source_layers: ['core'],
+    required_evidence: ['evidence_ref', 'status'],
+  }),
+  'capability.revocation_rejected': def({
+    family: 'capability',
+    kind: 'capability.revocation_rejected',
+    source_layers: ['core'],
+    required_evidence: ['evidence_ref', 'status'],
+  }),
   'adapter.derived': def({
     family: 'adapter',
     kind: 'adapter.derived',

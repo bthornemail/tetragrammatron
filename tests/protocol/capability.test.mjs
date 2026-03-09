@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { signGrant, verifyCapabilityChain } from '../../src/protocol/capability.mjs';
+import { signRevocationRecord } from '../../src/revocation/schema.mjs';
 import {
   SIDS,
   baseScope,
@@ -100,6 +101,41 @@ test('capability negative fixtures return deterministic typed rejects', async ()
   const invalidSig = buildValidSingle();
   invalidSig[0] = { ...invalidSig[0], signature: { ...invalidSig[0].signature, sig: 'sig:bad' } };
   assert.equal(verifyCapabilityChain(context(invalidSig)).status, 'invalid_signature');
+
+  const revoked = buildValidSingle();
+  const revocationRecord = signRevocationRecord({
+    effective_epoch: 20,
+    revoker_id: SIDS.govRoot,
+    scope: baseScope(),
+    target_kind: 'grant',
+    target_ref: revoked[0].grant_id,
+    version: 'revocation/v1',
+  });
+  assert.equal(verifyCapabilityChain(context(revoked, { revocation_records: [revocationRecord] })).status, 'revoked');
+
+  const unauthorizedRevoker = signRevocationRecord({
+    effective_epoch: 20,
+    revoker_id: SIDS.actorB,
+    scope: baseScope(),
+    target_kind: 'grant',
+    target_ref: revoked[0].grant_id,
+    version: 'revocation/v1',
+  });
+  assert.equal(verifyCapabilityChain(context(revoked, { revocation_records: [unauthorizedRevoker] })).status, 'unauthorized_revoker');
+
+  const outOfScopeRevocation = signRevocationRecord({
+    effective_epoch: 20,
+    revoker_id: SIDS.govRoot,
+    scope: {
+      actions: ['resolve'],
+      adapters: ['adapter:guarded-demo'],
+      resources: ['resource:beta'],
+    },
+    target_kind: 'grant',
+    target_ref: revoked[0].grant_id,
+    version: 'revocation/v1',
+  });
+  assert.equal(verifyCapabilityChain(context(revoked, { revocation_records: [outOfScopeRevocation] })).status, 'revocation_out_of_scope');
 });
 
 test('capability determinism fixtures are stable', async () => {
@@ -128,4 +164,17 @@ test('capability determinism fixtures are stable', async () => {
   const orderA = verifyCapabilityChain(context(buildValidDelegated()));
   const orderB = verifyCapabilityChain(context(buildValidDelegated()));
   assert.deepEqual(orderA, orderB);
+
+  const revoked = buildValidSingle();
+  const revocationRecord = signRevocationRecord({
+    effective_epoch: 20,
+    revoker_id: SIDS.govRoot,
+    scope: baseScope(),
+    target_kind: 'grant',
+    target_ref: revoked[0].grant_id,
+    version: 'revocation/v1',
+  });
+  const revA = verifyCapabilityChain(context(revoked, { revocation_records: [revocationRecord] }));
+  const revB = verifyCapabilityChain(context(revoked, { revocation_records: [revocationRecord] }));
+  assert.deepEqual(revA, revB);
 });

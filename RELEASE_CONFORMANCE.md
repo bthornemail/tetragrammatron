@@ -1,4 +1,47 @@
-# Tetragrammatron Reference Stack v0 Conformance Statement
+# Tetragrammatron Semantic Baseline Conformance Statement
+
+Release tag: `v1.0.0-semantic-baseline`
+
+This release freezes the foundational semantic baseline for Tetragrammatron.
+
+## Proven in this release
+
+- Same meaning -> same identity -> same address.
+- `resolve` is the only canonical write path.
+- Capability verification is deterministic and typed.
+- Revocation deterministically withdraws delegated authority without mutating SID or canonical meaning.
+- HD-RPC `call(SID, stage)` is semantic routing over Core, not semantic reinterpretation.
+- EVR event kinds are deterministic observational evidence; EventKind determines evidence shape.
+- Federation route derivation/arbitration and convergence/divergence witnesses are deterministic for equivalent inputs.
+- Demo outputs are frozen and reproducibly checked via conformance tests.
+
+## Implemented baseline surface
+
+- Substrate: NRR storage/replay/integrity/bundle/checkpoint.
+- Protocol: DBC + DBC-IDL deterministic calculus and identity projection.
+- Core: DBC-NODE host contract + HTTP mapping.
+- Network: HD-RPC routing + federation breadth for local deterministic witness profile.
+- Hub: read-mostly inspection shell.
+- Capability: delegated authority verification.
+- Revocation: deterministic authority withdrawal.
+- EVR: deterministic event taxonomy + evidence-shape validation.
+
+## Intentionally deferred after semantic baseline
+
+- Production PKI / hardware-backed cryptographic infrastructure.
+- Revocation distribution policies beyond deterministic record evaluation.
+- EVR `device.*` family completion.
+- Wide-area federation mesh optimization policies.
+- Embedded/mobile constrained profiles.
+- Role-segmented hub workflows.
+
+## Release classification
+
+This release is a **semantic baseline freeze**: foundationally stable semantics with deferred ecosystem/product breadth.
+
+---
+
+# Reference Stack v0 Conformance Statement
 
 Release tag: `v0.1.0-reference`
 
@@ -29,79 +72,3 @@ This release is the foundational reference baseline for the minimal five-layer T
 ## Release classification
 
 This is a **reference-conformant baseline** (foundational completeness), not ecosystem-complete feature coverage.
-
----
-
-# Capability Module Conformance Statement
-
-Module version: `0.2.0-capability`
-
-This module cut completes Track A capability semantics over the existing reference baseline.
-
-## Proven in this module
-
-- Delegated authority chains verify deterministically with typed outcomes and evidence.
-- Capability verification does not alter SID, descriptor identity, or canonical protocol meaning.
-- `POST /verify-capability` is runtime-complete (no placeholder `not_implemented` path).
-- Capability-gated `resolve` and guarded adapter derivation fail/allow deterministically.
-- HD-RPC forwards capability context as transport data; Network does not reinterpret capability semantics.
-- Hub capability pane is projection-only and matches Core verifier output.
-
-## Intentionally deferred after Track A
-
-- Capability revocation semantics.
-- Production PKI / hardware-backed cryptographic infrastructure.
-- EVR doctrine completion.
-- Federation discovery/arbitration breadth.
-- Role-segmented hub workflows.
-- Embedded/runtime profile specialization.
-
----
-
-# EVR Module Conformance Statement
-
-Module version: `0.3.0-evr`
-
-This module cut completes Track B EVR doctrine over the existing reference baseline and capability module.
-
-## Proven in this module
-
-- Event families and kinds are explicit for implemented layers (`resolution`, `descriptor`, `capability`, `adapter`, `route`, `hub`).
-- `EventKind` determines evidence shape via typed registry and validator.
-- Event envelopes are canonically encodable and validation rejects are deterministic.
-- Core and Network emit EVR events without altering protocol/capability semantics.
-- Hub event timeline/detail panes are projection-only over emitted events.
-- EVR demos are frozen and conformance-checked for deterministic trace shape.
-
-## Intentionally deferred after Track B
-
-- `device.*` event family completion.
-- Federation discovery/arbitration breadth.
-- Role-segmented hub workflows.
-- Embedded/runtime profile specialization.
-
----
-
-# Federation Module Conformance Statement
-
-Module version: `0.4.0-federation`
-
-This module cut completes Track C federation breadth for the deterministic local multi-node witness profile.
-
-## Proven in this module
-
-- Federation descriptor/announcement rules are explicit and validated.
-- Route-set derivation is deterministic for identical announcement sets.
-- Arbitration is deterministic with explicit tie-break law and typed ambiguity failures.
-- Convergence/divergence witnesses are explicit machine structures with deterministic typing.
-- HD-RPC federation flow (`discover -> routeset -> arbitrate -> forward`) preserves Core semantic equivalence.
-- Capability context passthrough remains non-reinterpreted under federation routing.
-- Hub federation panes are projection-only and match underlying network/core state.
-- Federation demos are frozen and conformance-checked.
-
-## Intentionally deferred after Track C
-
-- Wide-area peer mesh optimization policies.
-- Embedded/mobile constrained federation profiles.
-- `device.*` event family completion.
-- Role-segmented hub workflows.
