@@ -1,0 +1,1 @@
+{"id":"ABI-G-06","kind":"CapabilityVerificationResult","value":{"abi_version":"ABI-1.1.0","capability_digest":"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","status":"expired","evidence":{"current_epoch":30,"expired_epoch":20}}}

@@ -1,0 +1,70 @@
+{
+  "acceptance": "abi federation envelopes preserve deterministic routeset and arbitration structures",
+  "announcement": {
+    "descriptor_digest": "sha256:4938984bd80e9584859619c2a282f45983987eefee8eb3de28c29c845e91776f",
+    "epoch": "0",
+    "federation_scope": "",
+    "node_sid": "sid:dbc:0000000000000000000000000000000000000000000000000000000000000000",
+    "peer_endpoint": "node-a",
+    "schema_digest": "sha256:92dc1ccad096b02168d7ba96a2ce72bc0444fb8760d6e5485dab75d78cc3a4b8"
+  },
+  "arbitration": {
+    "abi_version": "ABI-1.1.0",
+    "call_digest": "sha256:39794960232e3a7406a71dfe4e166431be79811099c18683a9954ae23c3c70fa",
+    "status": "converged",
+    "evidence": {
+      "arbitration_fields": [
+        "exactScope",
+        "scopeSpecificity",
+        "priority"
+      ],
+      "request": {
+        "federation_scope": "",
+        "schema_digest": "sha256:92dc1ccad096b02168d7ba96a2ce72bc0444fb8760d6e5485dab75d78cc3a4b8",
+        "sid": "sid:dbc:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "stage": "Normalized"
+      },
+      "selected": {
+        "descriptor_digest": "sha256:4938984bd80e9584859619c2a282f45983987eefee8eb3de28c29c845e91776f",
+        "endpoint": "node-a",
+        "federation_scope": "",
+        "priority": 0,
+        "provider_id": "provider:a",
+        "schema_digests": [
+          "sha256:92dc1ccad096b02168d7ba96a2ce72bc0444fb8760d6e5485dab75d78cc3a4b8"
+        ],
+        "supported_stages": [
+          "Normalized"
+        ]
+      },
+      "selected_score": {
+        "exactScope": 1,
+        "priority": 0,
+        "scopeSpecificity": 0
+      },
+      "tie_count": 1
+    }
+  },
+  "convergence_witness": {
+    "call_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "result_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "runtime_sids": [
+      "sid:dbc:1111111111111111111111111111111111111111111111111111111111111111",
+      "sid:dbc:2222222222222222222222222222222222222222222222222222222222222222"
+    ],
+    "stage": "Normalized",
+    "test_id": "abi-fed"
+  },
+  "route_set": {
+    "entries": [
+      {
+        "ipv6_address": null,
+        "liveness": "unknown",
+        "peer_endpoint": "node-a",
+        "transport": "hd-rpc"
+      }
+    ],
+    "epoch": "0",
+    "federation_scope": ""
+  }
+}

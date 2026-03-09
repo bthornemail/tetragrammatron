@@ -1,11 +1,14 @@
 {
   "name": "tetragrammatron",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "conformance": "node --test tests/conformance/*.test.mjs",
-    "demo:all": "npm run demo:hello && npm run demo:pipeline && npm run demo:federation && npm run demo:capability:valid && npm run demo:capability:expired && npm run demo:capability:scope && npm run demo:evr:resolve && npm run demo:evr:capability && npm run demo:evr:route && npm run demo:federation:multi && npm run demo:federation:arbitration && npm run demo:federation:convergence && npm run demo:federation:divergence && npm run demo:revocation:revoked && npm run demo:revocation:ancestor && npm run demo:revocation:unauthorized && npm run demo:hub:roles",
+    "demo:all": "npm run demo:hello && npm run demo:pipeline && npm run demo:federation && npm run demo:capability:valid && npm run demo:capability:expired && npm run demo:capability:scope && npm run demo:evr:resolve && npm run demo:evr:capability && npm run demo:evr:route && npm run demo:federation:multi && npm run demo:federation:arbitration && npm run demo:federation:convergence && npm run demo:federation:divergence && npm run demo:revocation:revoked && npm run demo:revocation:ancestor && npm run demo:revocation:unauthorized && npm run demo:hub:roles && npm run demo:abi:resolve && npm run demo:abi:capability && npm run demo:abi:federation",
+    "demo:abi:capability": "node scripts/abi-capability-envelope.mjs",
+    "demo:abi:federation": "node scripts/abi-federation-envelope.mjs",
+    "demo:abi:resolve": "node scripts/abi-resolve-envelope.mjs",
     "demo:capability:expired": "node scripts/capability-expired-chain.mjs",
     "demo:capability:scope": "node scripts/capability-scope-failure.mjs",
     "demo:capability:valid": "node scripts/capability-valid-chain.mjs",

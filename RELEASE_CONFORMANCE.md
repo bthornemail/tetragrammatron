@@ -41,6 +41,29 @@ This release is a **semantic baseline freeze**: foundationally stable semantics 
 
 ---
 
+# ABI Module Conformance Statement
+
+Module version: `1.1.0-abi`
+
+This module cut completes Track F canonical semantic ABI over the frozen semantic baseline.
+
+## Proven in this module
+
+- Canonical ABI envelopes and structures are defined for protocol, identity, capability, revocation, EVR, and federation surfaces.
+- Structure conformance and encoding conformance are validated separately.
+- Closed status taxonomies are enforced per result family.
+- EVR EventKind evidence legality is ABI-validated.
+- ABI fixtures are frozen for golden/negative/determinism coverage.
+- ABI demo envelope snapshots are frozen and conformance-checked.
+- Baseline semantics are unchanged; ABI is a portability layer only.
+
+## Intentionally deferred after Track F
+
+- Runtime/process/transport/FFI concerns (Track G EABI).
+- CLI/session/auth/process lifecycle concerns.
+
+---
+
 # Hub Roles Module Conformance Statement
 
 Module version: `1.0.1-hub-roles`

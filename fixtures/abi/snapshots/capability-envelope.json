@@ -1,0 +1,18 @@
+{
+  "acceptance": "abi capability envelope preserves typed verification semantics",
+  "capability_result": {
+    "abi_version": "ABI-1.1.0",
+    "capability_digest": "sha256:3b56f1a9bb01b994c86e01b7c0df3829089c228ec798313339c76ba164befbdf",
+    "status": "valid",
+    "evidence": {
+      "original_status": "verified",
+      "actor_sid": "sid:dbc:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "chain_digest": "ch:d59786a0d5b8c017eb6b5dbab5d4c2d4227a38d161142686db59b70850b1242c",
+      "chain_length": 1,
+      "revocation_checked": true,
+      "revocation_set_digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "root_governor_sid": "sid:dbc:1111111111111111111111111111111111111111111111111111111111111111",
+      "subject_sid": "sid:dbc:9999999999999999999999999999999999999999999999999999999999999999"
+    }
+  }
+}

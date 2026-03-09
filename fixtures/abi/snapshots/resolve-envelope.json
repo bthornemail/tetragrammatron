@@ -1,0 +1,74 @@
+{
+  "acceptance": "abi resolve envelope is canonical and deterministic",
+  "resolve_call": {
+    "abi_version": "ABI-1.1.0",
+    "canonical_input": {
+      "d": [
+        {
+          "Rel": [
+            "hasType",
+            "Alice",
+            "Person"
+          ]
+        },
+        {
+          "Rel": [
+            "parent",
+            "A",
+            "B"
+          ]
+        },
+        {
+          "Rel": [
+            "parent",
+            "B",
+            "C"
+          ]
+        }
+      ]
+    },
+    "schema_digest": "sha256:87ff9ebed94208e14e647bf74f4465b08e520d4b7b581bac7c7be98fc930b11d",
+    "target_stage": "Normalized",
+    "view_digest": "sha256:1edfc1d7e4ea0c1caa42942d3d7617428a0605c27d64e4497a1c54dd6f9daeee"
+  },
+  "resolve_result": {
+    "abi_version": "ABI-1.1.0",
+    "canonical_value": {
+      "constraints": [],
+      "edges": [
+        [
+          "hasType",
+          "Alice",
+          "Person"
+        ],
+        [
+          "parent",
+          "A",
+          "B"
+        ],
+        [
+          "parent",
+          "A",
+          "C"
+        ],
+        [
+          "parent",
+          "B",
+          "C"
+        ]
+      ],
+      "nodes": [
+        "A",
+        "Alice",
+        "B",
+        "C",
+        "Person"
+      ],
+      "witnesses": []
+    },
+    "schema_digest": "sha256:87ff9ebed94208e14e647bf74f4465b08e520d4b7b581bac7c7be98fc930b11d",
+    "stage": "Normalized",
+    "value_digest": "sha256:40fd6b68ebff9a6dce9b86e4183f664a27d3328a4f0651962d1916c9a51e5024",
+    "value_kind": "NormalForm"
+  }
+}

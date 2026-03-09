@@ -1,24 +1,28 @@
 {
-  "module": "hub-roles",
-  "module_version": "1.0.1-hub-roles",
+  "module": "abi",
+  "module_version": "1.1.0-abi",
   "release_type": "module",
   "status": "complete",
   "laws": [
-    "NoDirectMutationLaw",
-    "EndpointFidelityLaw",
-    "NoBackflowLaw",
-    "RoleScopeLaw",
-    "ProjectionReadOnlyLaw",
-    "BrokerVerbatimForwardLaw",
-    "EventDrivenVisibilityLaw",
-    "DigestVerificationLaw"
+    "SemanticNeutralityLaw",
+    "CanonicalDeterminismLaw",
+    "StructureEncodingSeparationLaw",
+    "CanonicalOrderingLaw",
+    "TypedResultPreservationLaw",
+    "EvidenceCompletenessLaw",
+    "EVREvidenceLegalityLaw",
+    "ClosedStatusTaxonomyLaw",
+    "ExecutionExclusionLaw",
+    "ExplicitVersioningLaw",
+    "BaselineNonMutationLaw"
   ],
   "fixtures": [
-    "hub/role-shell.json",
-    "demos/hub-role-shell.snapshot.json",
-    "demos/hello.snapshot.json",
-    "demos/pipeline.snapshot.json",
-    "demos/federation.snapshot.json"
+    "abi/golden",
+    "abi/negative",
+    "abi/determinism",
+    "abi/snapshots/resolve-envelope.json",
+    "abi/snapshots/capability-envelope.json",
+    "abi/snapshots/federation-envelope.json"
   ],
   "cross_layer_tests": true,
   "conformance_verified": true

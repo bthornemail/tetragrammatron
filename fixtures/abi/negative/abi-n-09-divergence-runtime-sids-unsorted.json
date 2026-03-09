@@ -1,0 +1,1 @@
+{"id":"ABI-N-09","kind":"DivergenceWitness","value":{"call_digest":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","divergence_stage":"Normalized","result_digests":{},"runtime_sids":["sid:dbc:2222222222222222222222222222222222222222222222222222222222222222","sid:dbc:1111111111111111111111111111111111111111111111111111111111111111"],"test_id":"div"}}

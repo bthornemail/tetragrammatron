@@ -1,0 +1,1 @@
+{"id":"ABI-G-07","kind":"RevocationVerificationResult","value":{"abi_version":"ABI-1.1.0","capability_digest":"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","status":"revoked","evidence":{"revocation_digest":"sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","revocation_epoch":"20"}}}

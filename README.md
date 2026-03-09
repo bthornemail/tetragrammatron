@@ -15,6 +15,7 @@ Deterministic law-first reference implementation of the Tetragrammatron semantic
 - `src/substrate` — NRR substrate (`put/get`, append-only log, replay, verify, bundles, checkpoints)
 - `src/protocol` — DBC + DBC-IDL + capability verification
 - `src/revocation` — canonical revocation records and deterministic authority-withdrawal verification
+- `src/abi` — canonical semantic ABI (structure + encoding conformance layer)
 - `src/core` — host + node transport mapping (faithful execution, canonical persistence)
 - `src/network` — HD-RPC routing + federation bridge
 - `src/federation` — pure federation rules (descriptors, announcements, route sets, arbitration, convergence)
@@ -46,6 +47,9 @@ Deterministic law-first reference implementation of the Tetragrammatron semantic
 - `npm run demo:revocation:ancestor`
 - `npm run demo:revocation:unauthorized`
 - `npm run demo:hub:roles`
+- `npm run demo:abi:resolve`
+- `npm run demo:abi:capability`
+- `npm run demo:abi:federation`
 
 ## Frozen demo snapshots
 
@@ -68,12 +72,16 @@ Frozen snapshot fixtures live in `fixtures/demos/`:
 - `revocation-ancestor-revoked.snapshot.json`
 - `revocation-unauthorized-attempt.snapshot.json`
 - `hub-role-shell.snapshot.json`
+- `abi/snapshots/resolve-envelope.json`
+- `abi/snapshots/capability-envelope.json`
+- `abi/snapshots/federation-envelope.json`
 
 Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 
 ## Release status
 
 - Baseline tag target: `v1.0.0-semantic-baseline`
+- ABI module target: `v1.1.0-abi`
 - Previous reference tag: `v0.1.0-reference`
 - Changelog: `CHANGELOG.md`
 - Conformance statements: `RELEASE_CONFORMANCE.md`
@@ -118,6 +126,7 @@ Post-baseline work is intentionally split into independent tracks:
 - Track D: productization (`docs/tracks/track-d-productization.md`)
 - Track E: revocation (`docs/tracks/track-e-revocation.md`)
 - Track H: role-based hub completion (`docs/tracks/track-h-hub-roles.md`)
+- Track F: canonical semantic ABI (`docs/tracks/track-f-abi.md`)
 
 Cross-track dependency and contract rules:
 

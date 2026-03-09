@@ -7,6 +7,7 @@
 - `track-c/<topic>` federation breadth
 - `track-d/<topic>` productization
 - `track-e/<topic>` revocation
+- `track-f/<topic>` abi portability
 - `track-h/<topic>` hub role completion
 
 ## Required labels
@@ -16,6 +17,7 @@
 - `track:c-federation`
 - `track:d-productization`
 - `track:e-revocation`
+- `track:f-abi`
 - `track:h-hub-roles`
 - Optional: `contract-impact`, `snapshot-update`
 
@@ -35,6 +37,7 @@
 - `ci-track-c`
 - `ci-track-d`
 - `ci-track-e`
+- `ci-track-f`
 - `ci-track-h`
 - `ci-contract-integration`
 

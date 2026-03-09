@@ -9,6 +9,7 @@ Baseline floor: `v1.0.0-semantic-baseline`.
 - Track C (Federation) depends on Core/Network contracts, and may consume Track A outputs only after Track A contract freeze.
 - Track D (Productization) depends on stable APIs/contracts from A/B/C and must not define semantics.
 - Track E (Revocation) depends on Track A capability semantics and must not alter identity/protocol meaning.
+- Track F (ABI) depends on frozen semantic baseline modules and must remain execution-neutral.
 - Track H (Hub Roles) depends on Core/Network/EVR contracts and must not define semantic authority.
 
 ## Frozen contracts

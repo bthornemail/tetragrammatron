@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.1.0-abi
+
+### Track F (Canonical Semantic ABI)
+- Added ABI module docs and release artifacts under `docs/modules/abi` and `docs/tracks/track-f-abi.md`.
+- Added pure ABI layer (`src/abi`) with structure schemas, validators, canonical encoders, typed ABI errors, and EVR kind legality helpers.
+- Added ABI fixture matrices and canonical fixture sets:
+  - `fixtures/abi/golden` (12)
+  - `fixtures/abi/negative` (10)
+  - `fixtures/abi/determinism` (5)
+- Added ABI cross-module mapping tests:
+  - protocol, identity, capability, revocation, evr, federation
+- Added ABI conformance snapshot tests:
+  - `tests/conformance/abi-snapshots.test.mjs`
+- Added ABI inspection demos:
+  - `abi-resolve-envelope`
+  - `abi-capability-envelope`
+  - `abi-federation-envelope`
+- Maintained baseline semantics: ABI layer is portability-only and execution-neutral.
+
 ## v1.0.1-hub-roles
 
 ### Track H (Role-Based Hub Completion)

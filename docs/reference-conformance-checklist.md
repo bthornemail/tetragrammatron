@@ -36,6 +36,8 @@ Use this checklist to validate an independent implementation against this refere
 - [ ] Federation route-set derivation is deterministic for identical announcement sets.
 - [ ] Federation arbitration is deterministic with typed ambiguity failures.
 - [ ] Federation convergence/divergence witness structures are explicit and deterministic.
+- [ ] ABI structures are defined and validated for protocol/identity/capability/revocation/evr/federation surfaces.
+- [ ] Structure conformance and encoding conformance are proven independently.
 
 ## Required demos
 
@@ -63,6 +65,10 @@ Use this checklist to validate an independent implementation against this refere
   - role visibility matrix is stable
   - forbidden workspace and read-only enforcement are deterministic
   - broker verbatim-forward witness is true
+- [ ] ABI demos:
+  - resolve envelope
+  - capability envelope
+  - federation envelope
 
 ## Required negative proofs
 
@@ -82,6 +88,7 @@ Use this checklist to validate an independent implementation against this refere
 - [ ] Bundle export/import preserves descriptor and route lookup behavior.
 - [ ] Event timeline projection ordering is stable for equivalent operation traces.
 - [ ] Federation route-set/arbitration/convergence outputs are reproducible for equivalent inputs.
+- [ ] ABI snapshot outputs are reproducible for equivalent semantic inputs.
 
 ## Deferred (intentional)
 
