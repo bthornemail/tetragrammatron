@@ -1,0 +1,19 @@
+{
+  "name": "NRR-G-03 replay from empty state",
+  "laws": ["Replay Law", "Content Address Law", "Append-Only Law"],
+  "initial_state": { "sum": 0, "events": [] },
+  "blobs": {
+    "e1": "{\"op\":\"add\",\"value\":2,\"label\":\"alpha\"}",
+    "e2": "{\"op\":\"add\",\"value\":3,\"label\":\"beta\"}",
+    "e3": "{\"op\":\"add\",\"value\":5,\"label\":\"gamma\"}"
+  },
+  "entries": [
+    { "phase": 1, "type": "interior", "blob": "e1" },
+    { "phase": 2, "type": "interior", "blob": "e2" },
+    { "phase": 3, "type": "interior", "blob": "e3" }
+  ],
+  "expected_state": {
+    "sum": 10,
+    "events": ["alpha", "beta", "gamma"]
+  }
+}

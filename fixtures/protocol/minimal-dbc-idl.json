@@ -1,0 +1,58 @@
+{
+  "schema": {
+    "id": "dbc-minimal-v1",
+    "relations": {
+      "hasType": 2,
+      "parent": 2
+    },
+    "symbols": ["Alice", "Bob", "Person", "A", "B", "C"],
+    "closure": {
+      "transitive_relations": ["parent"]
+    }
+  },
+  "schema_digest": "sha256:92dc1ccad096b02168d7ba96a2ce72bc0444fb8760d6e5485dab75d78cc3a4b8",
+  "golden": {
+    "canonical_success": {
+      "document": [
+        { "Rel": ["hasType", "Alice", "Person"] },
+        { "Rel": ["parent", "A", "B"] },
+        { "Rel": ["parent", "B", "C"] }
+      ]
+    },
+    "equivalent_form_success": {
+      "document": [
+        { "Rel": ["parent", "B", "C"] },
+        { "Rel": ["hasType", "Alice", "Person"] },
+        { "Rel": ["parent", "A", "B"] },
+        { "Rel": ["parent", "A", "B"] }
+      ]
+    }
+  },
+  "negative": {
+    "realize_reject": {
+      "document": [
+        { "Rel": ["hasType", "Mallory", "Person"] }
+      ]
+    },
+    "close_reject": {
+      "document": [
+        { "Rel": ["parent", "A", "B"] },
+        { "Rel": ["parent", "B", "A"] }
+      ]
+    },
+    "normalize_reject": {
+      "document": [
+        { "Rel": ["hasType", "Alice", "Person"] },
+        { "Rel": ["hasType", "Alice", "Bob"] }
+      ]
+    },
+    "project_reject": {
+      "document": [
+        { "Rel": ["hasType", "Alice", "Person"] }
+      ],
+      "view": {
+        "target": "projection/svg-v1"
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "acceptance": "HD-RPC is semantic routing over Core, not semantic reinterpretation",
+  "equivalence": true,
+  "route_target": "node-a",
+  "sid": "sid:dbc:a2cb74e4658d52d4d994aa77a1814dd50a4c7f118ec1a88f3c1525b70b483745",
+  "unknown_route_result": {
+    "code": "route_not_found",
+    "kind": "RouteResolutionFailure",
+    "ok": false,
+    "sid": "sid:dbc:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+  }
+}

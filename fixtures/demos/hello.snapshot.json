@@ -1,0 +1,8 @@
+{
+  "acceptance": "same meaning -> same identity -> same address",
+  "same_ipv4_compatibility_hint": true,
+  "same_ipv6": true,
+  "same_normal_form": true,
+  "same_sid": true,
+  "sid": "sid:dbc:a2cb74e4658d52d4d994aa77a1814dd50a4c7f118ec1a88f3c1525b70b483745"
+}

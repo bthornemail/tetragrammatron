@@ -1,0 +1,35 @@
+{
+  "acceptance": "resolve is the only canonical write path; all other views are projection",
+  "adapter": {
+    "authoritative": true,
+    "credential": "fdf3:909d:916c:5b3a:26fb:bd80:d812:052f",
+    "label": "adapter:ipv6"
+  },
+  "descriptor": {
+    "descriptor_digest": "sha256:e6d41d417695af61608102f24c9fe00ccfeb0fe2c30b3b7ba8ca7c3109cbec45",
+    "normal_form_digest": "sha256:40fd6b68ebff9a6dce9b86e4183f664a27d3328a4f0651962d1916c9a51e5024",
+    "ok": true,
+    "schema_digest": "sha256:92dc1ccad096b02168d7ba96a2ce72bc0444fb8760d6e5485dab75d78cc3a4b8",
+    "sid": "sid:dbc:a2cb74e4658d52d4d994aa77a1814dd50a4c7f118ec1a88f3c1525b70b483745"
+  },
+  "events": {
+    "count": 4,
+    "kinds": [
+      "hub.resolve",
+      "hub.descriptor.lookup",
+      "hub.routing.adapter",
+      "hub.store.inspect"
+    ]
+  },
+  "resolve": {
+    "ok": true,
+    "sid": "sid:dbc:a2cb74e4658d52d4d994aa77a1814dd50a4c7f118ec1a88f3c1525b70b483745",
+    "stage": "Normalized",
+    "value_kind": "NormalForm"
+  },
+  "store": {
+    "entry_count": 5,
+    "nrr_verify_ok": true,
+    "replay_readiness_ok": true
+  }
+}

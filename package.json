@@ -1,0 +1,17 @@
+{
+  "name": "tetragrammatron",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "conformance": "node --test tests/conformance/*.test.mjs",
+    "demo:all": "npm run demo:hello && npm run demo:pipeline && npm run demo:federation",
+    "demo:federation": "node scripts/minimal-federation-proof.mjs",
+    "demo:hello": "node scripts/hello-tetragrammatron.mjs",
+    "demo:pipeline": "node scripts/node-pipeline-demo.mjs",
+    "test": "node --test tests/**/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

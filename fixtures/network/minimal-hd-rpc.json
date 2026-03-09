@@ -1,0 +1,6 @@
+{
+  "invalid_sid": "sid:dbc:not-a-digest",
+  "unknown_sid": "sid:dbc:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "supported_stage": "Normalized",
+  "unsupported_stage": "Imagined"
+}
