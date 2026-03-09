@@ -1,0 +1,89 @@
+#!/usr/bin/env node
+const crypto = require('crypto');
+
+function sha256Hex(input) {
+  return crypto.createHash('sha256').update(input).digest('hex');
+}
+
+function canonicalize(value) {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return '[' + value.map(canonicalize).join(',') + ']';
+  const keys = Object.keys(value).sort();
+  return '{' + keys.map(k => JSON.stringify(k) + ':' + canonicalize(value[k])).join(',') + '}';
+}
+
+function hkdfBytes(ikm, info, length) {
+  return crypto.hkdfSync('sha256', Buffer.from(ikm, 'utf8'), Buffer.alloc(0), Buffer.from(info, 'utf8'), length);
+}
+
+const schema = {
+  id: 'demo.hello',
+  normalize(doc) {
+    if (doc.schema !== 'demo.hello') throw new Error(`Unsupported schema: ${doc.schema}`);
+    if (typeof doc.name !== 'string' || doc.name.trim() === '') throw new Error("Field 'name' must be a non-empty string");
+    return {
+      kind: 'Greeting',
+      schema: 'demo.hello/v1',
+      message: `Hello ${doc.name.trim()}`,
+    };
+  }
+};
+
+function deriveSID(normalForm) {
+  const domainTag = 'DBC-SID-1.1\0';
+  const digest = sha256Hex(domainTag + canonicalize(normalForm));
+  return `sid:dbc:${digest}`;
+}
+
+function deriveIPv6FromSID(sid) {
+  const seed = Buffer.from(hkdfBytes(sid, 'adapter:ipv6', 16));
+  seed[0] = 0xfd;
+  const groups = [];
+  for (let i = 0; i < 16; i += 2) groups.push(seed.readUInt16BE(i).toString(16));
+  return groups.join(':').replace(/\b0(?=[0-9a-f])/g, '');
+}
+
+function deriveIPv4HintFromSID(sid) {
+  const seed = Buffer.from(hkdfBytes(sid, 'adapter:ipv4', 4));
+  return `10.${seed[1]}.${(seed[2] % 254) + 1}.${(seed[3] % 254) + 1}`;
+}
+
+function resolveDocument(doc) {
+  const normalForm = schema.normalize(doc);
+  const sid = deriveSID(normalForm);
+  return {
+    normalForm,
+    sid,
+    adapters: {
+      ipv6: deriveIPv6FromSID(sid),
+      ipv4: deriveIPv4HintFromSID(sid),
+    }
+  };
+}
+
+function makeNode(name) {
+  return {
+    name,
+    resolve(doc) {
+      return { node: name, ...resolveDocument(doc) };
+    }
+  };
+}
+
+const documentInput = { schema: 'demo.hello', name: 'world' };
+const nodeA = makeNode('nodeA');
+const nodeB = makeNode('nodeB');
+const resultA = nodeA.resolve(documentInput);
+const resultB = nodeB.resolve(documentInput);
+
+console.log('\nDOCUMENT');
+console.log(JSON.stringify(documentInput, null, 2));
+console.log('\nNODE A');
+console.log(JSON.stringify(resultA, null, 2));
+console.log('\nNODE B');
+console.log(JSON.stringify(resultB, null, 2));
+console.log('\nCONVERGENCE');
+console.log('same normal form:', canonicalize(resultA.normalForm) === canonicalize(resultB.normalForm));
+console.log('same SID:        ', resultA.sid === resultB.sid);
+console.log('same IPv6:       ', resultA.adapters.ipv6 === resultB.adapters.ipv6);
+console.log('same IPv4 hint:  ', resultA.adapters.ipv4 === resultB.adapters.ipv4);

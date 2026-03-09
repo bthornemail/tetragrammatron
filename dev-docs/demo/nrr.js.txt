@@ -1,0 +1,164 @@
+/**
+ * nrr.js — Native Repository Runtime (NRR-1.0 substrate)
+ *
+ * Content-addressed blob store + append-only log + deterministic replay.
+ * No dependencies. In-memory for demo; same API works over flash/disk.
+ *
+ * Laws implemented:
+ *   Content Address Law    ref = hash(bytes)
+ *   Append-Only Law        log entries never modified
+ *   Replay Law             same log + blobs → same state
+ *   Artifact Immutability  stored ref never overwritten with different bytes
+ *   Authority Neutrality   substrate has no concept of meaning
+ */
+
+import { createHash } from 'crypto'
+
+// ── Internal stores ──────────────────────────────────────────────────────────
+
+const _blobs = new Map()   // HashRef → Buffer
+const _log   = []          // Entry[]
+const _events = []         // internal event bus (for EVR demo integration)
+const _listeners = []      // (event) => void
+
+// ── Hashing ──────────────────────────────────────────────────────────────────
+
+export function sha256hex(buf) {
+  return createHash('sha256').update(buf).digest('hex')
+}
+
+export function hashRef(buf) {
+  return 'sha256:' + sha256hex(buf)
+}
+
+// ── Required API: put / get / append / log ───────────────────────────────────
+
+/**
+ * Store bytes. Returns content-addressed ref.
+ * Idempotent: identical bytes → same ref, no error.
+ * Rejects overwrite of existing ref with different bytes.
+ */
+export function put(bytes) {
+  const buf = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes)
+  const ref = hashRef(buf)
+
+  if (_blobs.has(ref)) {
+    // Artifact Immutability: same ref must mean same bytes
+    if (!_blobs.get(ref).equals(buf)) {
+      throw new Error(`NRR: immutability violation — ref ${ref} already exists with different bytes`)
+    }
+    return ref  // idempotent
+  }
+
+  _blobs.set(ref, buf)
+  _emit({ kind: 'nrr.blob.stored', ref, size: buf.length })
+  return ref
+}
+
+/**
+ * Retrieve bytes by ref. Verifies hash before returning.
+ * Never returns unverified bytes.
+ */
+export function get(ref) {
+  if (!_blobs.has(ref)) {
+    throw new Error(`NRR: not found — ${ref}`)
+  }
+  const buf = _blobs.get(ref)
+  const actual = hashRef(buf)
+  if (actual !== ref) {
+    throw new Error(`NRR: integrity violation — expected ${ref}, got ${actual}`)
+  }
+  return buf
+}
+
+/**
+ * Append a log entry. Returns the entry index.
+ * Rejects entries whose ref does not exist in the blob store (no dangling refs).
+ */
+export function append(entry) {
+  const { phase, type, ref } = entry
+  if (!_blobs.has(ref)) {
+    throw new Error(`NRR: dangling ref — ${ref} not in blob store`)
+  }
+  const index = _log.length
+  const record = Object.freeze({ index, phase, type, ref, ts: Date.now() })
+  _log.push(record)
+  _emit({ kind: 'nrr.log.appended', index, type, ref })
+  return index
+}
+
+/**
+ * Return ordered log (entry 0 … N). Immutable snapshot.
+ */
+export function log() {
+  return _log.slice()
+}
+
+// ── Extended API ─────────────────────────────────────────────────────────────
+
+export function has(ref) {
+  return _blobs.has(ref)
+}
+
+export function entries(fromIndex = 0, limit = Infinity) {
+  return _log.slice(fromIndex, fromIndex + limit)
+}
+
+/** Replay: same algorithm as NRR-1.0 §6. Returns state object. */
+export function replay(applyFn, validateFn, fromIndex = 0) {
+  let state    = null
+  let boundary = null
+
+  for (const entry of entries(fromIndex)) {
+    const blob = get(entry.ref)
+    const content = JSON.parse(blob.toString('utf8'))
+
+    if (entry.type === 'boundary') {
+      boundary = content
+    } else if (entry.type === 'interior') {
+      state = applyFn(state, content)
+      if (validateFn && !validateFn(state, boundary)) {
+        throw new Error(`NRR: replay validation failed at index ${entry.index}`)
+      }
+    }
+    // unknown types: stored, not applied (forward compatibility)
+  }
+
+  return { state, boundary }
+}
+
+/** Export a simple bundle of all blobs and log entries. */
+export function exportBundle() {
+  const blobs = {}
+  for (const [ref, buf] of _blobs) {
+    blobs[ref] = buf.toString('base64')
+  }
+  return {
+    manifest: { nrr_version: '1.0', hash_algorithm: 'sha256', log_format: 'nrr-log-json-v1' },
+    blobs,
+    log_segment: _log.slice(),
+  }
+}
+
+// ── Internal event bus (feeds EVR demo) ──────────────────────────────────────
+
+function _emit(event) {
+  const stamped = { ...event, ts: Date.now() }
+  _events.push(stamped)
+  for (const fn of _listeners) {
+    try { fn(stamped) } catch (_) {}
+  }
+}
+
+export function onEvent(fn) {
+  _listeners.push(fn)
+}
+
+export function recentEvents(n = 50) {
+  return _events.slice(-n)
+}
+
+/** Diagnostic: repo stats */
+export function stats() {
+  return { blobs: _blobs.size, entries: _log.length, events: _events.length }
+}

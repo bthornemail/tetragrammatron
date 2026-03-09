@@ -1,0 +1,284 @@
+/**
+ * node.js — DBC-NODE-1.0 runtime (demo)
+ *
+ * Exposes:
+ *   POST /resolve          SR-ABI calculus endpoint
+ *   GET  /sid/:digest      IdentityDescriptor endpoint
+ *   GET  /adapter/:label/:sid  Adapter derivation endpoint
+ *   GET  /events           EVR event stream (SSE)
+ *   GET  /nrr/stats        NRR substrate stats
+ *   GET  /                 Projection shell UI
+ *
+ * Laws demonstrated:
+ *   Calculus Faithfulness      node runs resolveTo exactly
+ *   No Semantic Invention      node produces only what the calculus produces
+ *   Artifact Immutability      stored artifacts never change
+ *   Descriptor Non-Authority   descriptor serves governed state
+ */
+
+import { createServer }         from 'http'
+import { readFileSync }         from 'fs'
+import { fileURLToPath }        from 'url'
+import { dirname, join }        from 'path'
+
+import * as NRR                 from './nrr.js'
+import { resolveTo, DEMO_SCHEMA, canonicalJSON, schemaDigest } from './dbc.js'
+import { deriveSID, projectDescriptor, deriveAdapter } from './idl.js'
+
+const PORT      = 3000
+const __dir     = dirname(fileURLToPath(import.meta.url))
+const SCHEMA_DIGEST = schemaDigest(DEMO_SCHEMA)
+const EPOCH     = 'demo-epoch-1'
+
+// ── In-memory descriptor index: sid → descriptor ─────────────────────────────
+const _descriptors = new Map()
+
+// ── EVR event bus ─────────────────────────────────────────────────────────────
+const _evrEvents  = []
+const _sseClients = new Set()
+
+function emit(eventKind, payload) {
+  const event = {
+    actor_sid:        null,
+    causal:           {},
+    event_id:         'evr:hdrpc:' + NRR.sha256hex(Buffer.from(JSON.stringify({ eventKind, payload, ts: Date.now() }))),
+    event_kind:       eventKind,
+    event_version:    'EVR-1.0',
+    federation_scope: null,
+    node_sid:         'sid:dbc:demo-node',
+    payload,
+    schema_digest:    SCHEMA_DIGEST,
+    subject_sid:      payload?.sid ?? null,
+    timestamp_epoch:  EPOCH,
+  }
+  _evrEvents.push(event)
+
+  // Broadcast to SSE clients
+  const data = `data: ${JSON.stringify(event)}\n\n`
+  for (const res of _sseClients) {
+    try { res.write(data) } catch (_) { _sseClients.delete(res) }
+  }
+}
+
+// ── Request helpers ───────────────────────────────────────────────────────────
+
+function readBody(req) {
+  return new Promise((resolve, reject) => {
+    let data = ''
+    req.on('data', chunk => data += chunk)
+    req.on('end',  () => { try { resolve(JSON.parse(data || '{}')) } catch (e) { reject(e) } })
+    req.on('error', reject)
+  })
+}
+
+function json(res, status, body) {
+  res.writeHead(status, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
+  res.end(JSON.stringify(body, null, 2))
+}
+
+function sse(res) {
+  res.writeHead(200, {
+    'Content-Type':  'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection':    'keep-alive',
+    'Access-Control-Allow-Origin': '*',
+  })
+  res.write('retry: 1000\n\n')  // reconnect hint
+  return res
+}
+
+// ── Route handlers ────────────────────────────────────────────────────────────
+
+async function handleResolve(req, res) {
+  let body
+  try { body = await readBody(req) }
+  catch { return json(res, 400, { error: 'malformed_envelope', http_status: 400 }) }
+
+  const { canonical_input, target_stage = 'Normalized', schema_digest: reqSchema } = body
+
+  // Schema guard (DBC-NODE-1.0 §2.5)
+  if (reqSchema && reqSchema !== SCHEMA_DIGEST) {
+    emit('resolve.protocol_error', { http_status: 422, error_class: 'unknown_schema' })
+    return json(res, 422, { error: 'unknown_schema', accepted: SCHEMA_DIGEST })
+  }
+
+  if (!canonical_input?.d) {
+    emit('resolve.protocol_error', { http_status: 400, error_class: 'malformed_envelope' })
+    return json(res, 400, { error: 'missing canonical_input.d' })
+  }
+
+  emit('resolve.received', { target_stage, schema_digest: SCHEMA_DIGEST })
+
+  // ── Run the calculus ──────────────────────────────────────────────────────
+  const result = resolveTo(target_stage, DEMO_SCHEMA, canonical_input.d)
+
+  if (!result.ok) {
+    emit('resolve.rejected', {
+      reject_code: result.reject_code,
+      reject_kind: result.reject_kind,
+      stage: result.stage,
+    })
+    return json(res, 200, {
+      canonical_evidence: { detail: result.detail },
+      reject_code: result.reject_code,
+      reject_kind: result.reject_kind,
+      stage:       result.stage ?? 'Realized',
+    })
+  }
+
+  // ── Store artifact in NRR ─────────────────────────────────────────────────
+  const valueJSON = canonicalJSON(result.value)
+  const valueRef  = NRR.put(Buffer.from(valueJSON, 'utf8'))
+  NRR.append({ phase: 1, type: 'interior', ref: valueRef })
+
+  emit('resolve.succeeded', {
+    stage:        result.stage,
+    value_digest: valueRef,
+    value_kind:   result.value_kind,
+  })
+
+  // ── Derive SID and descriptor if Normalized ───────────────────────────────
+  let sid = null
+  let descriptor = null
+
+  if (result.stage === 'Normalized') {
+    const sidResult = deriveSID(result, SCHEMA_DIGEST, null, {})
+    sid = sidResult.sid
+
+    emit('identity.derived', { sid, schema_digest: SCHEMA_DIGEST })
+
+    descriptor = projectDescriptor(sidResult, result, EPOCH, [
+      { id: sid + '#resolve', type: 'hd-rpc-resolve', serviceEndpoint: `http://localhost:${PORT}/resolve` },
+      { id: sid + '#sid',     type: 'hd-rpc-descriptor', serviceEndpoint: `http://localhost:${PORT}/sid/${sidResult.digest}` },
+    ])
+
+    // Store descriptor in NRR and in descriptor index
+    const descRef = NRR.put(Buffer.from(canonicalJSON(descriptor), 'utf8'))
+    NRR.append({ phase: 2, type: 'boundary', ref: descRef })
+    _descriptors.set(sidResult.digest, descriptor)
+    _descriptors.set(sid, descriptor)
+
+    emit('descriptor.projected', {
+      sid,
+      descriptor_digest: descriptor.descriptor_digest,
+      epoch: EPOCH,
+      governor_count: 0,
+      adapter_labels: [],
+    })
+  }
+
+  return json(res, 200, {
+    canonical_value:  result.value,
+    descriptor,
+    sid,
+    stage:            result.stage,
+    value_digest:     valueRef,
+    value_kind:       result.value_kind,
+  })
+}
+
+function handleGetSID(req, res, digest) {
+  const descriptor = _descriptors.get(digest) ?? _descriptors.get('sid:dbc:' + digest)
+
+  if (!descriptor) {
+    emit('descriptor.not_found', { sid_digest_requested: digest, federation_fallback_attempted: false })
+    return json(res, 404, { error: 'descriptor_not_found', sid_digest: digest })
+  }
+
+  emit('descriptor.served', { sid: descriptor.sid, descriptor_digest: descriptor.descriptor_digest, epoch: EPOCH, format: 'native' })
+  return json(res, 200, descriptor)
+}
+
+function handleGetAdapter(req, res, label, sidRaw) {
+  const sid = decodeURIComponent(sidRaw)
+  const credential = deriveAdapter(sid, label)
+
+  if (!credential) {
+    emit('adapter.unknown', { adapter_label_requested: label })
+    return json(res, 404, { error: 'unknown_adapter', adapter_label: label })
+  }
+
+  emit('adapter.public_served', { sid, adapter_label: label, credential_kind: credential.credential_kind })
+  return json(res, 200, credential)
+}
+
+function handleEvents(req, res) {
+  sse(res)
+  _sseClients.add(res)
+
+  // Send backlog of recent events immediately
+  for (const e of _evrEvents.slice(-20)) {
+    res.write(`data: ${JSON.stringify(e)}\n\n`)
+  }
+
+  req.on('close', () => _sseClients.delete(res))
+}
+
+function handleNRRStats(req, res) {
+  json(res, 200, { ...NRR.stats(), log: NRR.log() })
+}
+
+// ── Server ────────────────────────────────────────────────────────────────────
+
+const server = createServer(async (req, res) => {
+  const url = req.url.split('?')[0]
+
+  if (req.method === 'OPTIONS') {
+    res.writeHead(200, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods': '*' })
+    return res.end()
+  }
+
+  // POST /resolve
+  if (req.method === 'POST' && url === '/resolve') {
+    return handleResolve(req, res)
+  }
+
+  // GET /sid/:digest
+  const sidMatch = url.match(/^\/sid\/(.+)$/)
+  if (req.method === 'GET' && sidMatch) {
+    return handleGetSID(req, res, sidMatch[1])
+  }
+
+  // GET /adapter/:label/:sid
+  const adapterMatch = url.match(/^\/adapter\/([^/]+)\/(.+)$/)
+  if (req.method === 'GET' && adapterMatch) {
+    return handleGetAdapter(req, res, decodeURIComponent(adapterMatch[1]), adapterMatch[2])
+  }
+
+  // GET /events  (SSE)
+  if (req.method === 'GET' && url === '/events') {
+    return handleEvents(req, res)
+  }
+
+  // GET /nrr/stats
+  if (req.method === 'GET' && url === '/nrr/stats') {
+    return handleNRRStats(req, res)
+  }
+
+  // GET / → serve UI
+  if (req.method === 'GET' && (url === '/' || url === '/index.html')) {
+    try {
+      const html = readFileSync(join(__dir, 'ui.html'))
+      res.writeHead(200, { 'Content-Type': 'text/html' })
+      return res.end(html)
+    } catch {
+      return json(res, 404, { error: 'ui not found' })
+    }
+  }
+
+  return json(res, 404, { error: 'not_found' })
+})
+
+server.listen(PORT, () => {
+  console.log(`\n┌─────────────────────────────────────────────────┐`)
+  console.log(`│  Tetragrammatron Demo Node                      │`)
+  console.log(`│  http://localhost:${PORT}                          │`)
+  console.log(`│                                                 │`)
+  console.log(`│  POST /resolve          SR-ABI calculus         │`)
+  console.log(`│  GET  /sid/:digest      IdentityDescriptor      │`)
+  console.log(`│  GET  /adapter/:l/:sid  Adapter derivation      │`)
+  console.log(`│  GET  /events           EVR event stream (SSE)  │`)
+  console.log(`│  GET  /nrr/stats        NRR substrate stats     │`)
+  console.log(`└─────────────────────────────────────────────────┘\n`)
+  emit('node.started', { port: PORT, schema_digest: SCHEMA_DIGEST })
+})

@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tetragrammatron · Projection Shell</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg:       #0a0c0f;
+    --bg1:      #0f1215;
+    --bg2:      #141820;
+    --bg3:      #1a2030;
+    --border:   #1e2840;
+    --border2:  #243050;
+    --amber:    #e8a020;
+    --amber2:   #f0c060;
+    --amber3:   #ffd080;
+    --green:    #30c060;
+    --green2:   #50e080;
+    --red:      #e04040;
+    --blue:     #4080e0;
+    --blue2:    #60a0ff;
+    --muted:    #3a4560;
+    --text:     #c8d0e0;
+    --text2:    #8090b0;
+    --text3:    #506080;
+    --sid:      #a0d0ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* ── Layout ── */
+  #app {
+    display: grid;
+    grid-template-rows: 40px 1fr 24px;
+    height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--bg1);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 20px;
+  }
+  .logo {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    text-transform: uppercase;
+  }
+  .logo span { color: var(--text3); }
+  .badge {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    color: var(--text3);
+    padding: 2px 6px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+  .header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text3);
+    font-size: 11px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  .dot.warn { background: var(--amber); }
+
+  /* ── Main columns ── */
+  main {
+    display: grid;
+    grid-template-columns: 340px 1fr 300px;
+    overflow: hidden;
+  }
+
+  /* ── Panels ── */
+  .panel {
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .panel:last-child { border-right: none; }
+
+  .panel-header {
+    background: var(--bg1);
+    border-bottom: 1px solid var(--border);
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .panel-title {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text3);
+    font-weight: 500;
+  }
+  .panel-subtitle {
+    margin-left: auto;
+    font-size: 9px;
+    color: var(--text3);
+    opacity: 0.6;
+  }
+  .panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+  }
+  .panel-body::-webkit-scrollbar { width: 4px; }
+  .panel-body::-webkit-scrollbar-track { background: transparent; }
+  .panel-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  /* ── Input column ── */
+  .section { margin-bottom: 16px; }
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  textarea {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    padding: 8px;
+    resize: vertical;
+    outline: none;
+    border-radius: 2px;
+    transition: border-color 0.15s;
+  }
+  textarea:focus { border-color: var(--border2); }
+
+  select {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 5px 8px;
+    outline: none;
+    border-radius: 2px;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .btn {
+    display: block;
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    color: var(--amber);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    padding: 8px 16px;
+    cursor: pointer;
+    text-transform: uppercase;
+    border-radius: 2px;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .btn:hover  { background: var(--border2); border-color: var(--amber); color: var(--amber3); }
+  .btn:active { background: var(--bg2); }
+  .btn.running { color: var(--text3); border-color: var(--border); cursor: default; animation: pulse 1s infinite; }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  /* Scenario pills */
+  .pills { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+  .pill {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text3);
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.12s;
+  }
+  .pill:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* ── Middle column: output ── */
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    background: var(--bg1);
+  }
+  .tab {
+    padding: 7px 14px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.12s;
+    text-transform: uppercase;
+  }
+  .tab:hover { color: var(--text2); }
+  .tab.active { color: var(--amber); border-bottom-color: var(--amber); }
+
+  /* Result display */
+  .result-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    margin-bottom: 10px;
+  }
+  .result-card-header {
+    background: var(--bg1);
+    border-bottom: 1px solid var(--border);
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-card-title {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .result-card-body {
+    padding: 10px;
+  }
+
+  pre {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: var(--text);
+  }
+
+  .sid-display {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--sid);
+    word-break: break-all;
+    line-height: 1.6;
+    padding: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    margin-bottom: 8px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 2px 8px;
+    font-size: 10px;
+    color: var(--text2);
+  }
+  .chip.ok    { border-color: #1a4028; color: var(--green); }
+  .chip.error { border-color: #401a1a; color: var(--red); }
+  .chip.stage { border-color: #1a2840; color: var(--blue2); }
+  .chip.sid   { border-color: #182840; color: var(--sid); }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--text3);
+    gap: 8px;
+  }
+  .empty-state .icon { font-size: 28px; opacity: 0.3; }
+  .empty-state .msg { font-size: 11px; letter-spacing: 0.05em; }
+
+  /* Node graph */
+  .graph-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+  }
+  .node-pill {
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: 11px;
+    color: var(--text2);
+  }
+  .node-pill.canonical {
+    border-color: var(--green);
+    color: var(--green2);
+  }
+  .edge-pill {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 3px 8px;
+    font-size: 10px;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .rel-name { color: var(--amber); }
+
+  /* ── Right column: events / NRR ── */
+  .event-row {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    animation: fadeIn 0.25s ease;
+  }
+  .event-row:last-child { border-bottom: none; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; } }
+
+  .event-ts {
+    font-size: 9px;
+    color: var(--text3);
+    flex-shrink: 0;
+    margin-top: 1px;
+    width: 52px;
+  }
+  .event-kind {
+    font-size: 10px;
+    flex: 1;
+  }
+  .event-kind .family { color: var(--text3); }
+  .event-kind .name   { color: var(--amber2); }
+
+  .ev-resolve  .name { color: var(--blue2); }
+  .ev-identity .name { color: var(--sid); }
+  .ev-descriptor .name { color: var(--amber2); }
+  .ev-nrr      .name { color: var(--green); }
+  .ev-node     .name { color: var(--text2); }
+
+  .nrr-entry {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    animation: fadeIn 0.2s ease;
+  }
+  .nrr-entry:last-child { border-bottom: none; }
+  .nrr-ref {
+    font-size: 10px;
+    color: var(--green);
+    word-break: break-all;
+    margin-bottom: 2px;
+  }
+  .nrr-meta {
+    font-size: 9px;
+    color: var(--text3);
+    display: flex;
+    gap: 8px;
+  }
+  .type-badge {
+    font-size: 8px;
+    padding: 1px 5px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .type-boundary { background: #1a2840; color: var(--blue); }
+  .type-interior { background: #1a2820; color: var(--green); }
+  .type-guarantee { background: #2a1a10; color: var(--amber); }
+
+  /* ── Status bar ── */
+  footer {
+    background: var(--bg1);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 16px;
+    color: var(--text3);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+  .status-item { display: flex; align-items: center; gap: 4px; }
+  .status-val { color: var(--text2); }
+
+  /* Error display */
+  .error-box {
+    background: #1a0808;
+    border: 1px solid #401010;
+    border-radius: 2px;
+    padding: 10px;
+    color: var(--red);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 12px 0;
+  }
+
+  .kv-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    align-items: flex-start;
+  }
+  .kv-key { color: var(--text3); flex-shrink: 0; width: 110px; }
+  .kv-val { color: var(--text); word-break: break-all; flex: 1; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Header -->
+  <header>
+    <div class="logo">Tetragrammatron <span>·</span> Projection Shell</div>
+    <div class="badge">HD-RPC-GUI-1.0 · Demo</div>
+    <div class="badge">NRR + DBC + IDL + NODE</div>
+    <div class="header-right">
+      <div class="dot" id="dot"></div>
+      <span id="node-status">connecting…</span>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main>
+
+    <!-- ── Left: Input ── -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Resolve · Input</span>
+        <span class="panel-subtitle">SR-ABI</span>
+      </div>
+      <div class="panel-body">
+
+        <div class="section">
+          <div class="section-label">Scenario</div>
+          <div class="pills">
+            <div class="pill" data-scenario="person">Person card</div>
+            <div class="pill" data-scenario="org">Org + member</div>
+            <div class="pill" data-scenario="device">Device</div>
+            <div class="pill" data-scenario="chain">Chain collapse</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Document · canonical_input.d</div>
+          <textarea id="doc-input" rows="12" spellcheck="false">[
+  { "Rel": ["alias", "bob", "alice"] },
+  { "Rel": ["hasType", "bob", "Person"] }
+]</textarea>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Target Stage</div>
+          <select id="stage-select">
+            <option value="Realized">Realized</option>
+            <option value="Closed">Closed</option>
+            <option value="Normalized" selected>Normalized</option>
+          </select>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Schema</div>
+          <div class="kv-row">
+            <span class="kv-key">id</span>
+            <span class="kv-val" style="color:var(--text3);font-size:10px">tetragrammatron-demo-schema-v1</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-key">admitted relations</span>
+            <span class="kv-val" style="color:var(--amber);font-size:10px">alias · hasType · parentOf</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-key">admitted types</span>
+            <span class="kv-val" style="color:var(--text2);font-size:10px">Person · Organization · Device · Service · Agent</span>
+          </div>
+        </div>
+
+        <button class="btn" id="resolve-btn">↳ POST /resolve</button>
+
+        <div class="divider"></div>
+
+        <div class="section-label" style="margin-bottom:6px">Adapter Lookup</div>
+        <div id="adapter-section" style="display:none">
+          <div class="kv-row" style="margin-bottom:6px">
+            <span class="kv-key">current SID</span>
+            <span class="kv-val" id="adapter-sid-display" style="color:var(--sid);font-size:10px">—</span>
+          </div>
+          <select id="adapter-select" style="margin-bottom:6px">
+            <option value="adapter:evm">adapter:evm</option>
+            <option value="adapter:did:key">adapter:did:key</option>
+            <option value="adapter:ipv6">adapter:ipv6</option>
+          </select>
+          <button class="btn" id="adapter-btn">↳ GET /adapter</button>
+          <div id="adapter-result" style="margin-top:8px;display:none">
+            <div class="result-card">
+              <div class="result-card-header"><span class="result-card-title">Adapter Result</span></div>
+              <div class="result-card-body"><pre id="adapter-json"></pre></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Middle: Output ── -->
+    <div class="panel">
+      <div class="tab-bar">
+        <div class="tab active" data-tab="output">Output</div>
+        <div class="tab" data-tab="graph">Graph</div>
+        <div class="tab" data-tab="descriptor">Descriptor</div>
+        <div class="tab" data-tab="raw">Raw JSON</div>
+      </div>
+      <div class="panel-body" id="output-pane">
+        <div class="empty-state">
+          <div class="icon">◈</div>
+          <div class="msg">Submit a document to begin resolution</div>
+        </div>
+      </div>
+      <div class="panel-body" id="graph-pane" style="display:none"></div>
+      <div class="panel-body" id="descriptor-pane" style="display:none"></div>
+      <div class="panel-body" id="raw-pane" style="display:none"></div>
+    </div>
+
+    <!-- ── Right: Events + NRR ── -->
+    <div class="panel">
+      <div class="tab-bar">
+        <div class="tab active" data-tab="events">EVR Stream</div>
+        <div class="tab" data-tab="nrr">NRR Log</div>
+      </div>
+      <div class="panel-body" id="events-pane">
+        <div style="color:var(--text3);font-size:10px;padding:8px 0">Waiting for events…</div>
+      </div>
+      <div class="panel-body" id="nrr-pane" style="display:none">
+        <div style="color:var(--text3);font-size:10px;padding:8px 0">No entries yet.</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Status bar -->
+  <footer>
+    <div class="status-item">NODE <span class="status-val" id="sb-node">localhost:3000</span></div>
+    <div class="status-item">BLOBS <span class="status-val" id="sb-blobs">0</span></div>
+    <div class="status-item">ENTRIES <span class="status-val" id="sb-entries">0</span></div>
+    <div class="status-item">EVENTS <span class="status-val" id="sb-events">0</span></div>
+    <div class="status-item" style="margin-left:auto">NRR-1.0 · DBC-1.2 · DBC-IDL-1.2 · DBC-NODE-1.0</div>
+  </footer>
+
+</div>
+
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+const state = {
+  lastResult: null,
+  lastSid: null,
+  lastDescriptor: null,
+  events: [],
+  nrrLog: [],
+  eventCount: 0,
+}
+
+// ── Node health ──────────────────────────────────────────────────────────────
+async function checkNode() {
+  try {
+    const r = await fetch('/nrr/stats')
+    if (r.ok) {
+      const d = await r.json()
+      document.getElementById('node-status').textContent = 'node running'
+      document.getElementById('dot').className = 'dot'
+      document.getElementById('sb-blobs').textContent = d.blobs
+      document.getElementById('sb-entries').textContent = d.entries
+      state.nrrLog = d.log ?? []
+      if (document.getElementById('nrr-pane').style.display !== 'none') renderNRR()
+    }
+  } catch {
+    document.getElementById('node-status').textContent = 'node offline'
+    document.getElementById('dot').className = 'dot warn'
+  }
+}
+setInterval(checkNode, 3000)
+checkNode()
+
+// ── SSE Event stream ──────────────────────────────────────────────────────────
+function connectSSE() {
+  const es = new EventSource('/events')
+  es.onmessage = e => {
+    const evt = JSON.parse(e.data)
+    state.events.unshift(evt)
+    state.eventCount++
+    document.getElementById('sb-events').textContent = state.eventCount
+    if (document.getElementById('events-pane').style.display !== 'none') renderEvents()
+  }
+  es.onerror = () => setTimeout(connectSSE, 2000)
+}
+connectSSE()
+
+// ── Scenarios ─────────────────────────────────────────────────────────────────
+const SCENARIOS = {
+  person: `[
+  { "Rel": ["alias", "bob", "alice"] },
+  { "Rel": ["hasType", "bob", "Person"] }
+]`,
+  org: `[
+  { "Rel": ["alias", "acme-corp", "acme"] },
+  { "Rel": ["hasType", "acme-corp", "Organization"] },
+  { "Rel": ["hasType", "alice", "Person"] }
+]`,
+  device: `[
+  { "Rel": ["alias", "sensor-01", "s1"] },
+  { "Rel": ["hasType", "sensor-01", "Device"] }
+]`,
+  chain: `[
+  { "Rel": ["alias", "c", "b"] },
+  { "Rel": ["alias", "b", "a"] },
+  { "Rel": ["hasType", "c", "Agent"] },
+  { "Rel": ["parentOf", "a", "b"] },
+  { "Rel": ["parentOf", "b", "c"] }
+]`,
+}
+document.querySelectorAll('.pill[data-scenario]').forEach(p => {
+  p.addEventListener('click', () => {
+    document.getElementById('doc-input').value = SCENARIOS[p.dataset.scenario]
+  })
+})
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function setupTabs(barSelector, paneIds) {
+  const tabs = document.querySelectorAll(barSelector + ' .tab')
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'))
+      tab.classList.add('active')
+      paneIds.forEach(id => {
+        document.getElementById(id).style.display =
+          id === tab.dataset.tab + '-pane' ? 'flex' : 'none'
+      })
+      if (tab.dataset.tab === 'events') renderEvents()
+      if (tab.dataset.tab === 'nrr')    { checkNode(); renderNRR() }
+    })
+  })
+}
+setupTabs('.panel:nth-child(2) .tab-bar', ['output-pane','graph-pane','descriptor-pane','raw-pane'])
+setupTabs('.panel:nth-child(3) .tab-bar', ['events-pane','nrr-pane'])
+
+// ── Resolve ───────────────────────────────────────────────────────────────────
+document.getElementById('resolve-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('resolve-btn')
+  btn.className = 'btn running'
+  btn.textContent = '⟳ resolving…'
+
+  let doc
+  try { doc = JSON.parse(document.getElementById('doc-input').value) }
+  catch (e) {
+    showError('JSON parse error: ' + e.message)
+    btn.className = 'btn'; btn.textContent = '↳ POST /resolve'; return
+  }
+
+  const stage = document.getElementById('stage-select').value
+  const body = { canonical_input: { d: doc }, target_stage: stage }
+
+  try {
+    const r = await fetch('/resolve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    const data = await r.json()
+    state.lastResult = data
+
+    if (data.reject_kind) {
+      showReject(data)
+    } else {
+      state.lastSid = data.sid
+      state.lastDescriptor = data.descriptor
+      showOutput(data)
+      showGraph(data)
+      showDescriptor(data)
+      showRaw(data)
+      if (data.sid) {
+        document.getElementById('adapter-section').style.display = 'block'
+        document.getElementById('adapter-sid-display').textContent = data.sid
+      }
+    }
+    checkNode()
+  } catch(e) {
+    showError('fetch error: ' + e.message)
+  }
+
+  btn.className = 'btn'; btn.textContent = '↳ POST /resolve'
+})
+
+// ── Adapter ───────────────────────────────────────────────────────────────────
+document.getElementById('adapter-btn').addEventListener('click', async () => {
+  if (!state.lastSid) return
+  const label = document.getElementById('adapter-select').value
+  const encodedLabel = encodeURIComponent(label)
+  const encodedSid = encodeURIComponent(state.lastSid)
+  try {
+    const r = await fetch(`/adapter/${encodedLabel}/${encodedSid}`)
+    const data = await r.json()
+    document.getElementById('adapter-json').textContent = JSON.stringify(data, null, 2)
+    document.getElementById('adapter-result').style.display = 'block'
+  } catch(e) {
+    document.getElementById('adapter-json').textContent = 'Error: ' + e.message
+    document.getElementById('adapter-result').style.display = 'block'
+  }
+})
+
+// ── Render: Output ────────────────────────────────────────────────────────────
+function showOutput(data) {
+  const pane = document.getElementById('output-pane')
+  const stage = data.stage ?? 'Rejected'
+
+  let html = ''
+
+  // Stage + status chips
+  html += `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">`
+  html += `<span class="chip ok">✓ resolved</span>`
+  html += `<span class="chip stage">${stage}</span>`
+  if (data.sid) html += `<span class="chip sid">SID derived</span>`
+  html += `</div>`
+
+  // SID
+  if (data.sid) {
+    html += `<div class="section-label" style="margin-bottom:6px">Semantic ID</div>`
+    html += `<div class="sid-display">${data.sid}</div>`
+  }
+
+  // Value digest
+  if (data.value_digest) {
+    html += `<div class="kv-row">
+      <span class="kv-key">value_digest</span>
+      <span class="kv-val" style="color:var(--green);font-size:10px">${data.value_digest}</span>
+    </div>`
+  }
+
+  html += `<div class="divider"></div>`
+
+  // Normal form summary
+  if (data.canonical_value) {
+    const cv = data.canonical_value
+    html += `<div class="section-label" style="margin-bottom:8px">Normal Form</div>`
+
+    html += `<div class="kv-row"><span class="kv-key">nodes (${cv.nodes?.length ?? 0})</span>`
+    html += `<span class="kv-val">${(cv.nodes ?? []).map(n =>
+      `<span style="color:var(--amber2)">${n}</span>`).join(' · ')}</span></div>`
+
+    html += `<div class="kv-row"><span class="kv-key">edges (${cv.edges?.length ?? 0})</span>`
+    html += `<span class="kv-val" style="color:var(--text2)">${cv.edges?.length ?? 0} canonical</span></div>`
+  }
+
+  pane.innerHTML = html
+  pane.style.display = 'flex'
+  pane.style.flexDirection = 'column'
+}
+
+// ── Render: Graph ─────────────────────────────────────────────────────────────
+function showGraph(data) {
+  const pane = document.getElementById('graph-pane')
+  if (!data.canonical_value?.edges) { pane.innerHTML = '<div class="empty-state"><div class="msg">No edges</div></div>'; return }
+
+  const { nodes, edges } = data.canonical_value
+
+  // Build canonical node set from edges after alias collapse
+  const aliasMap = {}
+  for (const [rel, a, b] of edges) {
+    if (rel === 'alias' && a !== b) aliasMap[b] = a
+  }
+
+  const canonical = new Set()
+  for (const n of nodes) {
+    if (!aliasMap[n]) canonical.add(n)
+  }
+
+  let html = `<div class="section-label" style="margin-bottom:10px">Nodes</div>`
+  html += `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">`
+  for (const n of nodes) {
+    const isCanon = canonical.has(n)
+    html += `<span class="node-pill${isCanon ? ' canonical' : ''}">${n}</span>`
+  }
+  html += `</div>`
+
+  html += `<div class="section-label" style="margin-bottom:10px">Edges</div>`
+  for (const edge of edges) {
+    const [rel, ...args] = edge
+    if (rel === 'alias' && args[0] === args[1]) continue  // skip self-alias
+    html += `<div class="graph-row">`
+    html += `<span class="node-pill${canonical.has(args[0]) ? ' canonical' : ''}">${args[0]}</span>`
+    html += `<span class="edge-pill"><span class="rel-name">${rel}</span></span>`
+    html += `<span class="node-pill${canonical.has(args[1] ?? '') ? ' canonical' : ''}">${args[1] ?? ''}</span>`
+    html += `</div>`
+  }
+
+  pane.innerHTML = html
+  pane.style.display = 'flex'
+  pane.style.flexDirection = 'column'
+}
+
+// ── Render: Descriptor ────────────────────────────────────────────────────────
+function showDescriptor(data) {
+  const pane = document.getElementById('descriptor-pane')
+  if (!data.descriptor) {
+    pane.innerHTML = `<div class="empty-state"><div class="msg">Descriptor requires Normalized stage</div></div>`
+    pane.style.display = 'flex'
+    return
+  }
+  const d = data.descriptor
+  let html = `<div class="section-label" style="margin-bottom:8px">IdentityDescriptor</div>`
+  const fields = [
+    ['sid', d.sid, 'var(--sid)'],
+    ['spec', d.spec, 'var(--text2)'],
+    ['schema_digest', d.schema_digest, 'var(--text2)'],
+    ['epoch', d.epoch, 'var(--text2)'],
+    ['federation_scope', d.federation_scope ?? 'null', 'var(--text3)'],
+    ['descriptor_digest', d.descriptor_digest, 'var(--green)'],
+  ]
+  for (const [k, v, color] of fields) {
+    html += `<div class="kv-row">
+      <span class="kv-key">${k}</span>
+      <span class="kv-val" style="color:${color};font-size:10px">${v}</span>
+    </div>`
+  }
+
+  html += `<div class="divider"></div>`
+  html += `<div class="section-label" style="margin-bottom:8px">Services</div>`
+  for (const s of d.services ?? []) {
+    html += `<div class="kv-row">
+      <span class="kv-key" style="word-break:break-all">${s.type}</span>
+      <span class="kv-val" style="color:var(--blue2);font-size:10px">${s.serviceEndpoint}</span>
+    </div>`
+  }
+
+  html += `<div class="divider"></div>`
+  html += `<div class="section-label" style="margin-bottom:6px">Law: Descriptor Non-Authority</div>`
+  html += `<div style="color:var(--text3);font-size:10px;line-height:1.5">This descriptor is projected from canonical state. It describes the SID; it does not define it.</div>`
+
+  pane.innerHTML = html
+  pane.style.display = 'flex'
+  pane.style.flexDirection = 'column'
+}
+
+// ── Render: Raw JSON ──────────────────────────────────────────────────────────
+function showRaw(data) {
+  const pane = document.getElementById('raw-pane')
+  pane.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`
+  pane.style.display = 'flex'
+  pane.style.flexDirection = 'column'
+}
+
+// ── Render: Reject ────────────────────────────────────────────────────────────
+function showReject(data) {
+  const pane = document.getElementById('output-pane')
+  pane.innerHTML = `
+    <div style="display:flex;gap:6px;margin-bottom:12px">
+      <span class="chip error">✗ rejected</span>
+      <span class="chip">${data.reject_kind ?? 'unknown'}</span>
+    </div>
+    <div class="error-box">
+      <div><b>reject_kind:</b> ${data.reject_kind}</div>
+      <div><b>reject_code:</b> ${data.reject_code}</div>
+      ${data.canonical_evidence?.detail ? `<div style="margin-top:6px;color:var(--text3)">${data.canonical_evidence.detail}</div>` : ''}
+    </div>`
+  pane.style.display = 'flex'; pane.style.flexDirection = 'column'
+}
+
+function showError(msg) {
+  const pane = document.getElementById('output-pane')
+  pane.innerHTML = `<div class="error-box">${msg}</div>`
+  pane.style.display = 'flex'; pane.style.flexDirection = 'column'
+}
+
+// ── Render: Events ────────────────────────────────────────────────────────────
+function renderEvents() {
+  const pane = document.getElementById('events-pane')
+  if (!state.events.length) { pane.innerHTML = `<div style="color:var(--text3);font-size:10px;padding:8px 0">Waiting for events…</div>`; return }
+
+  const evClassMap = {
+    'resolve': 'ev-resolve',
+    'identity': 'ev-identity',
+    'descriptor': 'ev-descriptor',
+    'nrr': 'ev-nrr',
+    'node': 'ev-node',
+    'adapter': 'ev-resolve',
+  }
+
+  let html = ''
+  for (const e of state.events.slice(0, 60)) {
+    const [family, ...rest] = e.event_kind.split('.')
+    const cls = evClassMap[family] ?? ''
+    const ts = new Date(e.ts ?? 0).toLocaleTimeString('en', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    html += `<div class="event-row ${cls}">
+      <span class="event-ts">${ts}</span>
+      <span class="event-kind">
+        <span class="family">${family}.</span><span class="name">${rest.join('.')}</span>
+      </span>
+    </div>`
+  }
+  pane.innerHTML = html
+}
+
+// ── Render: NRR log ────────────────────────────────────────────────────────────
+function renderNRR() {
+  const pane = document.getElementById('nrr-pane')
+  if (!state.nrrLog.length) { pane.innerHTML = `<div style="color:var(--text3);font-size:10px;padding:8px 0">No entries yet.</div>`; return }
+
+  let html = ''
+  for (const entry of [...state.nrrLog].reverse().slice(0, 40)) {
+    const short = entry.ref.slice(0, 18) + '…'
+    html += `<div class="nrr-entry">
+      <div class="nrr-ref">${entry.ref}</div>
+      <div class="nrr-meta">
+        <span class="type-badge type-${entry.type}">${entry.type}</span>
+        <span>idx ${entry.index}</span>
+        <span>phase ${entry.phase}</span>
+      </div>
+    </div>`
+  }
+  pane.innerHTML = html
+}
+</script>
+</body>
+</html>

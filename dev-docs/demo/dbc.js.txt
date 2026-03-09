@@ -1,0 +1,284 @@
+/**
+ * dbc.js — DBC-1.2 normalization engine (demo subset)
+ *
+ * Implements realize → close → normalize for a demo schema that admits:
+ *   - hasType(x, T)      — type assertion
+ *   - alias(a, b)        — identity equivalence
+ *   - parentOf(p, c)     — hierarchical relation (closure demo)
+ *
+ * Laws demonstrated:
+ *   Stage Soundness          value_kind matches stage
+ *   Closure Idempotence      close(close(S)) = close(S)
+ *   Normalization Idempotence normalize(normalize(S)) = normalize(S)
+ *   Confluence               any rewrite order → same NormalForm
+ *   Schema Preservation      no unadmitted nodes or edges introduced
+ */
+
+// ── Demo schema ───────────────────────────────────────────────────────────────
+
+export const DEMO_SCHEMA = {
+  id: 'tetragrammatron-demo-schema-v1',
+  admitted_relations: new Set(['hasType', 'alias', 'parentOf']),
+  admitted_types:     new Set(['Person', 'Organization', 'Device', 'Service', 'Agent']),
+  closure_rules: [
+    // alias is symmetric and transitive (union-find)
+    { kind: 'alias_symmetry',    desc: 'alias(a,b) → alias(b,a)' },
+    { kind: 'alias_transitivity', desc: 'alias(a,b) ∧ alias(b,c) → alias(a,c)' },
+    // parentOf is transitive
+    { kind: 'parentOf_transitivity', desc: 'parentOf(a,b) ∧ parentOf(b,c) → parentOf(a,c)' },
+  ],
+  normalization_rules: [
+    // aliases collapse to canonical representative (lexicographic minimum)
+    { kind: 'alias_collapse', desc: 'all aliases → lexicographic minimum representative' },
+  ],
+}
+
+export function schemaDigest(schema) {
+  // Deterministic schema fingerprint (demo: just hash the id)
+  import('crypto').then(() => {})  // tree-shaken; used in idl.js
+  return 'schema:' + Buffer.from(schema.id).toString('hex').slice(0, 16)
+}
+
+// ── Stage 1: Realize ──────────────────────────────────────────────────────────
+
+/**
+ * realize(schema, document) → { ok: true, value } | { ok: false, reject }
+ *
+ * Validates that every clause uses admitted relations and types.
+ * Returns a RealizedStructure.
+ */
+export function realize(schema, document) {
+  const edges = []
+  const nodeSet = new Set()
+
+  for (const clause of document) {
+    if (!clause.Rel) {
+      return reject('RejectRealize', 'invalid_clause',
+        `clause missing Rel field: ${JSON.stringify(clause)}`)
+    }
+
+    const [rel, ...args] = clause.Rel
+
+    if (!schema.admitted_relations.has(rel)) {
+      return reject('RejectRealize', 'invalid_symbol',
+        `relation '${rel}' not admitted by schema`)
+    }
+
+    // For hasType: second arg must be admitted type
+    if (rel === 'hasType') {
+      const [, , type] = clause.Rel
+      if (!schema.admitted_types.has(type)) {
+        return reject('RejectRealize', 'invalid_symbol',
+          `type '${type}' not admitted by schema`)
+      }
+    }
+
+    edges.push(clause.Rel.slice())  // [rel, arg0, arg1, ...]
+    for (const node of args) nodeSet.add(node)
+  }
+
+  return {
+    ok: true,
+    stage: 'Realized',
+    value_kind: 'RealizedStructure',
+    value: {
+      nodes: [...nodeSet].sort(),
+      edges,
+      constraints: [],
+      witnesses: [],
+    }
+  }
+}
+
+// ── Stage 2: Close ────────────────────────────────────────────────────────────
+
+/**
+ * close(schema, realized) → { ok: true, value } | { ok: false, reject }
+ *
+ * Applies closure rules:
+ *   - alias symmetry and transitivity (union-find)
+ *   - parentOf transitivity
+ * Returns a ClosedStructure.
+ */
+export function close(schema, realized) {
+  if (!realized.ok) return realized
+
+  let edges = realized.value.edges.map(e => e.slice())
+
+  // Build union-find for alias closure
+  const parent = {}
+  function find(x) {
+    if (!(x in parent)) parent[x] = x
+    if (parent[x] !== x) parent[x] = find(parent[x])
+    return parent[x]
+  }
+  function union(a, b) {
+    const ra = find(a), rb = find(b)
+    if (ra !== rb) {
+      // canonical representative = lexicographic minimum
+      if (ra < rb) parent[rb] = ra
+      else parent[ra] = rb
+    }
+  }
+
+  // Seed union-find from explicit alias edges
+  for (const [rel, a, b] of edges) {
+    if (rel === 'alias') {
+      union(a, b)
+      union(b, a)  // symmetry
+    }
+  }
+
+  // Transitive parentOf closure
+  let changed = true
+  while (changed) {
+    changed = false
+    const newEdges = []
+    const edgeSet = new Set(edges.map(e => e.join('\0')))
+    for (const [r1, a, b] of edges) {
+      if (r1 !== 'parentOf') continue
+      for (const [r2, c, d] of edges) {
+        if (r2 !== 'parentOf' || c !== b) continue
+        const derived = ['parentOf', a, d]
+        if (!edgeSet.has(derived.join('\0'))) {
+          newEdges.push(derived)
+          edgeSet.add(derived.join('\0'))
+          changed = true
+        }
+      }
+    }
+    edges = edges.concat(newEdges)
+  }
+
+  // Check for contradiction: p(x) and not_p(x) — demo: alias(x,x) always ok
+  // (full contradiction detection out of scope for demo)
+
+  const nodeSet = new Set()
+  for (const edge of edges) {
+    for (const n of edge.slice(1)) nodeSet.add(n)
+  }
+
+  return {
+    ok: true,
+    stage: 'Closed',
+    value_kind: 'ClosedStructure',
+    value: {
+      nodes: [...nodeSet].sort(),
+      edges: sortEdges(edges),
+      constraints: [],
+      witnesses: [],
+      _aliasParent: parent,  // carry forward for normalization
+    }
+  }
+}
+
+// ── Stage 3: Normalize ────────────────────────────────────────────────────────
+
+/**
+ * normalize(schema, closed) → { ok: true, value } | { ok: false, reject }
+ *
+ * Collapses all aliases to canonical representative (lex-min in union-find).
+ * Eliminates duplicate edges after substitution.
+ * Returns a NormalForm.
+ */
+export function normalize(schema, closed) {
+  if (!closed.ok) return closed
+
+  const { _aliasParent } = closed.value
+
+  function canonical(x) {
+    if (!_aliasParent) return x
+    // walk to root
+    let cur = x
+    const seen = new Set()
+    while (_aliasParent[cur] && _aliasParent[cur] !== cur) {
+      if (seen.has(cur)) break
+      seen.add(cur)
+      cur = _aliasParent[cur]
+    }
+    return cur
+  }
+
+  // Substitute all nodes with canonical representatives
+  const edgeSet = new Set()
+  const normalEdges = []
+
+  for (const edge of closed.value.edges) {
+    const [rel, ...args] = edge
+    if (rel === 'alias') continue  // alias edges removed after collapse
+
+    const normEdge = [rel, ...args.map(canonical)]
+    const key = normEdge.join('\0')
+    if (!edgeSet.has(key)) {
+      edgeSet.add(key)
+      normalEdges.push(normEdge)
+    }
+  }
+
+  const nodeSet = new Set()
+  for (const edge of normalEdges) {
+    for (const n of edge.slice(1)) nodeSet.add(n)
+  }
+
+  return {
+    ok: true,
+    stage: 'Normalized',
+    value_kind: 'NormalForm',
+    value: {
+      nodes: [...nodeSet].sort(),
+      edges: sortEdges(normalEdges),
+      constraints: [],
+      witnesses: [],
+    }
+  }
+}
+
+// ── Full pipeline ─────────────────────────────────────────────────────────────
+
+/**
+ * resolveTo(targetStage, schema, document) → SRResult-shaped object
+ */
+export function resolveTo(targetStage, schema, document) {
+  const stages = ['Realized', 'Closed', 'Normalized']
+  const idx = stages.indexOf(targetStage)
+  if (idx === -1) {
+    return reject('RejectRealize', 'invalid_stage', `unknown stage: ${targetStage}`)
+  }
+
+  let result = realize(schema, document)
+  if (!result.ok || idx === 0) return result
+
+  result = close(schema, result)
+  if (!result.ok || idx === 1) return result
+
+  result = normalize(schema, result)
+  return result
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function reject(rejectKind, rejectCode, detail) {
+  return { ok: false, stage: null, reject_kind: rejectKind, reject_code: rejectCode, detail }
+}
+
+function sortEdges(edges) {
+  return edges.slice().sort((a, b) => {
+    const ka = a.join('\0'), kb = b.join('\0')
+    return ka < kb ? -1 : ka > kb ? 1 : 0
+  })
+}
+
+/** Canonical JSON: sorted keys, no extra whitespace. */
+export function canonicalJSON(obj) {
+  return JSON.stringify(sortKeys(obj))
+}
+
+function sortKeys(v) {
+  if (Array.isArray(v)) return v.map(sortKeys)
+  if (v && typeof v === 'object') {
+    const out = {}
+    for (const k of Object.keys(v).sort()) out[k] = sortKeys(v[k])
+    return out
+  }
+  return v
+}

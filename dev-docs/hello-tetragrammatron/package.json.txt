@@ -1,0 +1,13 @@
+{
+  "name": "hello-tetragrammatron",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minimal Hello Tetragrammatron demos",
+  "scripts": {
+    "hello": "node hello.js",
+    "call": "node call.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,176 @@
+#!/usr/bin/env node
+const http = require('http');
+const crypto = require('crypto');
+
+function sha256Hex(input) {
+  return crypto.createHash('sha256').update(input).digest('hex');
+}
+
+function canonicalize(value) {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return '[' + value.map(canonicalize).join(',') + ']';
+  const keys = Object.keys(value).sort();
+  return '{' + keys.map(k => JSON.stringify(k) + ':' + canonicalize(value[k])).join(',') + '}';
+}
+
+function hkdfBytes(ikm, info, length) {
+  return crypto.hkdfSync('sha256', Buffer.from(ikm, 'utf8'), Buffer.alloc(0), Buffer.from(info, 'utf8'), length);
+}
+
+function deriveSID(normalForm) {
+  const domainTag = 'DBC-SID-1.1\0';
+  const digest = sha256Hex(domainTag + canonicalize(normalForm));
+  return `sid:dbc:${digest}`;
+}
+
+function deriveIPv6FromSID(sid) {
+  const seed = Buffer.from(hkdfBytes(sid, 'adapter:ipv6', 16));
+  seed[0] = 0xfd;
+  const groups = [];
+  for (let i = 0; i < 16; i += 2) groups.push(seed.readUInt16BE(i).toString(16));
+  return groups.join(':').replace(/\b0(?=[0-9a-f])/g, '');
+}
+
+function deriveIPv4HintFromSID(sid) {
+  const seed = Buffer.from(hkdfBytes(sid, 'adapter:ipv4', 4));
+  return `10.${seed[1]}.${(seed[2] % 254) + 1}.${(seed[3] % 254) + 1}`;
+}
+
+function normalize(doc) {
+  if (doc.schema !== 'demo.hello') throw new Error(`Unsupported schema: ${doc.schema}`);
+  if (typeof doc.name !== 'string' || doc.name.trim() === '') throw new Error("Field 'name' must be a non-empty string");
+  return {
+    kind: 'Greeting',
+    schema: 'demo.hello/v1',
+    message: `Hello ${doc.name.trim()}`,
+  };
+}
+
+function makeNode(name, port) {
+  const store = new Map();
+
+  const server = http.createServer((req, res) => {
+    if (req.method === 'POST' && req.url === '/resolve') {
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', () => {
+        try {
+          const doc = JSON.parse(body || '{}');
+          const normalForm = normalize(doc);
+          const sid = deriveSID(normalForm);
+          const record = {
+            node: name,
+            stage: 'Normalized',
+            sid,
+            normalForm,
+            adapters: {
+              ipv6: deriveIPv6FromSID(sid),
+              ipv4: deriveIPv4HintFromSID(sid),
+            }
+          };
+          store.set(sid, record);
+          res.writeHead(200, { 'content-type': 'application/json' });
+          res.end(JSON.stringify(record, null, 2));
+        } catch (err) {
+          res.writeHead(400, { 'content-type': 'application/json' });
+          res.end(JSON.stringify({ error: String(err.message || err) }, null, 2));
+        }
+      });
+      return;
+    }
+
+    if (req.method === 'GET' && req.url.startsWith('/sid/')) {
+      const sid = decodeURIComponent(req.url.slice('/sid/'.length));
+      const record = store.get(sid);
+      res.writeHead(record ? 200 : 404, { 'content-type': 'application/json' });
+      res.end(JSON.stringify(record || { error: 'SID not found on this node' }, null, 2));
+      return;
+    }
+
+    if (req.method === 'GET' && req.url === '/health') {
+      res.writeHead(200, { 'content-type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, node: name, port }, null, 2));
+      return;
+    }
+
+    res.writeHead(404, { 'content-type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Not found' }, null, 2));
+  });
+
+  server.listen(port, () => {
+    console.log(`${name} listening on http://127.0.0.1:${port}`);
+  });
+
+  return { name, port, server };
+}
+
+function postJSON(port, path, payload) {
+  return new Promise((resolve, reject) => {
+    const req = http.request({
+      hostname: '127.0.0.1',
+      port,
+      path,
+      method: 'POST',
+      headers: { 'content-type': 'application/json' }
+    }, res => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => resolve(JSON.parse(body || '{}')));
+    });
+    req.on('error', reject);
+    req.write(JSON.stringify(payload));
+    req.end();
+  });
+}
+
+function getJSON(port, path) {
+  return new Promise((resolve, reject) => {
+    http.get({ hostname: '127.0.0.1', port, path }, res => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => resolve(JSON.parse(body || '{}')));
+    }).on('error', reject);
+  });
+}
+
+function routeFromSID(sid, table) {
+  const bytes = Buffer.from(sha256Hex('route:' + sid), 'hex');
+  const idx = bytes[0] % table.length;
+  return table[idx];
+}
+
+(async function main() {
+  const nodeA = makeNode('nodeA', 3101);
+  const nodeB = makeNode('nodeB', 3102);
+
+  const doc = { schema: 'demo.hello', name: 'world' };
+  const normalForm = normalize(doc);
+  const sid = deriveSID(normalForm);
+  const routed = routeFromSID(sid, [3101, 3102]);
+
+  const chosen = await postJSON(routed, '/resolve', doc);
+  const fetched = await getJSON(routed, '/sid/' + encodeURIComponent(sid));
+
+  console.log('\nDOCUMENT');
+  console.log(JSON.stringify(doc, null, 2));
+
+  console.log('\nDERIVATION');
+  console.log(JSON.stringify({ sid, preferredIPv6: deriveIPv6FromSID(sid), compatibilityIPv4: deriveIPv4HintFromSID(sid) }, null, 2));
+
+  console.log('\nSEMANTIC CALL');
+  console.log(`call(${sid}, Normalized) -> routed to node on port ${routed}`);
+
+  console.log('\nRESOLVE RESULT');
+  console.log(JSON.stringify(chosen, null, 2));
+
+  console.log('\nFETCH BY SID');
+  console.log(JSON.stringify(fetched, null, 2));
+
+  setTimeout(() => {
+    nodeA.server.close();
+    nodeB.server.close();
+  }, 100);
+})().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
