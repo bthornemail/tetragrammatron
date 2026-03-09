@@ -1,0 +1,72 @@
+{
+  "acceptance": "eabi capability verify framing preserves typed semantic outcome",
+  "invocation": {
+    "eabi_version": "1.0",
+    "operation": "verify-capability",
+    "context": {},
+    "payload": {
+      "capability_input": {
+        "capability_chain": [
+          {
+            "actor_sid": "sid:dbc:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "epoch": {
+              "not_after": 50,
+              "not_before": 10
+            },
+            "governor_sid": "sid:dbc:1111111111111111111111111111111111111111111111111111111111111111",
+            "parent_grant_id": null,
+            "scope": {
+              "actions": [
+                "derive_adapter",
+                "resolve"
+              ],
+              "adapters": [
+                "adapter:guarded-demo"
+              ],
+              "resources": [
+                "resource:alpha"
+              ]
+            },
+            "subject_sid": "sid:dbc:9999999999999999999999999999999999999999999999999999999999999999",
+            "version": "capability/v1",
+            "grant_id": "cg:46ea5330b563828301125bb9d2bb760c2768203a69f10f0e5a03c2f50210cabb",
+            "signature": {
+              "by_sid": "sid:dbc:1111111111111111111111111111111111111111111111111111111111111111",
+              "sig": "sig:e71364ad25218498bf54727a6b54014db789d7807979d75f7e213425dfdc760d"
+            }
+          }
+        ],
+        "now_epoch": 20,
+        "trust_anchors": [
+          "sid:dbc:1111111111111111111111111111111111111111111111111111111111111111"
+        ],
+        "request": {
+          "action": "resolve",
+          "actor_sid": "sid:dbc:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "resource": "resource:alpha",
+          "subject_sid": "sid:dbc:9999999999999999999999999999999999999999999999999999999999999999"
+        }
+      }
+    }
+  },
+  "result": {
+    "eabi_version": "1.0",
+    "ok": true,
+    "operation": "verify-capability",
+    "result": {
+      "abi_version": "ABI-1.1.0",
+      "capability_digest": "sha256:3b56f1a9bb01b994c86e01b7c0df3829089c228ec798313339c76ba164befbdf",
+      "status": "valid",
+      "evidence": {
+        "original_status": "verified",
+        "actor_sid": "sid:dbc:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "chain_digest": "ch:d59786a0d5b8c017eb6b5dbab5d4c2d4227a38d161142686db59b70850b1242c",
+        "chain_length": 1,
+        "revocation_checked": true,
+        "revocation_set_digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "root_governor_sid": "sid:dbc:1111111111111111111111111111111111111111111111111111111111111111",
+        "subject_sid": "sid:dbc:9999999999999999999999999999999999999999999999999999999999999999"
+      }
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"verdict_policy_version":"1.0","must_match":["invocation_digest","semantic_result_digest","evr_events_digest"],"may_vary":[],"ordering":"strict","failure_class":"none","verdict_strength":"strict"}

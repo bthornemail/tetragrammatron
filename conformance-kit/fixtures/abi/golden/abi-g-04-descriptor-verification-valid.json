@@ -1,0 +1,1 @@
+{"id":"ABI-G-04","kind":"DescriptorVerificationResult","value":{"abi_version":"ABI-1.1.0","descriptor_digest":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","sid":"sid:dbc:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","status":"valid","evidence":{"reason":"self_verified"}}}

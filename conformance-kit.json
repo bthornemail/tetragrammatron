@@ -1,0 +1,283 @@
+{
+  "conformance_kit_version": "1.2.0",
+  "semantic_baseline": "v1.0.0-semantic-baseline",
+  "abi_version": "v1.1.0-abi",
+  "eabi_version": "v1.2.0-eabi",
+  "required_operations": [
+    "resolve",
+    "get-descriptor",
+    "verify-capability",
+    "verify-revocation",
+    "derive-adapter",
+    "routed-call",
+    "bundle-export",
+    "bundle-import",
+    "verify-store",
+    "event-batch-request"
+  ],
+  "optional_operations": [
+    "event-stream-item"
+  ],
+  "fixture_groups": [
+    {
+      "id": "abi-golden",
+      "path": "fixtures/abi/golden",
+      "file_count": 12,
+      "digest": "sha256:e1c4f6a97cab9487ca6de93baad40751d7e88d248fa422ae2ee25a6ac77a5c00"
+    },
+    {
+      "id": "abi-negative",
+      "path": "fixtures/abi/negative",
+      "file_count": 10,
+      "digest": "sha256:a3bb83ec0473aad24befe7b6697d0a5cbd228894307dddb06130986c15647530"
+    },
+    {
+      "id": "abi-determinism",
+      "path": "fixtures/abi/determinism",
+      "file_count": 5,
+      "digest": "sha256:d3c326cc27a0377a88391d0626d70f25b256d99b44cb6f0b62f6a8ceffbcb4d9"
+    },
+    {
+      "id": "eabi-golden",
+      "path": "fixtures/eabi/golden",
+      "file_count": 13,
+      "digest": "sha256:a9ee4c5955bce93fab0b79196a7b212c7d76bdafe870d234b137d33226c41021"
+    },
+    {
+      "id": "eabi-negative",
+      "path": "fixtures/eabi/negative",
+      "file_count": 7,
+      "digest": "sha256:a7f32981d1d474683d63f5622d49367ee91300b0ce550055ceec92c74deafee0"
+    },
+    {
+      "id": "eabi-determinism",
+      "path": "fixtures/eabi/determinism",
+      "file_count": 3,
+      "digest": "sha256:fecfb2da73dd58edd74e41d53e1719d3944107a0d47b46b6c269d57bacb04ac2"
+    }
+  ],
+  "fixture_expectations": [
+    {
+      "fixture": "fixtures/abi/determinism/abi-d-01-sid-determinism.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/determinism/abi-d-02-resolve-result-stability.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/determinism/abi-d-03-capability-result-stability.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/determinism/abi-d-04-evr-event-id-stability.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/determinism/abi-d-05-descriptor-digest-stability.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/golden/abi-g-01-resolve-success.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/golden/abi-g-02-resolve-reject.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/golden/abi-g-03-identity-descriptor.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/golden/abi-g-04-descriptor-verification-valid.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/golden/abi-g-05-capability-valid.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/golden/abi-g-06-capability-expired.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/golden/abi-g-07-revocation-revoked.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/golden/abi-g-08-evr-resolve-succeeded.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/golden/abi-g-09-evr-capability-verify.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/golden/abi-g-10-federation-announcement.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/golden/abi-g-11-convergence-witness.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/golden/abi-g-12-divergence-witness.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/abi/negative/abi-n-01-missing-schema-digest.json",
+      "classification": "semantic_failure"
+    },
+    {
+      "fixture": "fixtures/abi/negative/abi-n-02-stage-value-kind-mismatch.json",
+      "classification": "semantic_failure"
+    },
+    {
+      "fixture": "fixtures/abi/negative/abi-n-03-invalid-reject-kind.json",
+      "classification": "semantic_failure"
+    },
+    {
+      "fixture": "fixtures/abi/negative/abi-n-04-evr-missing-causal-field.json",
+      "classification": "semantic_failure"
+    },
+    {
+      "fixture": "fixtures/abi/negative/abi-n-05-unknown-event-kind.json",
+      "classification": "semantic_failure"
+    },
+    {
+      "fixture": "fixtures/abi/negative/abi-n-06-invalid-descriptor-digest.json",
+      "classification": "semantic_failure"
+    },
+    {
+      "fixture": "fixtures/abi/negative/abi-n-07-capability-status-outside-taxonomy.json",
+      "classification": "semantic_failure"
+    },
+    {
+      "fixture": "fixtures/abi/negative/abi-n-08-federation-missing-scope.json",
+      "classification": "semantic_failure"
+    },
+    {
+      "fixture": "fixtures/abi/negative/abi-n-09-divergence-runtime-sids-unsorted.json",
+      "classification": "semantic_failure"
+    },
+    {
+      "fixture": "fixtures/abi/negative/abi-n-10-normalform-edges-unsorted.json",
+      "classification": "semantic_failure"
+    },
+    {
+      "fixture": "fixtures/eabi/determinism/eabi-d-01-same-invocation.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/determinism/eabi-d-02-same-bundle-framing.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/determinism/eabi-d-03-same-invalid-invocation.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/golden/eabi-g-01-resolve.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/golden/eabi-g-02-resolve-reject.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/golden/eabi-g-03-get-descriptor-found.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/golden/eabi-g-04-get-descriptor-miss.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/golden/eabi-g-05-verify-capability.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/golden/eabi-g-06-verify-capability-expired.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/golden/eabi-g-07-verify-revocation.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/golden/eabi-g-08-derive-adapter.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/golden/eabi-g-09-routed-call.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/golden/eabi-g-10-bundle-export.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/golden/eabi-g-11-bundle-import.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/golden/eabi-g-12-event-batch.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/golden/eabi-g-13-event-stream-item.json",
+      "classification": "success"
+    },
+    {
+      "fixture": "fixtures/eabi/negative/eabi-n-01-malformed-envelope.json",
+      "classification": "execution_failure"
+    },
+    {
+      "fixture": "fixtures/eabi/negative/eabi-n-02-unsupported-version.json",
+      "classification": "execution_failure"
+    },
+    {
+      "fixture": "fixtures/eabi/negative/eabi-n-03-missing-required-field.json",
+      "classification": "execution_failure"
+    },
+    {
+      "fixture": "fixtures/eabi/negative/eabi-n-04-unknown-operation.json",
+      "classification": "execution_failure"
+    },
+    {
+      "fixture": "fixtures/eabi/negative/eabi-n-05-invalid-artifact-ref.json",
+      "classification": "execution_failure"
+    },
+    {
+      "fixture": "fixtures/eabi/negative/eabi-n-06-malformed-context.json",
+      "classification": "execution_failure"
+    },
+    {
+      "fixture": "fixtures/eabi/negative/eabi-n-07-malformed-bundle.json",
+      "classification": "execution_failure"
+    }
+  ],
+  "transcripts": [
+    {
+      "id": "resolve",
+      "path": "fixtures/eabi/snapshots/resolve.json",
+      "digest": "sha256:17ef6c716c6a0841e19eb2dcc9e714777486dc07979e44763d436b009daedd67"
+    },
+    {
+      "id": "capability-verify",
+      "path": "fixtures/eabi/snapshots/capability-verify.json",
+      "digest": "sha256:2123f2b489d1bdfcce690f64a855003b4296b8d3fd2f17c931f4279a2d36bd02"
+    },
+    {
+      "id": "routed-call",
+      "path": "fixtures/eabi/snapshots/routed-call.json",
+      "digest": "sha256:937e720b1c59d128e91d26486e92245b300f35fc5832c4e8662f3ce2b70b75e7"
+    }
+  ],
+  "classifications": [
+    "success",
+    "semantic_failure",
+    "execution_failure"
+  ]
+}

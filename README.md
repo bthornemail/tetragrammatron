@@ -118,6 +118,18 @@ Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 
 See `docs/reference-conformance-checklist.md`.
 
+## Independent implementation entrypoint
+
+Independent implementations should start with the Conformance Kit, not the full source tree.
+
+- Guide: `docs/conformance-kit.md`
+- Manifest: `conformance-kit.json`
+- Verify public compatibility surface: `npm run conformance:kit`
+- Export portable kit: `npm run conformance:kit:export`
+- Minimal external-style verifier seed: `examples/minimal-verifier/`
+- Replay witness pack spec: `docs/replay-witness-pack.md`
+- Verify replay packs: `npm run replay:verify:all`
+
 ## Release policy
 
 Post-baseline releases are module-gated (not feature-incremental):

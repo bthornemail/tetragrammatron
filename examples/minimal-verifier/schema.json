@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MinimalVerifierReport",
+  "type": "object",
+  "required": ["ok", "fixtures_tested", "semantic_failures_verified", "determinism_cases_verified"],
+  "properties": {
+    "ok": { "type": "boolean" },
+    "fixtures_tested": { "type": "integer", "minimum": 0 },
+    "semantic_failures_verified": { "type": "integer", "minimum": 0 },
+    "determinism_cases_verified": { "type": "integer", "minimum": 0 }
+  }
+}

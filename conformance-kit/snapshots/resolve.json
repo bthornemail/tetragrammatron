@@ -1,0 +1,102 @@
+{
+  "acceptance": "eabi resolve framing preserves semantic result without mutation",
+  "invocation": {
+    "eabi_version": "1.0",
+    "operation": "resolve",
+    "context": {},
+    "payload": {
+      "canonical_input": {
+        "d": [
+          {
+            "Rel": [
+              "hasType",
+              "Alice",
+              "Person"
+            ]
+          },
+          {
+            "Rel": [
+              "parent",
+              "A",
+              "B"
+            ]
+          },
+          {
+            "Rel": [
+              "parent",
+              "B",
+              "C"
+            ]
+          }
+        ]
+      },
+      "schema": {
+        "id": "dbc-minimal-v1",
+        "relations": {
+          "hasType": 2,
+          "parent": 2
+        },
+        "symbols": [
+          "Alice",
+          "Bob",
+          "Person",
+          "A",
+          "B",
+          "C"
+        ],
+        "closure": {
+          "transitive_relations": [
+            "parent"
+          ]
+        }
+      },
+      "schema_digest": "sha256:92dc1ccad096b02168d7ba96a2ce72bc0444fb8760d6e5485dab75d78cc3a4b8",
+      "target_stage": "Normalized"
+    }
+  },
+  "result": {
+    "eabi_version": "1.0",
+    "ok": true,
+    "operation": "resolve",
+    "result": {
+      "abi_version": "ABI-1.1.0",
+      "canonical_value": {
+        "constraints": [],
+        "edges": [
+          [
+            "hasType",
+            "Alice",
+            "Person"
+          ],
+          [
+            "parent",
+            "A",
+            "B"
+          ],
+          [
+            "parent",
+            "A",
+            "C"
+          ],
+          [
+            "parent",
+            "B",
+            "C"
+          ]
+        ],
+        "nodes": [
+          "A",
+          "Alice",
+          "B",
+          "C",
+          "Person"
+        ],
+        "witnesses": []
+      },
+      "schema_digest": "sha256:92dc1ccad096b02168d7ba96a2ce72bc0444fb8760d6e5485dab75d78cc3a4b8",
+      "stage": "Normalized",
+      "value_digest": "sha256:40fd6b68ebff9a6dce9b86e4183f664a27d3328a4f0651962d1916c9a51e5024",
+      "value_kind": "NormalForm"
+    }
+  }
+}
