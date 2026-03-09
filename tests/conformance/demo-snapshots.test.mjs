@@ -10,6 +10,10 @@ import { runCapabilityValidChainDemo } from '../../scripts/capability-valid-chai
 import { runEVRCapabilityTrace } from '../../scripts/evr-capability-trace.mjs';
 import { runEVRResolveTrace } from '../../scripts/evr-resolve-trace.mjs';
 import { runEVRRouteTrace } from '../../scripts/evr-route-trace.mjs';
+import { runFederationConvergenceWitnessDemo } from '../../scripts/federation-convergence-witness.mjs';
+import { runFederationDeterministicArbitrationDemo } from '../../scripts/federation-deterministic-arbitration.mjs';
+import { runFederationDivergenceWitnessDemo } from '../../scripts/federation-divergence-witness.mjs';
+import { runFederationMultiProviderDemo } from '../../scripts/federation-multi-provider.mjs';
 import { runMinimalFederationProof } from '../../scripts/minimal-federation-proof.mjs';
 import { runHelloTetragrammatron } from '../../scripts/hello-tetragrammatron.mjs';
 import { runNodePipelineDemo } from '../../scripts/node-pipeline-demo.mjs';
@@ -117,4 +121,29 @@ test('EVR demos snapshots are frozen and reproducible', async () => {
   assert.equal(canonicalJson(capB), canonicalJson(expectedCapability));
   assert.equal(canonicalJson(routeA), canonicalJson(expectedRoute));
   assert.equal(canonicalJson(routeB), canonicalJson(expectedRoute));
+});
+
+test('federation breadth demos snapshots are frozen and reproducible', async () => {
+  const expectedMulti = await loadSnapshot('federation-multi-provider');
+  const expectedArb = await loadSnapshot('federation-deterministic-arbitration');
+  const expectedConv = await loadSnapshot('federation-convergence-witness');
+  const expectedDiv = await loadSnapshot('federation-divergence-witness');
+
+  const multiA = await runFederationMultiProviderDemo();
+  const multiB = await runFederationMultiProviderDemo();
+  const arbA = await runFederationDeterministicArbitrationDemo();
+  const arbB = await runFederationDeterministicArbitrationDemo();
+  const convA = await runFederationConvergenceWitnessDemo();
+  const convB = await runFederationConvergenceWitnessDemo();
+  const divA = await runFederationDivergenceWitnessDemo();
+  const divB = await runFederationDivergenceWitnessDemo();
+
+  assert.equal(canonicalJson(multiA), canonicalJson(expectedMulti));
+  assert.equal(canonicalJson(multiB), canonicalJson(expectedMulti));
+  assert.equal(canonicalJson(arbA), canonicalJson(expectedArb));
+  assert.equal(canonicalJson(arbB), canonicalJson(expectedArb));
+  assert.equal(canonicalJson(convA), canonicalJson(expectedConv));
+  assert.equal(canonicalJson(convB), canonicalJson(expectedConv));
+  assert.equal(canonicalJson(divA), canonicalJson(expectedDiv));
+  assert.equal(canonicalJson(divB), canonicalJson(expectedDiv));
 });

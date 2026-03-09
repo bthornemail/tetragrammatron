@@ -75,8 +75,33 @@ This module cut completes Track B EVR doctrine over the existing reference basel
 
 ## Intentionally deferred after Track B
 
-- `federation.*` event family completion.
 - `device.*` event family completion.
 - Federation discovery/arbitration breadth.
 - Role-segmented hub workflows.
 - Embedded/runtime profile specialization.
+
+---
+
+# Federation Module Conformance Statement
+
+Module version: `0.4.0-federation`
+
+This module cut completes Track C federation breadth for the deterministic local multi-node witness profile.
+
+## Proven in this module
+
+- Federation descriptor/announcement rules are explicit and validated.
+- Route-set derivation is deterministic for identical announcement sets.
+- Arbitration is deterministic with explicit tie-break law and typed ambiguity failures.
+- Convergence/divergence witnesses are explicit machine structures with deterministic typing.
+- HD-RPC federation flow (`discover -> routeset -> arbitrate -> forward`) preserves Core semantic equivalence.
+- Capability context passthrough remains non-reinterpreted under federation routing.
+- Hub federation panes are projection-only and match underlying network/core state.
+- Federation demos are frozen and conformance-checked.
+
+## Intentionally deferred after Track C
+
+- Wide-area peer mesh optimization policies.
+- Embedded/mobile constrained federation profiles.
+- `device.*` event family completion.
+- Role-segmented hub workflows.

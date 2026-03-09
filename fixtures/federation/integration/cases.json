@@ -1,0 +1,8 @@
+{
+  "cases": [
+    {"id":"F-I01_discover_arbitrate_call_pipeline","kind":"pipeline"},
+    {"id":"F-I02_federated_call_replay_convergence_witness","kind":"convergence"},
+    {"id":"F-I03_capability_passthrough_under_federation","kind":"capability_passthrough"},
+    {"id":"F-I04_hub_federation_projection_equivalence","kind":"hub_projection"}
+  ]
+}

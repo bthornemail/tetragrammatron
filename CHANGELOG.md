@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.4.0-federation
+
+### Track C (Federation Breadth)
+- Added pure federation module (`src/federation`) for descriptor/announcement validation, deterministic route-set derivation, deterministic arbitration, and convergence/divergence witnesses.
+- Added explicit machine-level arbitration fields and tie-break order, plus canonical convergence/divergence witness shapes.
+- Added federation fixtures (golden/negative/determinism/integration) and pure federation tests (`tests/federation/*`).
+- Added network federation bridge (`src/network/federation.mjs`) and integrated HD-RPC announcement ingestion, route-set derivation, arbitration selection, and convergence checks.
+- Added EVR federation event kinds:
+  - `federation.announcement_received`
+  - `federation.routeset_derived`
+  - `federation.arbitration_selected`
+  - `federation.convergence_witness`
+  - `federation.divergence_witness`
+- Added Hub federation inspection panes:
+  - `federation.providers`
+  - `federation.routeset`
+  - `federation.arbitration`
+  - `federation.convergence`
+- Added federation demos and frozen snapshots:
+  - multi-provider routing
+  - deterministic arbitration
+  - convergence witness
+  - divergence witness
+- Added federation integration tests for network/core/hub projection equivalence and capability-context passthrough.
+
 ## v0.3.0-evr
 
 ### Track B (EVR Doctrine)

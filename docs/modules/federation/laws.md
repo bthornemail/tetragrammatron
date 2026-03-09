@@ -37,6 +37,21 @@ A reachable provider is not semantically authoritative by reachability alone. Se
 
 Given identical candidate provider sets and identical arbitration inputs, route selection outcome must be deterministic and reproducible.
 
+Arbitration input fields (machine-level):
+
+- `sid`
+- `stage`
+- `schema_digest`
+- `federation_scope`
+- candidate fields: `provider_id`, `endpoint`, `descriptor_digest`, `federation_scope`, `priority`
+
+Deterministic tie-break order:
+
+1. exact federation scope match (`candidate.federation_scope == request.federation_scope`)
+2. scope specificity (`candidate.federation_scope.length`, descending)
+3. `priority` (descending)
+4. canonical candidate ordering (`provider_id`, `endpoint`, `descriptor_digest`)
+
 ### 4. Arbitration Non-Invention Law
 
 Arbitration may choose route targets or produce typed route failures, but must not change request semantics, stage semantics, SID semantics, or capability semantics.
@@ -45,9 +60,27 @@ Arbitration may choose route targets or produce typed route failures, but must n
 
 Independent nodes converge when replay and canonical artifact checks agree for the scoped workload. Convergence claims require explicit evidence inputs and outputs.
 
+Convergence witness shape (machine-level):
+
+- `kind: \"convergence_witness\"`
+- `status: \"converged\"`
+- `sid`
+- `schema_digest`
+- `normal_form_digest`
+- `replay_digest`
+- `witness_digest`
+
 ### 6. Divergence Typing Law
 
 Divergence and mismatch outcomes are typed deterministically (for example: descriptor mismatch, schema mismatch, scope mismatch, replay mismatch, route ambiguity).
+
+Divergence witness shape (machine-level):
+
+- `kind: \"divergence_witness\"`
+- `mismatch` (`scope_schema_mismatch|replay_divergence|...`)
+- `mismatches[]` (field-level entries where applicable)
+- scoped evidence payload
+- `witness_digest`
 
 ### 7. Federation Descriptor Integrity Law
 

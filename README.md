@@ -18,6 +18,7 @@ Minimal law-first reference implementation of the five-layer Tetragrammatron sta
 - `src/network` — minimal HD-RPC (`call(SID, stage)`, route table, IPv6 canonical adapter)
 - `src/hub` — read-mostly inspection shell
 - `src/evr` — event doctrine module (kind registry, envelope validation, canonical encoding)
+- `src/federation` — pure federation rules (descriptors, announcements, route sets, arbitration, convergence)
 
 ## Run
 
@@ -32,6 +33,10 @@ Minimal law-first reference implementation of the five-layer Tetragrammatron sta
 - EVR resolve trace demo: `npm run demo:evr:resolve`
 - EVR capability trace demo: `npm run demo:evr:capability`
 - EVR route trace demo: `npm run demo:evr:route`
+- Federation multi-provider demo: `npm run demo:federation:multi`
+- Federation deterministic arbitration demo: `npm run demo:federation:arbitration`
+- Federation convergence witness demo: `npm run demo:federation:convergence`
+- Federation divergence witness demo: `npm run demo:federation:divergence`
 
 ## Frozen demo snapshots
 
@@ -46,6 +51,10 @@ Frozen snapshot fixtures live in `fixtures/demos/`:
 - `evr-resolve-trace.snapshot.json`
 - `evr-capability-trace.snapshot.json`
 - `evr-route-trace.snapshot.json`
+- `federation-multi-provider.snapshot.json`
+- `federation-deterministic-arbitration.snapshot.json`
+- `federation-convergence-witness.snapshot.json`
+- `federation-divergence-witness.snapshot.json`
 
 Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 
@@ -62,15 +71,16 @@ Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 - Capability delegation verification with typed deterministic rejection taxonomy
 - Capability-gated resolve and guarded adapter derivation in Core
 - EVR event taxonomy, validation, and deterministic timeline projection over Core/Network/Hub emissions
+- Federation discovery/announcement, deterministic arbitration, and convergence/divergence witnesses
 - End-to-end runnable demos and reproducibility checks
 
 ## Deferred (intentional)
 
 - Capability revocation semantics
 - Production PKI / hardware-backed cryptographic infrastructure
-- EVR `federation.*` and `device.*` family completion
+- EVR `device.*` family completion
 - Role-segmented hub
-- Federation/discovery mesh breadth
+- Wide-area federation mesh optimization
 - Embedded profile optimization work
 
 ## Conformance checklist

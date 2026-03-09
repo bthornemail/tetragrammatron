@@ -64,10 +64,10 @@ Malformed events are typed deterministically (invalid shape, illegal kind, illeg
 - `adapter.*`
 - `route.*`
 - `hub.*`
+- `federation.*`
 
 ## Reserved families (declared, not required in this module)
 
-- `federation.*`
 - `device.*`
 
 ## Canonical event envelope (module-level)

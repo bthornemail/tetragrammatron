@@ -27,6 +27,10 @@ Use this checklist to validate an independent implementation against this refere
 - [ ] EVR event kinds are explicit and validated against evidence-shape laws.
 - [ ] Core/Network emission is observational-only and does not alter semantic outcomes.
 - [ ] Hub event timeline/detail panes are projection-only over emitted EVR events.
+- [ ] Federation descriptor/announcement validation is explicit and deterministic.
+- [ ] Federation route-set derivation is deterministic for identical announcement sets.
+- [ ] Federation arbitration is deterministic with typed ambiguity failures.
+- [ ] Federation convergence/divergence witness structures are explicit and deterministic.
 
 ## Required demos
 
@@ -41,6 +45,11 @@ Use this checklist to validate an independent implementation against this refere
   - resolve trace
   - capability trace
   - route trace
+- [ ] Federation breadth demos:
+  - multi-provider routing
+  - deterministic arbitration
+  - convergence witness
+  - divergence witness
 
 ## Required negative proofs
 
@@ -58,11 +67,11 @@ Use this checklist to validate an independent implementation against this refere
 - [ ] Fresh run from empty state reproduces demo snapshots.
 - [ ] Bundle export/import preserves descriptor and route lookup behavior.
 - [ ] Event timeline projection ordering is stable for equivalent operation traces.
+- [ ] Federation route-set/arbitration/convergence outputs are reproducible for equivalent inputs.
 
 ## Deferred (intentional)
 
-- [ ] EVR doctrine expansion.
-- [ ] EVR `federation.*` and `device.*` family completion.
+- [ ] EVR `device.*` family completion.
 - [ ] Role-segmented hub.
-- [ ] Peer discovery mesh / federation breadth.
+- [ ] Wide-area federation mesh optimization.
 - [ ] Embedded profile optimization policies.

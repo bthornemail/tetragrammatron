@@ -1,25 +1,26 @@
 {
-  "module": "evr-doctrine",
-  "module_version": "0.3.0-evr",
+  "module": "federation-breadth",
+  "module_version": "0.4.0-federation",
   "release_type": "module",
   "status": "complete",
   "laws": [
-    "ObservationalOnlyLaw",
-    "EventKindDeterminesEvidenceShape",
-    "FamilyKindLegality",
-    "SourceLayerLegality",
-    "CausalLinkageLaw",
-    "DeterministicEncodingLaw",
-    "RejectTaxonomyLaw"
+    "DiscoveryAnnouncementLaw",
+    "ReachabilityIsNotValidity",
+    "ArbitrationDeterminismLaw",
+    "ArbitrationNonInventionLaw",
+    "ReplayConvergenceLaw",
+    "DivergenceTypingLaw",
+    "NonAuthorityLaw"
   ],
   "fixtures": [
-    "evr/golden/cases.json",
-    "evr/negative/cases.json",
-    "evr/determinism/cases.json",
-    "evr/integration/cases.json",
-    "demos/evr-resolve-trace.snapshot.json",
-    "demos/evr-capability-trace.snapshot.json",
-    "demos/evr-route-trace.snapshot.json"
+    "federation/golden/cases.json",
+    "federation/negative/cases.json",
+    "federation/determinism/cases.json",
+    "federation/integration/cases.json",
+    "demos/federation-multi-provider.snapshot.json",
+    "demos/federation-deterministic-arbitration.snapshot.json",
+    "demos/federation-convergence-witness.snapshot.json",
+    "demos/federation-divergence-witness.snapshot.json"
   ],
   "cross_layer_tests": true,
   "conformance_verified": true

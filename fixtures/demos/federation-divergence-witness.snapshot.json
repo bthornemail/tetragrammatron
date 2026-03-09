@@ -1,0 +1,7 @@
+{
+  "acceptance": "mismatched replay records yield a deterministic divergence witness",
+  "code": "replay_divergence",
+  "ok": false,
+  "witness_kind": "divergence_witness",
+  "witness_digest": "sha256:45c6a9fb16887f3a768296522211ef820d80bfd57bb2f37e0a124d7d38789c1e"
+}

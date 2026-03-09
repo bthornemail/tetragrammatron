@@ -5,10 +5,10 @@ export const IMPLEMENTED_FAMILIES = [
   'adapter',
   'route',
   'hub',
+  'federation',
 ];
 
 export const RESERVED_FAMILIES = [
-  'federation',
   'device',
 ];
 
@@ -100,6 +100,36 @@ export const EVENT_KIND_REGISTRY = {
     kind: 'hub.inspect_emitted',
     source_layers: ['hub'],
     required_evidence: ['pane'],
+  }),
+  'federation.announcement_received': def({
+    family: 'federation',
+    kind: 'federation.announcement_received',
+    source_layers: ['network'],
+    required_evidence: ['descriptor_ref', 'provider_id'],
+  }),
+  'federation.routeset_derived': def({
+    family: 'federation',
+    kind: 'federation.routeset_derived',
+    source_layers: ['network'],
+    required_evidence: ['candidate_count', 'sid', 'stage'],
+  }),
+  'federation.arbitration_selected': def({
+    family: 'federation',
+    kind: 'federation.arbitration_selected',
+    source_layers: ['network'],
+    required_evidence: ['provider_id', 'sid', 'stage'],
+  }),
+  'federation.convergence_witness': def({
+    family: 'federation',
+    kind: 'federation.convergence_witness',
+    source_layers: ['network'],
+    required_evidence: ['status', 'witness_digest'],
+  }),
+  'federation.divergence_witness': def({
+    family: 'federation',
+    kind: 'federation.divergence_witness',
+    source_layers: ['network'],
+    required_evidence: ['code', 'witness_digest'],
   }),
 };
 

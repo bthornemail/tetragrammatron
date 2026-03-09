@@ -1,0 +1,7 @@
+{
+  "acceptance": "independent equivalent replay records yield a deterministic convergence witness",
+  "ok": true,
+  "status": "converged",
+  "witness_kind": "convergence_witness",
+  "witness_digest": "sha256:a5156bab165ce3434a9e5c09590b37c6e72870daae60555d68650aa89d4ffe86"
+}

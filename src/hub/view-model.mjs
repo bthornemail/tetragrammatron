@@ -166,4 +166,40 @@ export class HubViewModel {
       },
     };
   }
+
+  async federationProviders() {
+    const providers = this.hdRpc.listFederationProviders();
+    this._record('federation.providers', { count: providers.length });
+    return {
+      pane: 'federation.providers',
+      value: providers,
+    };
+  }
+
+  async federationRouteSet(request, options = {}) {
+    const result = this.hdRpc.deriveFederationRouteSet(request, options);
+    this._record('federation.routeset', { ok: result.ok, sid: request?.sid ?? null, stage: request?.stage ?? null });
+    return {
+      pane: 'federation.routeset',
+      value: result,
+    };
+  }
+
+  async federationArbitration(routeSet) {
+    const result = this.hdRpc.arbitrateFederationRoute(routeSet);
+    this._record('federation.arbitration', { ok: result.ok });
+    return {
+      pane: 'federation.arbitration',
+      value: result,
+    };
+  }
+
+  async federationConvergence(localRecord, remoteRecord) {
+    const result = this.hdRpc.checkFederationConvergence(localRecord, remoteRecord);
+    this._record('federation.convergence', { ok: result.ok, code: result.code ?? null });
+    return {
+      pane: 'federation.convergence',
+      value: result,
+    };
+  }
 }

@@ -52,6 +52,18 @@ export class HubShell {
     if (command === 'capability.verify') {
       return this.viewModel.verifyCapability(payload.input ?? {});
     }
+    if (command === 'federation.providers') {
+      return this.viewModel.federationProviders();
+    }
+    if (command === 'federation.routeset') {
+      return this.viewModel.federationRouteSet(payload.request ?? {}, payload.options ?? {});
+    }
+    if (command === 'federation.arbitration') {
+      return this.viewModel.federationArbitration(payload.route_set ?? {});
+    }
+    if (command === 'federation.convergence') {
+      return this.viewModel.federationConvergence(payload.local_record ?? {}, payload.remote_record ?? {});
+    }
 
     return {
       pane: 'error',

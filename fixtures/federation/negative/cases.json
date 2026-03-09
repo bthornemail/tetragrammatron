@@ -1,0 +1,10 @@
+{
+  "cases": [
+    {"id":"F-N01_conflicting_provider_announcement","kind":"announcement_conflict"},
+    {"id":"F-N02_unreachable_route","kind":"route_unreachable"},
+    {"id":"F-N03_replay_divergence","kind":"replay_divergence"},
+    {"id":"F-N04_stale_or_invalid_descriptor","kind":"invalid_federation_descriptor"},
+    {"id":"F-N05_route_selection_ambiguity","kind":"route_ambiguity"},
+    {"id":"F-N06_schema_scope_mismatch","kind":"scope_schema_mismatch"}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "acceptance": "same topology and inputs produce the same arbitration result independent of announcement order",
+  "same_selected_provider": true,
+  "selected_provider": "provider:b",
+  "tie_break_fields": [
+    "exactScope",
+    "scopeSpecificity",
+    "priority"
+  ]
+}

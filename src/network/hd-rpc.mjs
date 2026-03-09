@@ -1,5 +1,14 @@
 import { STAGES } from '../protocol/dbc.mjs';
 import { createEvent } from '../evr/schema.mjs';
+import { validateAnnouncement } from '../federation/announce.mjs';
+import {
+  arbitrateFederatedRoute,
+  deriveFederatedRoute,
+  deriveFederatedRouteSet,
+  judgeFederationConvergence,
+  listFederationProviders,
+} from './federation.mjs';
+import { deriveSchemaDigest } from '../protocol/idl.mjs';
 import { deriveIPv4CompatibilityAdapter, deriveIPv6Adapter } from './adapters.mjs';
 import { RouteTable } from './routing.mjs';
 
@@ -11,6 +20,7 @@ export class HDRPC {
   constructor() {
     this.routeTable = new RouteTable();
     this.targets = new Map();
+    this.announcements = [];
     this.evrEvents = [];
     this.evrSeq = 0;
   }
@@ -53,6 +63,86 @@ export class HDRPC {
     return this.routeTable.register(sid, targetId);
   }
 
+  announceProvider(announcement, { now_epoch = 0 } = {}) {
+    const valid = validateAnnouncement(announcement, { now_epoch });
+    if (!valid.ok) {
+      return valid;
+    }
+
+    const existing = this.announcements.find((a) => a.provider_id === valid.value.provider_id);
+    if (existing && existing.descriptor.descriptor_digest !== valid.value.descriptor.descriptor_digest) {
+      return {
+        code: 'announcement_conflict',
+        evidence: {
+          descriptor_a: existing.descriptor.descriptor_digest,
+          descriptor_b: valid.value.descriptor.descriptor_digest,
+          provider_id: valid.value.provider_id,
+        },
+        kind: 'FederationAnnouncementFailure',
+        ok: false,
+      };
+    }
+
+    this.announcements = this.announcements.filter((a) => a.provider_id !== valid.value.provider_id);
+    this.announcements.push(valid.value);
+    this.emitEvent('federation.announcement_received', 'ok', {
+      descriptor_ref: valid.value.descriptor.descriptor_digest,
+      provider_id: valid.value.provider_id,
+    });
+    return { ok: true, value: valid.value };
+  }
+
+  listFederationProviders() {
+    return listFederationProviders(this.announcements);
+  }
+
+  deriveFederationRouteSet(request, { now_epoch = 0 } = {}) {
+    const routeSet = deriveFederatedRouteSet({
+      announcements: this.announcements,
+      now_epoch,
+      request,
+    });
+    if (routeSet.ok) {
+      this.emitEvent('federation.routeset_derived', 'ok', {
+        candidate_count: routeSet.value.candidates.length,
+        sid: request.sid,
+        stage: request.stage,
+      });
+    }
+    return routeSet;
+  }
+
+  arbitrateFederationRoute(routeSet) {
+    const arbitration = arbitrateFederatedRoute({ route_set: routeSet });
+    if (arbitration.ok) {
+      this.emitEvent('federation.arbitration_selected', 'ok', {
+        provider_id: arbitration.value.selected.provider_id,
+        sid: arbitration.value.request.sid,
+        stage: arbitration.value.request.stage,
+      });
+    }
+    return arbitration;
+  }
+
+  checkFederationConvergence(localRecord, remoteRecord) {
+    const result = judgeFederationConvergence({
+      local_record: localRecord,
+      remote_record: remoteRecord,
+    });
+    if (result.ok) {
+      this.emitEvent('federation.convergence_witness', 'ok', {
+        status: result.value.status,
+        witness_digest: result.value.witness_digest,
+      });
+    } else {
+      this.emitEvent('federation.divergence_witness', 'error', {
+        code: result.code,
+        witness_digest: result.evidence?.witness_digest ?? null,
+      });
+    }
+    return result;
+  }
+
   resolveRoute(sid) {
     return this.routeTable.resolve(sid);
   }
@@ -79,7 +169,51 @@ export class HDRPC {
       return failure;
     }
 
-    const route = this.routeTable.resolve(sid);
+    let route = this.routeTable.resolve(sid);
+    let federationMeta = null;
+    if (!route.ok && this.announcements.length > 0) {
+      const schemaDigest = deriveSchemaDigest(request.canonical_input.schema ?? {});
+      const federation = deriveFederatedRoute({
+        announcements: this.announcements,
+        now_epoch: request.now_epoch ?? 0,
+        request: {
+          federation_scope: request.federation_scope ?? '',
+          schema_digest: schemaDigest,
+          sid,
+          stage,
+        },
+      });
+
+      if (federation.ok) {
+        federationMeta = federation.value;
+        route = {
+          ok: true,
+          sid,
+          target_id: federation.value.selected.endpoint,
+        };
+        this.emitEvent('federation.routeset_derived', 'ok', {
+          candidate_count: federation.value.route_set.candidates.length,
+          sid,
+          stage,
+        });
+        this.emitEvent('federation.arbitration_selected', 'ok', {
+          provider_id: federation.value.selected.provider_id,
+          sid,
+          stage,
+        });
+      } else {
+        this.emitEvent('route.lookup_failed', 'error', { code: federation.code, sid });
+        this.emitEvent('route.call_failed', 'error', { code: federation.code, stage });
+        return {
+          code: federation.code,
+          evidence: federation.evidence,
+          kind: 'RouteResolutionFailure',
+          ok: false,
+          sid,
+        };
+      }
+    }
+
     if (!route.ok) {
       this.emitEvent('route.lookup_failed', 'error', { code: route.code, sid });
       this.emitEvent('route.call_failed', 'error', { code: route.code, stage });
@@ -111,13 +245,17 @@ export class HDRPC {
       this.emitEvent('route.call_failed', 'error', { code: response.code ?? response.reject_kind ?? 'call_failed', stage });
     }
 
-    return {
+    const payload = {
       network: {
         route_target: route.target_id,
         sid,
       },
       ...response,
     };
+    if (federationMeta) {
+      payload.federation = federationMeta;
+    }
+    return payload;
   }
 
   deriveAdapter(label, sid, options = {}) {

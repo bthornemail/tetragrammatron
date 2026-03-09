@@ -1,0 +1,8 @@
+{
+  "cases": [
+    {"id":"F-D01_same_announce_set_same_route_set","kind":"route_set_stability"},
+    {"id":"F-D02_same_topology_same_arbitration","kind":"arbitration_stability"},
+    {"id":"F-D03_same_inputs_same_convergence_judgment","kind":"convergence_stability"},
+    {"id":"F-D04_same_divergence_same_failure_shape","kind":"divergence_stability"}
+  ]
+}

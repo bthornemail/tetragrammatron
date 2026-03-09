@@ -1,0 +1,8 @@
+{
+  "acceptance": "discover -> routeset -> arbitrate -> forward is deterministic over multi-provider topology",
+  "equivalence": true,
+  "provider_count": 3,
+  "selected_provider": "provider:b",
+  "selected_target": "node-b",
+  "sid": "sid:dbc:a2cb74e4658d52d4d994aa77a1814dd50a4c7f118ec1a88f3c1525b70b483745"
+}

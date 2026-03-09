@@ -103,7 +103,8 @@ This matrix defines required EVR fixture coverage before runtime event wiring.
 Implemented fixture obligations in this module:
 
 - `resolution.*`, `descriptor.*`, `capability.*`, `adapter.*`, `route.*`, `hub.*`
+- `federation.*` (minimal announce/discover/arbitrate/converge witness kinds)
 
 Reserved/deferred fixture obligations:
 
-- `federation.*`, `device.*`
+- `device.*`

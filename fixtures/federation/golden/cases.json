@@ -1,0 +1,9 @@
+{
+  "cases": [
+    {"id":"F-G01_announce_discover_success","kind":"discover"},
+    {"id":"F-G02_multi_provider_reachability_success","kind":"discover"},
+    {"id":"F-G03_deterministic_arbitration_success","kind":"arbitrate"},
+    {"id":"F-G04_replay_convergence_success","kind":"converge"},
+    {"id":"F-G05_routed_call_equivalence_success","kind":"equivalence_witness"}
+  ]
+}
