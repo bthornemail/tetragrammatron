@@ -61,6 +61,7 @@ Tracks may proceed independently:
 - Track C — Federation
 - Track D — Productization
 - Track E — Revocation
+- Track H — Hub Roles
 
 But releases happen only when one track yields a law-complete module.
 

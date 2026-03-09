@@ -1,0 +1,16 @@
+{
+  "roles": ["provider", "broker", "consumer", "user", "agent"],
+  "workspaces": ["A", "B", "C", "D", "E", "F"],
+  "golden": [
+    "provider_identity_resolution_federation",
+    "broker_verbatim_forward",
+    "consumer_resolution_only",
+    "user_projection_read_only",
+    "agent_all_workspaces"
+  ],
+  "negative": [
+    "forbidden_workspace",
+    "read_only_projection",
+    "invalid_workspace"
+  ]
+}

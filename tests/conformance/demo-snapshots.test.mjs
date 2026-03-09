@@ -14,6 +14,7 @@ import { runFederationConvergenceWitnessDemo } from '../../scripts/federation-co
 import { runFederationDeterministicArbitrationDemo } from '../../scripts/federation-deterministic-arbitration.mjs';
 import { runFederationDivergenceWitnessDemo } from '../../scripts/federation-divergence-witness.mjs';
 import { runFederationMultiProviderDemo } from '../../scripts/federation-multi-provider.mjs';
+import { runHubRoleShellDemo } from '../../scripts/hub-role-shell-demo.mjs';
 import { runMinimalFederationProof } from '../../scripts/minimal-federation-proof.mjs';
 import { runRevocationAncestorRevokedDemo } from '../../scripts/revocation-ancestor-revoked.mjs';
 import { runRevocationUnauthorizedAttemptDemo } from '../../scripts/revocation-unauthorized-attempt.mjs';
@@ -169,4 +170,14 @@ test('revocation demos snapshots are frozen and reproducible', async () => {
   assert.equal(canonicalJson(ancestorB), canonicalJson(expectedAncestor));
   assert.equal(canonicalJson(unauthorizedA), canonicalJson(expectedUnauthorized));
   assert.equal(canonicalJson(unauthorizedB), canonicalJson(expectedUnauthorized));
+});
+
+test('hub role-shell demo snapshot is frozen and reproducible', async () => {
+  const expected = await loadSnapshot('hub-role-shell');
+
+  const actualA = await runHubRoleShellDemo();
+  const actualB = await runHubRoleShellDemo();
+
+  assert.equal(canonicalJson(actualA), canonicalJson(expected));
+  assert.equal(canonicalJson(actualB), canonicalJson(expected));
 });

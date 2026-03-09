@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 
 import { createEvent } from '../evr/schema.mjs';
 import { canonicalJson } from '../protocol/dbc.mjs';
+import { eventFamiliesForWorkspace } from './roles.mjs';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -209,6 +210,109 @@ export class HubViewModel {
     return {
       pane: 'federation.convergence',
       value: result,
+    };
+  }
+
+  async roleWorkspace(role, workspace, payload = {}) {
+    if (workspace === 'A') {
+      const sid = payload.sid;
+      return {
+        pane: 'workspace.A',
+        value: {
+          descriptor: sid ? (await this.descriptorBySid(sid)).value : { code: 'sid_required', ok: false },
+          event_families: eventFamiliesForWorkspace('A'),
+          routing: sid ? (await this.routingBySid(sid)).value : { code: 'sid_required', ok: false },
+          workspace: 'A',
+        },
+      };
+    }
+
+    if (workspace === 'B') {
+      const call = payload.call;
+      return {
+        pane: 'workspace.B',
+        value: {
+          event_families: eventFamiliesForWorkspace('B'),
+          resolve: call ? (await this.resolve(call)).value : { code: 'call_required', ok: false },
+          workspace: 'B',
+        },
+      };
+    }
+
+    if (workspace === 'C') {
+      return {
+        pane: 'workspace.C',
+        value: {
+          capability: payload.capability_input ? (await this.verifyCapability(payload.capability_input)).value : { code: 'capability_input_required', ok: false },
+          event_families: eventFamiliesForWorkspace('C'),
+          revocation: payload.revocation_input ? (await this.verifyRevocation(payload.revocation_input)).value : { code: 'revocation_input_required', ok: false },
+          workspace: 'C',
+        },
+      };
+    }
+
+    if (workspace === 'D') {
+      const sid = payload.sid;
+      const adapterLabel = payload.adapter_label ?? 'adapter:ipv6';
+      return {
+        pane: 'workspace.D',
+        value: {
+          adapter: sid ? (await this.adapterByLabelAndSid(adapterLabel, sid)).value : { code: 'sid_required', ok: false },
+          event_families: eventFamiliesForWorkspace('D'),
+          routing: sid ? (await this.routingBySid(sid)).value : { code: 'sid_required', ok: false },
+          workspace: 'D',
+        },
+      };
+    }
+
+    if (workspace === 'E') {
+      const providers = await this.federationProviders();
+      const routeSet = payload.routeset_request
+        ? await this.federationRouteSet(payload.routeset_request, payload.routeset_options ?? {})
+        : { value: { code: 'routeset_request_required', ok: false } };
+      const arbitration = payload.route_set
+        ? await this.federationArbitration(payload.route_set)
+        : { value: { code: 'route_set_required', ok: false } };
+      const convergence = payload.local_record && payload.remote_record
+        ? await this.federationConvergence(payload.local_record, payload.remote_record)
+        : { value: { code: 'convergence_records_required', ok: false } };
+      return {
+        pane: 'workspace.E',
+        value: {
+          arbitration: arbitration.value,
+          convergence: convergence.value,
+          event_families: eventFamiliesForWorkspace('E'),
+          providers: providers.value,
+          routeset: routeSet.value,
+          workspace: 'E',
+        },
+      };
+    }
+
+    if (workspace === 'F') {
+      const timeline = this.listEvents(payload.limit ?? 200, payload.filter ?? {});
+      return {
+        pane: 'workspace.F',
+        value: {
+          descriptor: payload.sid ? (await this.descriptorBySid(payload.sid)).value : null,
+          event_families: eventFamiliesForWorkspace('F'),
+          events: timeline,
+          projection_read_only: true,
+          routing: payload.sid ? (await this.routingBySid(payload.sid)).value : null,
+          store: (await this.storeReplaySummary()).value,
+          workspace: 'F',
+        },
+      };
+    }
+
+    return {
+      pane: 'workspace.error',
+      value: {
+        code: 'invalid_workspace',
+        ok: false,
+        role,
+        workspace,
+      },
     };
   }
 }

@@ -29,6 +29,9 @@ Use this checklist to validate an independent implementation against this refere
 - [ ] EVR event kinds are explicit and validated against evidence-shape laws.
 - [ ] Core/Network emission is observational-only and does not alter semantic outcomes.
 - [ ] Hub event timeline/detail panes are projection-only over emitted EVR events.
+- [ ] Hub role workspace scope is enforced for Provider/Broker/Consumer/User/Agent.
+- [ ] User projection portal is read-only and rejects mutating commands.
+- [ ] Broker forwarding provides verbatim-forward witness and does not rewrite call payloads.
 - [ ] Federation descriptor/announcement validation is explicit and deterministic.
 - [ ] Federation route-set derivation is deterministic for identical announcement sets.
 - [ ] Federation arbitration is deterministic with typed ambiguity failures.
@@ -56,6 +59,10 @@ Use this checklist to validate an independent implementation against this refere
   - valid chain then revoked
   - delegated chain invalidated by ancestor revocation
   - unauthorized revocation attempt rejected
+- [ ] Hub role-shell demo:
+  - role visibility matrix is stable
+  - forbidden workspace and read-only enforcement are deterministic
+  - broker verbatim-forward witness is true
 
 ## Required negative proofs
 

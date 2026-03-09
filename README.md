@@ -45,6 +45,7 @@ Deterministic law-first reference implementation of the Tetragrammatron semantic
 - `npm run demo:revocation:revoked`
 - `npm run demo:revocation:ancestor`
 - `npm run demo:revocation:unauthorized`
+- `npm run demo:hub:roles`
 
 ## Frozen demo snapshots
 
@@ -66,6 +67,7 @@ Frozen snapshot fixtures live in `fixtures/demos/`:
 - `revocation-valid-then-revoked.snapshot.json`
 - `revocation-ancestor-revoked.snapshot.json`
 - `revocation-unauthorized-attempt.snapshot.json`
+- `hub-role-shell.snapshot.json`
 
 Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 
@@ -115,6 +117,7 @@ Post-baseline work is intentionally split into independent tracks:
 - Track C: federation breadth (`docs/tracks/track-c-federation.md`)
 - Track D: productization (`docs/tracks/track-d-productization.md`)
 - Track E: revocation (`docs/tracks/track-e-revocation.md`)
+- Track H: role-based hub completion (`docs/tracks/track-h-hub-roles.md`)
 
 Cross-track dependency and contract rules:
 

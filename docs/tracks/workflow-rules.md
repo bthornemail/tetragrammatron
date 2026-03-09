@@ -7,6 +7,7 @@
 - `track-c/<topic>` federation breadth
 - `track-d/<topic>` productization
 - `track-e/<topic>` revocation
+- `track-h/<topic>` hub role completion
 
 ## Required labels
 
@@ -15,6 +16,7 @@
 - `track:c-federation`
 - `track:d-productization`
 - `track:e-revocation`
+- `track:h-hub-roles`
 - Optional: `contract-impact`, `snapshot-update`
 
 ## PR discipline
@@ -33,6 +35,7 @@
 - `ci-track-c`
 - `ci-track-d`
 - `ci-track-e`
+- `ci-track-h`
 - `ci-contract-integration`
 
 A PR is merge-eligible only when its track lane and `ci-contract-integration` are green.

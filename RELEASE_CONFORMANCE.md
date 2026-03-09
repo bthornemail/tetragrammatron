@@ -41,6 +41,28 @@ This release is a **semantic baseline freeze**: foundationally stable semantics 
 
 ---
 
+# Hub Roles Module Conformance Statement
+
+Module version: `1.0.1-hub-roles`
+
+This module cut completes Track H role-segmented Hub projection over the frozen semantic baseline.
+
+## Proven in this module
+
+- Hub role workspace visibility is deterministic for Provider/Broker/Consumer/User/Agent.
+- Workspace A/B/C/D/E/F views are endpoint-fidelity projections over existing Core/Network/EVR contracts.
+- User portal remains read-only and rejects mutation attempts.
+- Broker forwarding produces a verbatim-forward witness and does not rewrite routed payloads.
+- Role-shell demo output is frozen and conformance-checked.
+
+## Intentionally deferred after Track H
+
+- Role-based authn/authz policy expansion.
+- Product workflow orchestration beyond projection shell behavior.
+- Multi-tenant policy administration surfaces.
+
+---
+
 # Reference Stack v0 Conformance Statement
 
 Release tag: `v0.1.0-reference`

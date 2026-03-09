@@ -1,0 +1,35 @@
+{
+  "acceptance": "role-scoped hub surfaces remain projection-only and endpoint-fidelity constrained",
+  "broker_verbatim_forward": true,
+  "consumer_forbidden_workspace_code": "forbidden_workspace",
+  "role_visibility": {
+    "provider": [
+      "A",
+      "B",
+      "C",
+      "E"
+    ],
+    "broker": [
+      "A",
+      "C",
+      "D",
+      "E"
+    ],
+    "consumer": [
+      "A",
+      "B"
+    ],
+    "user": [
+      "F"
+    ],
+    "agent": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  "user_resolve_code": "forbidden_workspace"
+}

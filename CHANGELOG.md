@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.0.1-hub-roles
+
+### Track H (Role-Based Hub Completion)
+- Added Hub role/workspace doctrine docs and fixture/checklist set (`docs/modules/hub-roles/*`).
+- Added explicit role/workspace policy and endpoint-fidelity maps (`src/hub/roles.mjs`).
+- Added role-scoped command authorization in Hub shell with deterministic non-success surfaces for forbidden workspace and read-only projection attempts.
+- Added workspace projection openings for A/B/C/D/E/F over existing Core/Network/EVR surfaces.
+- Added broker verbatim-forward witness path (`broker.forward`) proving no payload rewrite at Hub layer.
+- Added Hub role fixture/tests (`fixtures/hub/role-shell.json`, `tests/hub/roles.test.mjs`).
+- Added frozen role-shell demo snapshot (`fixtures/demos/hub-role-shell.snapshot.json`) and conformance coverage.
+
 ## v1.0.0-semantic-baseline
 
 ### Track E (Revocation)
