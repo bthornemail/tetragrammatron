@@ -10,6 +10,14 @@ Deterministic law-first reference implementation of the Tetragrammatron semantic
 - Descriptors are discoverable.
 - Presentation is projection.
 
+## Start Here
+
+- Conformance Kit: `docs/conformance-kit.md`
+- Minimal verifier seed: `examples/minimal-verifier/`
+- Replay witness packs: `replay-packs/`
+- Public compatibility check: `npm run conformance:kit`
+- Replay pack verification: `npm run replay:verify:all`
+
 ## Layers and modules
 
 - `src/substrate` — NRR substrate (`put/get`, append-only log, replay, verify, bundles, checkpoints)

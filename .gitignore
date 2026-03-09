@@ -1,2 +1,5 @@
 archive
 dev-docs
+.npm-cache
+npm-pack-contents.txt
+tetragrammatron-*.tgz

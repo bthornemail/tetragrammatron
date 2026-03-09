@@ -1,0 +1,2 @@
+7082eb599a9033838032d3ae1a46d16553700f4554842399c99c3d8a0e4d2265  releases/conformance-kit-v1.2.0.tar.gz
+47c8380aa3c12aec2436ea673b832ac6cb1cc562acd7e90eea7659de41e3ab78  tetragrammatron-1.2.0.tgz
