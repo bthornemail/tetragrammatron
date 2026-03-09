@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { NRR } from '../substrate/nrr.mjs';
 import { STAGES, canonicalJson, resolveTo } from '../protocol/dbc.mjs';
 import { verifyCapabilityChain } from '../protocol/capability.mjs';
+import { createEvent } from '../evr/schema.mjs';
 import {
   deriveSchemaDigest,
   deriveSID,
@@ -85,6 +86,8 @@ function adapterIPv4Compat(sid) {
 export class CoreHost {
   constructor({ nrr }) {
     this.nrr = nrr;
+    this.evrEvents = [];
+    this.evrSeq = 0;
   }
 
   static async create({ repoDir }) {
@@ -100,43 +103,77 @@ export class CoreHost {
     return ref;
   }
 
+  emitEvent(kind, status, evidence) {
+    const created = createEvent({
+      evidence,
+      kind,
+      origin_layer: 'core',
+      seq: (this.evrSeq += 1),
+      status,
+    });
+    if (!created.ok) {
+      return created;
+    }
+    this.evrEvents.push(created.value);
+    return { ok: true, value: created.value };
+  }
+
+  listEvents(limit = 200) {
+    return JSON.parse(JSON.stringify(this.evrEvents.slice(-limit)));
+  }
+
   async resolve(call) {
     if (!call || typeof call !== 'object') {
-      return hostValidationFailure('invalid_request', null, { detail: 'call must be an object' });
+      const failure = hostValidationFailure('invalid_request', null, { detail: 'call must be an object' });
+      this.emitEvent('resolution.rejected', 'error', { code: failure.code, stage: null });
+      return failure;
     }
 
     const targetStage = call?.target_stage;
     if (typeof targetStage !== 'string' || !STAGES.includes(targetStage)) {
-      return hostValidationFailure('invalid_stage', targetStage ?? null, {
+      const failure = hostValidationFailure('invalid_stage', targetStage ?? null, {
         allowed_stages: STAGES,
         got: targetStage,
       });
+      this.emitEvent('resolution.rejected', 'error', { code: failure.code, stage: targetStage ?? null });
+      return failure;
     }
 
     const input = call?.canonical_input;
     if (!input || typeof input !== 'object') {
-      return hostValidationFailure('invalid_request', targetStage, { detail: 'canonical_input must be an object' });
+      const failure = hostValidationFailure('invalid_request', targetStage, { detail: 'canonical_input must be an object' });
+      this.emitEvent('resolution.rejected', 'error', { code: failure.code, stage: targetStage });
+      return failure;
     }
 
     const schema = input.schema;
     if (!schema || typeof schema !== 'object' || typeof schema.id !== 'string' || schema.id.trim() === '') {
-      return hostValidationFailure('invalid_request', targetStage, { detail: 'schema.id is required' });
+      const failure = hostValidationFailure('invalid_request', targetStage, { detail: 'schema.id is required' });
+      this.emitEvent('resolution.rejected', 'error', { code: failure.code, stage: targetStage });
+      return failure;
     }
     if (!Array.isArray(input.document)) {
-      return hostValidationFailure('invalid_request', targetStage, { detail: 'document must be an array' });
+      const failure = hostValidationFailure('invalid_request', targetStage, { detail: 'document must be an array' });
+      this.emitEvent('resolution.rejected', 'error', { code: failure.code, stage: targetStage });
+      return failure;
     }
     if (targetStage === 'Projected' && input.view !== undefined && typeof input.view !== 'object') {
-      return hostValidationFailure('invalid_request', targetStage, { detail: 'view must be an object when provided' });
+      const failure = hostValidationFailure('invalid_request', targetStage, { detail: 'view must be an object when provided' });
+      this.emitEvent('resolution.rejected', 'error', { code: failure.code, stage: targetStage });
+      return failure;
     }
 
     const schemaDigest = deriveSchemaDigest(schema);
+    this.emitEvent('resolution.started', 'ok', { schema_digest: schemaDigest, target_stage: targetStage });
 
     if (call.required_capability === true) {
       const capabilityResult = await this.verifyCapability(call.capability_context);
       if (!capabilityResult.ok) {
-        return hostValidationFailure('capability_denied', targetStage, {
+        const failure = hostValidationFailure('capability_denied', targetStage, {
           capability_result: capabilityResult,
         });
+        this.emitEvent('resolution.rejected', 'error', { code: failure.code, stage: targetStage });
+        return failure;
       }
     }
 
@@ -179,6 +216,11 @@ export class CoreHost {
       response.reject_kind = resolved.reject_kind;
       response.evidence = resolved.evidence;
       response.persisted.result_ref = await this.persistRecord(rejectRecord);
+      this.emitEvent('resolution.rejected', 'error', {
+        call_ref: callRef,
+        code: resolved.reject_kind ?? resolved.reject_code ?? 'Reject',
+        stage: resolved.stage,
+      });
       return response;
     }
 
@@ -253,17 +295,27 @@ export class CoreHost {
       }
     }
 
+    this.emitEvent('resolution.succeeded', 'ok', {
+      call_ref: callRef,
+      result_ref: response.persisted.result_ref,
+      sid: response.identity?.sid ?? null,
+      stage: response.stage,
+      value_kind: response.value_kind ?? null,
+    });
+
     return response;
   }
 
   async getDescriptorBySID(sid) {
     if (!isSid(sid)) {
-      return {
+      const result = {
         code: 'invalid_sid',
         kind: 'CoreLookupFailure',
         ok: false,
         sid,
       };
+      this.emitEvent('descriptor.lookup_missed', 'error', { code: result.code, sid });
+      return result;
     }
 
     const entries = await this.nrr.log();
@@ -278,25 +330,29 @@ export class CoreHost {
     }
 
     if (!lastIndex) {
-      return {
+      const result = {
         code: 'sid_not_found',
         kind: 'CoreLookupFailure',
         ok: false,
         sid,
       };
+      this.emitEvent('descriptor.lookup_missed', 'error', { code: result.code, sid });
+      return result;
     }
 
     const descriptorRecord = parseEntryJson(await this.nrr.get(lastIndex.descriptor_ref));
     if (!descriptorRecord || descriptorRecord.kind !== 'core.identity_descriptor.v1') {
-      return {
+      const result = {
         code: 'descriptor_corrupt',
         kind: 'CoreLookupFailure',
         ok: false,
         sid,
       };
+      this.emitEvent('descriptor.lookup_missed', 'error', { code: result.code, sid });
+      return result;
     }
 
-    return {
+    const result = {
       descriptor: descriptorRecord.descriptor,
       descriptor_ref: lastIndex.descriptor_ref,
       normal_form_ref: lastIndex.normal_form_ref,
@@ -304,6 +360,11 @@ export class CoreHost {
       schema_digest: lastIndex.schema_digest,
       sid,
     };
+    this.emitEvent('descriptor.lookup_succeeded', 'ok', {
+      descriptor_ref: result.descriptor_ref,
+      sid: result.sid,
+    });
+    return result;
   }
 
   async verifyCapability(input) {
@@ -315,51 +376,69 @@ export class CoreHost {
     };
     const ref = await this.persistRecord(record);
 
-    return {
+    const shaped = {
       ...result,
       kind: result.ok ? 'CapabilityVerified' : 'CapabilityRejected',
       meta: {
         evidence_ref: ref,
       },
     };
+    if (shaped.ok) {
+      this.emitEvent('capability.verify_succeeded', 'ok', {
+        evidence_ref: ref,
+        status: shaped.status,
+      });
+    } else {
+      this.emitEvent('capability.verify_failed', 'error', {
+        evidence_ref: ref,
+        status: shaped.status,
+      });
+    }
+    return shaped;
   }
 
   async deriveAdapter(label, sid, options = {}) {
-    void options;
-
     if (!isSid(sid)) {
-      return {
+      const result = {
         code: 'invalid_sid',
         kind: 'RejectAdapter',
         ok: false,
       };
+      this.emitEvent('adapter.derivation_failed', 'error', { adapter_label: label, code: result.code });
+      return result;
     }
 
     if (label === 'adapter:ipv6') {
-      return {
+      const result = {
         ok: true,
         value: adapterIPv6(sid),
       };
+      this.emitEvent('adapter.derived', 'ok', { adapter_label: label, sid });
+      return result;
     }
 
     if (label === 'adapter:ipv4') {
-      return {
+      const result = {
         ok: true,
         value: adapterIPv4Compat(sid),
       };
+      this.emitEvent('adapter.derived', 'ok', { adapter_label: label, sid });
+      return result;
     }
 
     if (label === 'adapter:guarded-demo') {
       const verification = await this.verifyCapability(options?.capability_context ?? {});
       if (!verification.ok) {
-        return {
+        const denied = {
           code: 'adapter_not_authorized',
           evidence: verification,
           kind: 'RejectAdapter',
           ok: false,
         };
+        this.emitEvent('adapter.derivation_failed', 'error', { adapter_label: label, code: denied.code });
+        return denied;
       }
-      return {
+      const result = {
         ok: true,
         value: {
           adapter_label: 'adapter:guarded-demo',
@@ -369,14 +448,18 @@ export class CoreHost {
           sid,
         },
       };
+      this.emitEvent('adapter.derived', 'ok', { adapter_label: label, sid });
+      return result;
     }
 
-    return {
+    const result = {
       code: 'unsupported_adapter',
       evidence: { label },
       kind: 'RejectAdapter',
       ok: false,
     };
+    this.emitEvent('adapter.derivation_failed', 'error', { adapter_label: label, code: result.code });
+    return result;
   }
 
   async getDescriptorByDigest(digest) {

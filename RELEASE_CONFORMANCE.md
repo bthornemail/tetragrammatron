@@ -55,3 +55,28 @@ This module cut completes Track A capability semantics over the existing referen
 - Federation discovery/arbitration breadth.
 - Role-segmented hub workflows.
 - Embedded/runtime profile specialization.
+
+---
+
+# EVR Module Conformance Statement
+
+Module version: `0.3.0-evr`
+
+This module cut completes Track B EVR doctrine over the existing reference baseline and capability module.
+
+## Proven in this module
+
+- Event families and kinds are explicit for implemented layers (`resolution`, `descriptor`, `capability`, `adapter`, `route`, `hub`).
+- `EventKind` determines evidence shape via typed registry and validator.
+- Event envelopes are canonically encodable and validation rejects are deterministic.
+- Core and Network emit EVR events without altering protocol/capability semantics.
+- Hub event timeline/detail panes are projection-only over emitted events.
+- EVR demos are frozen and conformance-checked for deterministic trace shape.
+
+## Intentionally deferred after Track B
+
+- `federation.*` event family completion.
+- `device.*` event family completion.
+- Federation discovery/arbitration breadth.
+- Role-segmented hub workflows.
+- Embedded/runtime profile specialization.

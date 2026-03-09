@@ -1,4 +1,5 @@
 import { STAGES } from '../protocol/dbc.mjs';
+import { createEvent } from '../evr/schema.mjs';
 import { deriveIPv4CompatibilityAdapter, deriveIPv6Adapter } from './adapters.mjs';
 import { RouteTable } from './routing.mjs';
 
@@ -10,6 +11,27 @@ export class HDRPC {
   constructor() {
     this.routeTable = new RouteTable();
     this.targets = new Map();
+    this.evrEvents = [];
+    this.evrSeq = 0;
+  }
+
+  emitEvent(kind, status, evidence) {
+    const created = createEvent({
+      evidence,
+      kind,
+      origin_layer: 'network',
+      seq: (this.evrSeq += 1),
+      status,
+    });
+    if (!created.ok) {
+      return created;
+    }
+    this.evrEvents.push(created.value);
+    return { ok: true, value: created.value };
+  }
+
+  listEvents(limit = 200) {
+    return JSON.parse(JSON.stringify(this.evrEvents.slice(-limit)));
   }
 
   registerTarget(targetId, host) {
@@ -37,28 +59,39 @@ export class HDRPC {
 
   async call(sid, stage, request = {}) {
     if (!isSid(sid)) {
-      return { code: 'invalid_sid', kind: 'NetworkValidationFailure', ok: false, sid };
+      const failure = { code: 'invalid_sid', kind: 'NetworkValidationFailure', ok: false, sid };
+      this.emitEvent('route.call_failed', 'error', { code: failure.code, stage: stage ?? null });
+      return failure;
     }
     if (typeof stage !== 'string' || !STAGES.includes(stage)) {
-      return {
+      const failure = {
         code: 'invalid_stage',
         kind: 'NetworkValidationFailure',
         ok: false,
         evidence: { allowed_stages: STAGES, got: stage },
       };
+      this.emitEvent('route.call_failed', 'error', { code: failure.code, stage: String(stage) });
+      return failure;
     }
     if (!request || typeof request !== 'object' || !request.canonical_input || typeof request.canonical_input !== 'object') {
-      return { code: 'invalid_request', kind: 'NetworkValidationFailure', ok: false };
+      const failure = { code: 'invalid_request', kind: 'NetworkValidationFailure', ok: false };
+      this.emitEvent('route.call_failed', 'error', { code: failure.code, stage });
+      return failure;
     }
 
     const route = this.routeTable.resolve(sid);
     if (!route.ok) {
+      this.emitEvent('route.lookup_failed', 'error', { code: route.code, sid });
+      this.emitEvent('route.call_failed', 'error', { code: route.code, stage });
       return route;
     }
+    this.emitEvent('route.lookup_succeeded', 'ok', { route_target: route.target_id, sid });
 
     const target = this.targets.get(route.target_id);
     if (!target) {
-      return { code: 'route_target_not_registered', kind: 'RouteResolutionFailure', ok: false, sid };
+      const failure = { code: 'route_target_not_registered', kind: 'RouteResolutionFailure', ok: false, sid };
+      this.emitEvent('route.call_failed', 'error', { code: failure.code, stage });
+      return failure;
     }
 
     const call = {
@@ -71,8 +104,12 @@ export class HDRPC {
     if (request.required_capability === true) {
       call.required_capability = true;
     }
+    this.emitEvent('route.call_forwarded', 'ok', { route_target: route.target_id, sid, stage });
 
     const response = await target.resolve(call);
+    if (!response.ok) {
+      this.emitEvent('route.call_failed', 'error', { code: response.code ?? response.reject_kind ?? 'call_failed', stage });
+    }
 
     return {
       network: {

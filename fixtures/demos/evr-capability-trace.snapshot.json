@@ -1,0 +1,27 @@
+{
+  "acceptance": "EVR capability trace preserves deterministic success/failure evidence shapes",
+  "events": [
+    {
+      "evidence": {
+        "evidence_ref": "sha256:32473d8418352324f172551fa2ea9bfe9d4957306d702ac390181f1ffe0270a9",
+        "status": "verified"
+      },
+      "family": "capability",
+      "kind": "capability.verify_succeeded",
+      "origin_layer": "core",
+      "seq": 1,
+      "status": "ok"
+    },
+    {
+      "evidence": {
+        "evidence_ref": "sha256:0857beb47f2e6414c8fdb640c2e832f110c17826933b080afe57bab27e3a446e",
+        "status": "epoch_expired"
+      },
+      "family": "capability",
+      "kind": "capability.verify_failed",
+      "origin_layer": "core",
+      "seq": 2,
+      "status": "error"
+    }
+  ]
+}

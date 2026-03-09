@@ -24,6 +24,9 @@ Use this checklist to validate an independent implementation against this refere
 - [ ] Capability verification outcomes are deterministic, typed, and evidence-carrying.
 - [ ] Capability verification does not alter SID, descriptor identity, or NormalForm semantics.
 - [ ] Capability-gated resolve and guarded adapter paths are deterministic across Core/Network/Hub.
+- [ ] EVR event kinds are explicit and validated against evidence-shape laws.
+- [ ] Core/Network emission is observational-only and does not alter semantic outcomes.
+- [ ] Hub event timeline/detail panes are projection-only over emitted EVR events.
 
 ## Required demos
 
@@ -34,6 +37,10 @@ Use this checklist to validate an independent implementation against this refere
   - valid delegation allows guarded action
   - expired chain denies guarded action
   - scope escalation denies guarded action
+- [ ] EVR demos:
+  - resolve trace
+  - capability trace
+  - route trace
 
 ## Required negative proofs
 
@@ -50,10 +57,12 @@ Use this checklist to validate an independent implementation against this refere
 - [ ] Snapshot drift fails CI until explicitly reviewed.
 - [ ] Fresh run from empty state reproduces demo snapshots.
 - [ ] Bundle export/import preserves descriptor and route lookup behavior.
+- [ ] Event timeline projection ordering is stable for equivalent operation traces.
 
 ## Deferred (intentional)
 
 - [ ] EVR doctrine expansion.
+- [ ] EVR `federation.*` and `device.*` family completion.
 - [ ] Role-segmented hub.
 - [ ] Peer discovery mesh / federation breadth.
 - [ ] Embedded profile optimization policies.

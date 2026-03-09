@@ -1,0 +1,30 @@
+{
+  "acceptance": "EVR resolve trace is observational evidence over canonical resolve behavior",
+  "events": [
+    {
+      "evidence": {
+        "schema_digest": "sha256:92dc1ccad096b02168d7ba96a2ce72bc0444fb8760d6e5485dab75d78cc3a4b8",
+        "target_stage": "Normalized"
+      },
+      "family": "resolution",
+      "kind": "resolution.started",
+      "origin_layer": "core",
+      "seq": 1,
+      "status": "ok"
+    },
+    {
+      "evidence": {
+        "call_ref": "sha256:178867df903d11e556826511a0c6988201aef334234bdffe1a11ff8f7a7bb57a",
+        "result_ref": "sha256:985474759c55643ed1ff818fb063447323652b0c5f83c0927c794269099ddc65",
+        "sid": "sid:dbc:a2cb74e4658d52d4d994aa77a1814dd50a4c7f118ec1a88f3c1525b70b483745",
+        "stage": "Normalized",
+        "value_kind": "NormalForm"
+      },
+      "family": "resolution",
+      "kind": "resolution.succeeded",
+      "origin_layer": "core",
+      "seq": 2,
+      "status": "ok"
+    }
+  ]
+}

@@ -7,6 +7,9 @@ import { canonicalJson } from '../../src/protocol/dbc.mjs';
 import { runCapabilityExpiredChainDemo } from '../../scripts/capability-expired-chain.mjs';
 import { runCapabilityScopeFailureDemo } from '../../scripts/capability-scope-failure.mjs';
 import { runCapabilityValidChainDemo } from '../../scripts/capability-valid-chain.mjs';
+import { runEVRCapabilityTrace } from '../../scripts/evr-capability-trace.mjs';
+import { runEVRResolveTrace } from '../../scripts/evr-resolve-trace.mjs';
+import { runEVRRouteTrace } from '../../scripts/evr-route-trace.mjs';
 import { runMinimalFederationProof } from '../../scripts/minimal-federation-proof.mjs';
 import { runHelloTetragrammatron } from '../../scripts/hello-tetragrammatron.mjs';
 import { runNodePipelineDemo } from '../../scripts/node-pipeline-demo.mjs';
@@ -94,4 +97,24 @@ test('capability demos snapshots are frozen and reproducible', async () => {
   assert.equal(canonicalJson(expiredB), canonicalJson(expectedExpired));
   assert.equal(canonicalJson(scopeA), canonicalJson(expectedScope));
   assert.equal(canonicalJson(scopeB), canonicalJson(expectedScope));
+});
+
+test('EVR demos snapshots are frozen and reproducible', async () => {
+  const expectedResolve = await loadSnapshot('evr-resolve-trace');
+  const expectedCapability = await loadSnapshot('evr-capability-trace');
+  const expectedRoute = await loadSnapshot('evr-route-trace');
+
+  const resolveA = await runEVRResolveTrace();
+  const resolveB = await runEVRResolveTrace();
+  const capA = await runEVRCapabilityTrace();
+  const capB = await runEVRCapabilityTrace();
+  const routeA = await runEVRRouteTrace();
+  const routeB = await runEVRRouteTrace();
+
+  assert.equal(canonicalJson(resolveA), canonicalJson(expectedResolve));
+  assert.equal(canonicalJson(resolveB), canonicalJson(expectedResolve));
+  assert.equal(canonicalJson(capA), canonicalJson(expectedCapability));
+  assert.equal(canonicalJson(capB), canonicalJson(expectedCapability));
+  assert.equal(canonicalJson(routeA), canonicalJson(expectedRoute));
+  assert.equal(canonicalJson(routeB), canonicalJson(expectedRoute));
 });

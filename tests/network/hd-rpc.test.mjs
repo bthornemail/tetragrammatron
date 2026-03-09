@@ -65,6 +65,9 @@ test('call(SID, stage) is canonically equivalent to direct Core host resolve', a
   const { network: routeMeta, ...routedCoreShape } = routed;
   assert.equal(typeof routeMeta.route_target, 'string');
   assert.equal(canonicalJson(routedCoreShape), canonicalJson(direct));
+  const events = network.listEvents();
+  assert.equal(events.some((e) => e.kind === 'route.lookup_succeeded'), true);
+  assert.equal(events.some((e) => e.kind === 'route.call_forwarded'), true);
 });
 
 test('known SID route lookup succeeds deterministically', async () => {
@@ -91,6 +94,9 @@ test('invalid SID and unknown SID route fail deterministically', async () => {
   const unknownSid = await network.call(networkFixture.unknown_sid, 'Normalized', { canonical_input: {} });
   assert.equal(unknownSid.ok, false);
   assert.equal(unknownSid.code, 'route_not_found');
+  const events = network.listEvents();
+  assert.equal(events.some((e) => e.kind === 'route.lookup_failed'), true);
+  assert.equal(events.some((e) => e.kind === 'route.call_failed'), true);
 });
 
 test('unsupported stage and malformed network call fail deterministically', async () => {

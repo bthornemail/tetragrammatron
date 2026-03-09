@@ -1,0 +1,8 @@
+{
+  "cases": [
+    {"id":"E-D01_same_operation_same_schema","kind":"schema_stability"},
+    {"id":"E-D02_same_failure_same_schema","kind":"failure_schema_stability"},
+    {"id":"E-D03_stable_ordering","kind":"ordering_stability"},
+    {"id":"E-D04_stable_timeline_projection","kind":"timeline_projection_stability"}
+  ]
+}

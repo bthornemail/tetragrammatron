@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.3.0-evr
+
+### Track B (EVR Doctrine)
+- Added pure EVR module (`src/evr`) with event kind registry, envelope validator, canonical encoding, and deterministic projection view helpers.
+- Defined implemented event families (`resolution`, `descriptor`, `capability`, `adapter`, `route`, `hub`) and reserved families (`federation`, `device`).
+- Integrated Core event emission for resolve, descriptor lookup, capability verification, and adapter derivation outcomes.
+- Integrated Network event emission for route lookup/call forwarding/failures.
+- Integrated Hub event inspection surfaces (`events.timeline`, `events.detail`) as projection-only views.
+- Added EVR fixtures (golden/negative/determinism/integration) and dedicated EVR tests.
+- Added EVR end-to-end demos and frozen snapshots:
+  - resolve trace
+  - capability trace
+  - route trace
+- Added conformance coverage for EVR snapshots and deterministic timeline projection ordering.
+
 ## v0.2.0-capability
 
 ### Track A (Capability Model)

@@ -13,12 +13,15 @@
     "sid": "sid:dbc:a2cb74e4658d52d4d994aa77a1814dd50a4c7f118ec1a88f3c1525b70b483745"
   },
   "events": {
-    "count": 4,
+    "count": 7,
     "kinds": [
-      "hub.resolve",
-      "hub.descriptor.lookup",
-      "hub.routing.adapter",
-      "hub.store.inspect"
+      "resolution.started",
+      "resolution.succeeded",
+      "descriptor.lookup_succeeded",
+      "hub.inspect_emitted",
+      "hub.inspect_emitted",
+      "hub.inspect_emitted",
+      "hub.inspect_emitted"
     ]
   },
   "resolve": {

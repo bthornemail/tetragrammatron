@@ -1,0 +1,10 @@
+{
+  "cases": [
+    {"id":"E-I01_resolve_emits_resolution_events","kind":"resolution_sequence"},
+    {"id":"E-I02_route_call_emits_route_and_resolution_events","kind":"route_resolution_sequence"},
+    {"id":"E-I03_capability_verification_emits_capability_events","kind":"capability_sequence"},
+    {"id":"E-I04_descriptor_lookup_emits_descriptor_events","kind":"descriptor_sequence"},
+    {"id":"E-I05_adapter_request_emits_adapter_events","kind":"adapter_sequence"},
+    {"id":"E-I06_hub_timeline_projection_matches_emitted_events","kind":"hub_projection_equivalence"}
+  ]
+}

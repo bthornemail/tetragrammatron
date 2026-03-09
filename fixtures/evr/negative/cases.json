@@ -1,0 +1,10 @@
+{
+  "cases": [
+    {"id":"E-N01_malformed_envelope","kind":"invalid_envelope"},
+    {"id":"E-N02_wrong_evidence_shape","kind":"missing_causal_field"},
+    {"id":"E-N03_invalid_family_kind_pair","kind":"invalid_family_kind"},
+    {"id":"E-N04_invalid_origin_layer","kind":"invalid_origin_layer"},
+    {"id":"E-N05_invalid_timestamp","kind":"invalid_timestamp"},
+    {"id":"E-N06_invalid_sequence","kind":"invalid_sequence"}
+  ]
+}

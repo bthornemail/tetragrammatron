@@ -136,3 +136,27 @@ test('capability pane is projection-only and matches core verification', async (
   const afterCapability = (await coreHost.nrr.log()).length;
   assert.equal(afterCapability > baseline, true);
 });
+
+test('EVR timeline and detail panes are projection-only and filterable', async () => {
+  const { fixture, shell } = await setup();
+
+  await shell.run('resolve', { call: fixture.resolve_call });
+  await shell.run('descriptor.lookup', {
+    sid: 'sid:dbc:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  });
+
+  const timeline = await shell.run('events.timeline', { limit: 200 });
+  assert.equal(timeline.pane, 'events.timeline');
+  assert.equal(Array.isArray(timeline.value), true);
+  assert.equal(timeline.value.length > 0, true);
+  assert.equal(timeline.value.every((e) => typeof e.family === 'string' && typeof e.kind === 'string'), true);
+
+  const routeOnly = await shell.run('events.timeline', { filter: { family: 'route' }, limit: 200 });
+  assert.equal(routeOnly.value.every((e) => e.family === 'route'), true);
+
+  const first = timeline.value[0];
+  const detail = await shell.run('events.detail', { event_id: first.event_id });
+  assert.equal(detail.pane, 'events.detail');
+  assert.equal(detail.value.ok, true);
+  assert.equal(detail.value.value.event_id, first.event_id);
+});

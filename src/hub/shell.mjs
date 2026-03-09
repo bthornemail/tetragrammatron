@@ -34,7 +34,19 @@ export class HubShell {
     if (command === 'events.list') {
       return {
         pane: 'events',
-        value: this.viewModel.listEvents(payload.limit ?? 100),
+        value: this.viewModel.listEvents(payload.limit ?? 100, payload.filter ?? {}),
+      };
+    }
+    if (command === 'events.timeline') {
+      return {
+        pane: 'events.timeline',
+        value: this.viewModel.listEvents(payload.limit ?? 200, payload.filter ?? {}),
+      };
+    }
+    if (command === 'events.detail') {
+      return {
+        pane: 'events.detail',
+        value: this.viewModel.getEventById(payload.event_id),
       };
     }
     if (command === 'capability.verify') {

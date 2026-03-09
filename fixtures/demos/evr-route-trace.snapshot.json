@@ -1,0 +1,50 @@
+{
+  "acceptance": "EVR route trace distinguishes lookup success/failure and call forwarding/failure",
+  "events": [
+    {
+      "evidence": {
+        "route_target": "node-a",
+        "sid": "sid:dbc:a2cb74e4658d52d4d994aa77a1814dd50a4c7f118ec1a88f3c1525b70b483745"
+      },
+      "family": "route",
+      "kind": "route.lookup_succeeded",
+      "origin_layer": "network",
+      "seq": 1,
+      "status": "ok"
+    },
+    {
+      "evidence": {
+        "route_target": "node-a",
+        "sid": "sid:dbc:a2cb74e4658d52d4d994aa77a1814dd50a4c7f118ec1a88f3c1525b70b483745",
+        "stage": "Normalized"
+      },
+      "family": "route",
+      "kind": "route.call_forwarded",
+      "origin_layer": "network",
+      "seq": 2,
+      "status": "ok"
+    },
+    {
+      "evidence": {
+        "code": "route_not_found",
+        "sid": "sid:dbc:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "family": "route",
+      "kind": "route.lookup_failed",
+      "origin_layer": "network",
+      "seq": 3,
+      "status": "error"
+    },
+    {
+      "evidence": {
+        "code": "route_not_found",
+        "stage": "Normalized"
+      },
+      "family": "route",
+      "kind": "route.call_failed",
+      "origin_layer": "network",
+      "seq": 4,
+      "status": "error"
+    }
+  ]
+}

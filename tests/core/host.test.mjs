@@ -38,6 +38,9 @@ test('in-process resolve yields stage envelope, persisted refs, SID and descript
   assert.equal(typeof result.persisted.descriptor_ref, 'string');
   assert.equal(typeof result.identity.sid, 'string');
   assert.equal(result.identity.descriptor.sid, result.identity.sid);
+  const events = host.listEvents();
+  assert.equal(events.some((e) => e.kind === 'resolution.started'), true);
+  assert.equal(events.some((e) => e.kind === 'resolution.succeeded'), true);
 });
 
 test('resolve distinguishes host validation failure from protocol reject', async () => {
@@ -61,6 +64,8 @@ test('resolve distinguishes host validation failure from protocol reject', async
   assert.equal(protocolReject.ok, false);
   assert.equal(protocolReject.reject_kind, 'RejectNormalize');
   assert.equal(protocolReject.meta.category, 'protocol_reject');
+  const events = host.listEvents();
+  assert.equal(events.filter((e) => e.kind === 'resolution.rejected').length >= 2, true);
 });
 
 test('descriptor lookup by SID returns exact descriptor', async () => {
@@ -73,6 +78,7 @@ test('descriptor lookup by SID returns exact descriptor', async () => {
 
   assert.equal(lookup.ok, true);
   assert.deepEqual(lookup.descriptor, result.identity.descriptor);
+  assert.equal(host.listEvents().some((e) => e.kind === 'descriptor.lookup_succeeded'), true);
 });
 
 test('capability verification returns deterministic typed result', async () => {
@@ -84,6 +90,7 @@ test('capability verification returns deterministic typed result', async () => {
   assert.equal(result.status, 'invalid_request');
   assert.equal(result.kind, 'CapabilityRejected');
   assert.equal(typeof result.meta.evidence_ref, 'string');
+  assert.equal(host.listEvents().some((e) => e.kind === 'capability.verify_failed'), true);
 });
 
 test('resolve capability gating and guarded adapter behavior are deterministic', async () => {
@@ -138,6 +145,9 @@ test('resolve capability gating and guarded adapter behavior are deterministic',
   });
   assert.equal(guardedAllowed.ok, true);
   assert.equal(guardedAllowed.value.adapter_label, 'adapter:guarded-demo');
+  const events = host.listEvents();
+  assert.equal(events.some((e) => e.kind === 'adapter.derived'), true);
+  assert.equal(events.some((e) => e.kind === 'adapter.derivation_failed'), true);
 });
 
 test('missing SID lookup and unsupported adapter are deterministic non-success', async () => {

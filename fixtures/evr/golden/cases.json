@@ -1,0 +1,14 @@
+{
+  "cases": [
+    {"id":"E-G01_resolve_success","kind":"resolution.succeeded"},
+    {"id":"E-G02_resolve_reject","kind":"resolution.rejected"},
+    {"id":"E-G03_descriptor_lookup_success","kind":"descriptor.lookup_succeeded"},
+    {"id":"E-G04_capability_verify_success","kind":"capability.verify_succeeded"},
+    {"id":"E-G05_capability_verify_failure","kind":"capability.verify_failed"},
+    {"id":"E-G06_adapter_success","kind":"adapter.derived"},
+    {"id":"E-G07_adapter_failure","kind":"adapter.derivation_failed"},
+    {"id":"E-G08_route_success","kind":"route.lookup_succeeded"},
+    {"id":"E-G09_route_failure","kind":"route.lookup_failed"},
+    {"id":"E-G10_hub_projection","kind":"hub.inspect_emitted"}
+  ]
+}

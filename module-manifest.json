@@ -1,25 +1,25 @@
 {
-  "module": "capability-model",
-  "module_version": "0.2.0-capability",
+  "module": "evr-doctrine",
+  "module_version": "0.3.0-evr",
   "release_type": "module",
   "status": "complete",
   "laws": [
-    "AuthorityIsDelegated",
-    "CapabilityIsNotIdentity",
-    "CapabilityDoesNotAlterSID",
-    "GrantChainValidity",
-    "EpochAndScopeBounds",
-    "DeterministicVerification",
-    "TypedRejection"
+    "ObservationalOnlyLaw",
+    "EventKindDeterminesEvidenceShape",
+    "FamilyKindLegality",
+    "SourceLayerLegality",
+    "CausalLinkageLaw",
+    "DeterministicEncodingLaw",
+    "RejectTaxonomyLaw"
   ],
   "fixtures": [
-    "capability/golden/cases.json",
-    "capability/negative/cases.json",
-    "capability/determinism/cases.json",
-    "capability/integration/cases.json",
-    "demos/capability-valid.snapshot.json",
-    "demos/capability-expired.snapshot.json",
-    "demos/capability-scope.snapshot.json"
+    "evr/golden/cases.json",
+    "evr/negative/cases.json",
+    "evr/determinism/cases.json",
+    "evr/integration/cases.json",
+    "demos/evr-resolve-trace.snapshot.json",
+    "demos/evr-capability-trace.snapshot.json",
+    "demos/evr-route-trace.snapshot.json"
   ],
   "cross_layer_tests": true,
   "conformance_verified": true

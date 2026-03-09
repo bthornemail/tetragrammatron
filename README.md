@@ -17,6 +17,7 @@ Minimal law-first reference implementation of the five-layer Tetragrammatron sta
 - `src/core` — host + node transport mapping (faithful execution, canonical persistence)
 - `src/network` — minimal HD-RPC (`call(SID, stage)`, route table, IPv6 canonical adapter)
 - `src/hub` — read-mostly inspection shell
+- `src/evr` — event doctrine module (kind registry, envelope validation, canonical encoding)
 
 ## Run
 
@@ -28,6 +29,9 @@ Minimal law-first reference implementation of the five-layer Tetragrammatron sta
 - Capability valid chain demo: `npm run demo:capability:valid`
 - Capability expired chain demo: `npm run demo:capability:expired`
 - Capability scope-failure demo: `npm run demo:capability:scope`
+- EVR resolve trace demo: `npm run demo:evr:resolve`
+- EVR capability trace demo: `npm run demo:evr:capability`
+- EVR route trace demo: `npm run demo:evr:route`
 
 ## Frozen demo snapshots
 
@@ -39,6 +43,9 @@ Frozen snapshot fixtures live in `fixtures/demos/`:
 - `capability-valid.snapshot.json`
 - `capability-expired.snapshot.json`
 - `capability-scope.snapshot.json`
+- `evr-resolve-trace.snapshot.json`
+- `evr-capability-trace.snapshot.json`
+- `evr-route-trace.snapshot.json`
 
 Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 
@@ -54,13 +61,14 @@ Snapshot conformance is enforced by `tests/conformance/demo-snapshots.test.mjs`.
 - Typed deterministic failure surfaces across protocol/core/network
 - Capability delegation verification with typed deterministic rejection taxonomy
 - Capability-gated resolve and guarded adapter derivation in Core
+- EVR event taxonomy, validation, and deterministic timeline projection over Core/Network/Hub emissions
 - End-to-end runnable demos and reproducibility checks
 
 ## Deferred (intentional)
 
 - Capability revocation semantics
 - Production PKI / hardware-backed cryptographic infrastructure
-- EVR doctrine expansion
+- EVR `federation.*` and `device.*` family completion
 - Role-segmented hub
 - Federation/discovery mesh breadth
 - Embedded profile optimization work
