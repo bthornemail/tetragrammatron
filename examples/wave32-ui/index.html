@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wave32 Mesh UI Bridge</title>
+    <style>
+      :root {
+        --bg: #0b1117;
+        --card: #141e28;
+        --fg: #d6e1ea;
+        --accent: #4dd0e1;
+      }
+      body { margin: 0; background: radial-gradient(circle at 20% 0%, #1b2a37 0%, var(--bg) 45%); color: var(--fg); font: 14px/1.5 "JetBrains Mono", monospace; }
+      .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+      .panel { background: var(--card); border: 1px solid #223142; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+      .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+      input, button, textarea { background: #0e1720; color: var(--fg); border: 1px solid #2a3a4b; border-radius: 8px; padding: 8px 10px; font: inherit; }
+      button { cursor: pointer; border-color: var(--accent); }
+      #log { height: 360px; overflow: auto; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="panel">
+        <div class="row">
+          <strong>Wave32 UI Bridge</strong>
+          <span id="status">disconnected</span>
+          <button id="snapshotBtn">Load Snapshot</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="row">
+          <textarea id="payload" rows="3" cols="70">{"topic":"/replay/scrub","t":"42"}</textarea>
+          <button id="publishBtn">Publish</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div id="log"></div>
+      </div>
+    </div>
+
+    <script type="module">
+      const status = document.getElementById('status');
+      const log = document.getElementById('log');
+      const payload = document.getElementById('payload');
+
+      function append(line) {
+        log.textContent += `${line}\n`;
+        log.scrollTop = log.scrollHeight;
+      }
+
+      const stream = new EventSource('/stream');
+      stream.addEventListener('status', (event) => {
+        const data = JSON.parse(event.data);
+        status.textContent = data.connected ? 'connected' : 'disconnected';
+        append(`[status] ${event.data}`);
+      });
+      stream.addEventListener('mesh', (event) => {
+        append(`[mesh] ${event.data}`);
+      });
+
+      document.getElementById('publishBtn').onclick = async () => {
+        const body = payload.value.trim();
+        const res = await fetch('/publish', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body,
+        });
+        append(`[publish] ${res.status} ${await res.text()}`);
+      };
+
+      document.getElementById('snapshotBtn').onclick = async () => {
+        const res = await fetch('/snapshot');
+        append(`[snapshot] ${res.status} ${await res.text()}`);
+      };
+    </script>
+  </body>
+</html>

@@ -13,6 +13,7 @@ Deterministic law-first reference implementation of the Tetragrammatron semantic
 ## Start Here
 
 - Conformance Kit: `docs/conformance-kit.md`
+- Wave 32 semantic addressing: `docs/wave32.md`
 - Minimal verifier seed: `examples/minimal-verifier/`
 - Replay witness packs: `replay-packs/`
 - Public compatibility check: `npm run conformance:kit`
@@ -30,6 +31,8 @@ Deterministic law-first reference implementation of the Tetragrammatron semantic
 - `src/federation` — pure federation rules (descriptors, announcements, route sets, arbitration, convergence)
 - `src/evr` — event doctrine module (kind registry, envelope validation, canonical encoding)
 - `src/hub` — read-mostly inspection shell
+- `src/waves/wave31` — advisory hardware decode + frame verify artifacts
+- `src/waves/wave32` — advisory surrogate semantic-address map + projection frames
 
 ## Run
 

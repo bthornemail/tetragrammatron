@@ -52,6 +52,8 @@ If two implementations conform to EABI, they agree on how to call `resolve`, how
 
 ## Practical Distinction
 
+The `waveform-4channel` module is a semantic bridge layer between structural control framing and EABI invocation. It is neither ABI nor EABI and must not redefine canonical semantic truth or execution-boundary semantics.
+
 **Put something in ABI when it answers:**
 - What is the canonical shape of this semantic object?
 - What statuses are legal?

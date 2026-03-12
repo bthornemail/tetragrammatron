@@ -54,6 +54,15 @@
     "demo:pipeline": "node scripts/node-pipeline-demo.mjs",
     "replay:verify": "node scripts/verify-replay-pack.mjs",
     "replay:verify:all": "node scripts/verify-replay-pack.mjs --all",
+    "wave31:golden": "node scripts/wave31-golden.mjs",
+    "wave31:must-reject": "node scripts/wave31-must-reject.mjs",
+    "wave32:fixtures": "node scripts/generate-wave32-fixtures.mjs",
+    "wave32:golden": "node scripts/wave32-golden.mjs",
+    "wave32:must-reject": "node scripts/wave32-must-reject.mjs",
+    "wave32:integration-fixtures": "node scripts/generate-wave32-integration-fixtures.mjs",
+    "wave32:integration-test": "node --test tests/waves/wave32/integrate-wave30.test.mjs",
+    "wave32:integration:must-reject": "node scripts/wave32-integration-must-reject.mjs",
+    "wave32:ui-bridge": "node scripts/wave32-ui-bridge.mjs",
     "test": "node --test tests/**/*.test.mjs"
   },
   "engines": {

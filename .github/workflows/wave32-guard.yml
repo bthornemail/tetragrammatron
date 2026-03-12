@@ -1,0 +1,40 @@
+name: wave32-guard
+
+on:
+  push:
+    paths:
+      - 'src/waves/wave32/**'
+      - 'tests/waves/wave32/**'
+      - 'fixtures/waves/wave32/**'
+      - 'scripts/wave32-*.mjs'
+      - 'scripts/generate-wave32-fixtures.mjs'
+      - 'scripts/generate-wave32-integration-fixtures.mjs'
+      - 'docs/wave32.md'
+      - 'package.json'
+      - '.github/workflows/wave32-guard.yml'
+  pull_request:
+    paths:
+      - 'src/waves/wave32/**'
+      - 'tests/waves/wave32/**'
+      - 'fixtures/waves/wave32/**'
+      - 'scripts/wave32-*.mjs'
+      - 'scripts/generate-wave32-fixtures.mjs'
+      - 'scripts/generate-wave32-integration-fixtures.mjs'
+      - 'docs/wave32.md'
+      - 'package.json'
+      - '.github/workflows/wave32-guard.yml'
+
+jobs:
+  wave32:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - run: npm run -s wave32:fixtures
+      - run: npm run -s wave32:integration-fixtures
+      - run: npm run -s wave32:golden
+      - run: npm run -s wave32:must-reject
+      - run: npm run -s wave32:integration:must-reject
+      - run: node --test tests/waves/wave32/*.test.mjs
